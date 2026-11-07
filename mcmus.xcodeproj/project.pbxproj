@@ -116,53 +116,53 @@
 			);
 			target = D3A5000000000000000000F2 /* mcmusTests */;
 		};
-		D4DEF0F9309FAA7800B3F3CB /* Exceptions for "wrappers" folder in "wrappers" target */ = {
+		D4DEF126309FAED500B3F3CB /* Exceptions for "src" folder in "wrappers" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Audio.h,
-				AudioReal.h,
-				AudioReal.m,
-				FileSystem.h,
-				FileSystem.m,
-				FileSystemReal.h,
-				FileSystemReal.m,
-				Preferences.h,
-				PreferencesReal.h,
-				PreferencesReal.m,
+				wrappers/Audio.h,
+				wrappers/AudioReal.h,
+				wrappers/AudioReal.m,
+				wrappers/FileSystem.h,
+				wrappers/FileSystem.m,
+				wrappers/FileSystemReal.h,
+				wrappers/FileSystemReal.m,
+				wrappers/Preferences.h,
+				wrappers/PreferencesReal.h,
+				wrappers/PreferencesReal.m,
 			);
 			publicHeaders = (
-				Audio.h,
-				AudioReal.h,
-				FileSystem.h,
-				FileSystemReal.h,
-				Preferences.h,
-				PreferencesReal.h,
+				wrappers/Audio.h,
+				wrappers/AudioReal.h,
+				wrappers/FileSystem.h,
+				wrappers/FileSystemReal.h,
+				wrappers/Preferences.h,
+				wrappers/PreferencesReal.h,
 			);
 			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
 		};
-		D4DEF10F309FAA9500B3F3CB /* Exceptions for "wrappersfakes" folder in "wrappersfakes" target */ = {
+		D4DEF140309FAED800B3F3CB /* Exceptions for "src" folder in "wrappersfakes" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				AudioFake.h,
-				AudioFake.m,
-				AudioFakeCall.h,
-				AudioFakeCall.m,
-				FileSystemFake.h,
-				FileSystemFake.m,
-				FileSystemFakeErrorMatching.h,
-				FileSystemFakeErrorMatching.m,
-				NotificationCounter.h,
-				NotificationCounter.m,
-				PreferencesFake.h,
-				PreferencesFake.m,
+				wrappersfakes/AudioFake.h,
+				wrappersfakes/AudioFake.m,
+				wrappersfakes/AudioFakeCall.h,
+				wrappersfakes/AudioFakeCall.m,
+				wrappersfakes/FileSystemFake.h,
+				wrappersfakes/FileSystemFake.m,
+				wrappersfakes/FileSystemFakeErrorMatching.h,
+				wrappersfakes/FileSystemFakeErrorMatching.m,
+				wrappersfakes/NotificationCounter.h,
+				wrappersfakes/NotificationCounter.m,
+				wrappersfakes/PreferencesFake.h,
+				wrappersfakes/PreferencesFake.m,
 			);
 			publicHeaders = (
-				AudioFake.h,
-				AudioFakeCall.h,
-				FileSystemFake.h,
-				FileSystemFakeErrorMatching.h,
-				NotificationCounter.h,
-				PreferencesFake.h,
+				wrappersfakes/AudioFake.h,
+				wrappersfakes/AudioFakeCall.h,
+				wrappersfakes/FileSystemFake.h,
+				wrappersfakes/FileSystemFakeErrorMatching.h,
+				wrappersfakes/NotificationCounter.h,
+				wrappersfakes/PreferencesFake.h,
 			);
 			target = D4DEF0BC309FA6D800B3F3CB /* wrappersfakes */;
 		};
@@ -190,14 +190,6 @@
 			path = docs;
 			sourceTree = "<group>";
 		};
-		D4566B0C309F9E2F0013DCF4 /* wrappers */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				D4DEF0F9309FAA7800B3F3CB /* Exceptions for "wrappers" folder in "wrappers" target */,
-			);
-			path = wrappers;
-			sourceTree = "<group>";
-		};
 		D45D240630998E1900F84DF9 /* scripts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = scripts;
@@ -223,12 +215,13 @@
 			path = ModelTests;
 			sourceTree = "<group>";
 		};
-		D4DEF0C5309FA6F900B3F3CB /* wrappersfakes */ = {
+		D4DEF110309FAEC800B3F3CB /* src */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D4DEF10F309FAA9500B3F3CB /* Exceptions for "wrappersfakes" folder in "wrappersfakes" target */,
+				D4DEF126309FAED500B3F3CB /* Exceptions for "src" folder in "wrappers" target */,
+				D4DEF140309FAED800B3F3CB /* Exceptions for "src" folder in "wrappersfakes" target */,
 			);
-			path = wrappersfakes;
+			path = src;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -291,6 +284,7 @@
 		D3A5000000000000000000A0 = {
 			isa = PBXGroup;
 			children = (
+				D4DEF110309FAEC800B3F3CB /* src */,
 				D4A78314308D0B4000325F1E /* .gitignore */,
 				D41DFEB0308C305900FEA684 /* CLAUDE.md */,
 				D4EE45C53099A628002C6BF9 /* mcmus.xctestplan */,
@@ -302,8 +296,6 @@
 				D3A5000000000000000000A3 /* mcmus */,
 				D47788FE309D80B30074B85B /* mcmusTests */,
 				D45D240630998E1900F84DF9 /* scripts */,
-				D4566B0C309F9E2F0013DCF4 /* wrappers */,
-				D4DEF0C5309FA6F900B3F3CB /* wrappersfakes */,
 				D4DEF0B8309FA49800B3F3CB /* Frameworks */,
 				D3A5000000000000000000A1 /* Products */,
 			);

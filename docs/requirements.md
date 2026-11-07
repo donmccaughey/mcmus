@@ -71,7 +71,12 @@ The MC Mus project shall place source files for artwork and other media in the
 
 The MC Mus project shall place documentation files in the `docs/` subdirectory.
 
+The MC Mus project shall place third party source code in the `libs/`
+subdirectory.
+
 The MC Mus project shall place script files in the `scripts/` subdirectory.
+
+The MC Mus project shall place project source code in the `src/` subdirectory.
 
 
 ## Code organization
@@ -103,14 +108,14 @@ system, network, audio playback, time and random number generation.
 ## Libraries
 
 The MC Mus project shall place wrapper interfaces and their real implementations
-in the wrappers library, with code placed in the `wrappers/` subdirectory.
+in the wrappers library, with code placed in the `src/wrappers/` subdirectory.
 
 The wrappers library shall not depend on any other library in the MC Mus
 project.
 
 The MC Mus project shall place the fake implementations of wrapper interfaces,
 and test helpers in the wrappersfake library, with code placed in the
-`wrappersfake/` subdirectory.
+`src/wrappersfake/` subdirectory.
 
 The wrappersfake library shall depend on the wrappers library.
 
