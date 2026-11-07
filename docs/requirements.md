@@ -108,20 +108,23 @@ system, network, audio playback, time and random number generation.
 ## Libraries
 
 The MC Mus project shall place wrapper interfaces and their real implementations
-in the wrappers library, with code placed in the `src/wrappers/` subdirectory.
+in the wrappers library, with code and unit tests placed in the `src/wrappers/`
+subdirectory.
 
 The wrappers library shall not depend on any other library in the MC Mus
 project.
 
 The MC Mus project shall place the fake implementations of wrapper interfaces,
-and test helpers in the wrappersfake library, with code placed in the
-`src/wrappersfake/` subdirectory.
+and test helpers in the wrappers-fakes library, with code and unit tests placed
+in the `src/wrappers-fakes/` subdirectory.
 
-The wrappersfake library shall depend on the wrappers library.
+The wrappers-fakes library shall depend on the wrappers library.
 
-The MC Mus project shall place model code in `mcmusBase/Model/`, part of the
-`mcmusBase` static library, and corresponding unit tests in
-`mcmusBase/ModelTests/`, part of the `mcmusBaseTests` test bundle.
+The MC Mus project shall place model code in the model library, with code and
+unit tests placed in the `src/model/` subdirectory.
+
+The model library shall depend on the wrappers library; model unit tests shall
+also depend on the wrappers-fakes library.
 
 The MC Mus project shall organize user interface code around major UI elements
 and/or features. The primary files panel code shall live in `mcmus/files/`. Main
