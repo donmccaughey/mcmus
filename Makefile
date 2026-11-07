@@ -1,21 +1,22 @@
 TMP ?= $(abspath tmp)
 
-IOS_CHECK_DEVICE ?= iPhone 16e
+BUILD_FLAGS ?= -quiet
+IOS_TEST_DEVICE ?= iPhone 16e
+TEST_FLAGS ?= -quiet
 
+
+app = $(release_dir)/$(product).app
 arch = $(shell uname -m)
 product = MC Mus
 project_files = \
+		mcmus.xctestplan \
 		mcmus.xcodeproj/project.pbxproj \
-		$(wildcard mcmus.xcodeproj/xcshareddata/xcschemes/*.xcscheme) \
-		mcmus.xctestplan
+		$(wildcard mcmus.xcodeproj/xcshareddata/xcschemes/*.xcscheme)
 release_dir = $(TMP)/Release
-app = $(release_dir)/$(product).app
-test_files = $(shell find mcmusTests -type f -not -name '.*')
 src_files = \
 		 .git/hooks/pre-commit \
 		$(shell find src -type f -not -name '.*') \
-		$(project_files) \
-		$(test_files)
+		$(project_files)
 ver = 1.0
 
 
@@ -70,7 +71,7 @@ $(TMP)/built-release.stamp : \
 		-configuration Release \
 		-destination 'generic/platform=macOS' \
 		CONFIGURATION_BUILD_DIR=$(release_dir) \
-		-quiet
+		$(BUILD_FLAGS)
 	touch $@
 
 
@@ -78,8 +79,8 @@ $(TMP)/checked-iOS.stamp : $(src_files) | $$(dir $$@)
 	xcodebuild test \
 		-project mcmus.xcodeproj \
 		-scheme app \
-		-destination 'platform=iOS Simulator,name=$(IOS_CHECK_DEVICE)' \
-		-quiet
+		-destination 'platform=iOS Simulator,name=$(IOS_TEST_DEVICE)' \
+		$(TEST_FLAGS)
 	touch $@
 
 
@@ -88,7 +89,7 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-destination 'platform=macOS,arch=$(arch)' \
-		-quiet
+		$(TEST_FLAGS)
 	touch $@
 
 

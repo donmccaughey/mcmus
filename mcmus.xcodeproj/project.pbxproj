@@ -94,7 +94,7 @@
 
 /* Begin PBXFileReference section */
 		D3A5000000000000000000A2 /* MC Mus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MC Mus.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D3A5000000000000000000F1 /* mcmusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mcmusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3A5000000000000000000F1 /* app-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "app-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D41DFEB0308C305900FEA684 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D41DFEB1308C305900FEA684 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D4566B11309F9ECF0013DCF4 /* libwrappers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwrappers.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -251,15 +251,19 @@
 			);
 			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
 		};
-		D4EAD6E4309FD51100573748 /* Exceptions for "src" folder in "mcmusTests" target */ = {
+		D4EAD6E4309FD51100573748 /* Exceptions for "src" folder in "app-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				app/components/PanelArrangement.m,
+				app/components/PanelArrangementTests.m,
 				app/files/FolderChildPasteboard.m,
+				app/files/FolderChildPasteboardTests.m,
 				app/MusicLibraryStore.m,
+				app/MusicLibraryStoreTests.m,
 				app/queue/LowerLineWidths.m,
+				app/queue/LowerLineWidthsTests.m,
 			);
-			target = D3A5000000000000000000F2 /* mcmusTests */;
+			target = D3A5000000000000000000F2 /* app-tests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -322,11 +326,6 @@
 			path = scripts;
 			sourceTree = "<group>";
 		};
-		D47788FE309D80B30074B85B /* mcmusTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = mcmusTests;
-			sourceTree = "<group>";
-		};
 		D4A78311308D0B2500325F1E /* .claude */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = .claude;
@@ -337,7 +336,7 @@
 			exceptions = (
 				D41B878C309FD21F00136AE5 /* Exceptions for "src" folder in "app" target */,
 				D47252A7309FD2C9008D1F07 /* Exceptions for "src" folder in "Compile Sources" phase from "app" target */,
-				D4EAD6E4309FD51100573748 /* Exceptions for "src" folder in "mcmusTests" target */,
+				D4EAD6E4309FD51100573748 /* Exceptions for "src" folder in "app-tests" target */,
 				D41B8727309FB45700136AE5 /* Exceptions for "src" folder in "model" target */,
 				D41B8729309FB45F00136AE5 /* Exceptions for "src" folder in "model-tests" target */,
 				D4DEF126309FAED500B3F3CB /* Exceptions for "src" folder in "wrappers" target */,
@@ -415,7 +414,6 @@
 				D41DFEB1308C305900FEA684 /* README.md */,
 				D4A78311308D0B2500325F1E /* .claude */,
 				D41DFEB6308C307E00FEA684 /* docs */,
-				D47788FE309D80B30074B85B /* mcmusTests */,
 				D45D240630998E1900F84DF9 /* scripts */,
 				D3A5000000000000000000A1 /* Products */,
 			);
@@ -425,7 +423,7 @@
 			isa = PBXGroup;
 			children = (
 				D3A5000000000000000000A2 /* MC Mus.app */,
-				D3A5000000000000000000F1 /* mcmusTests.xctest */,
+				D3A5000000000000000000F1 /* app-tests.xctest */,
 				D4B100000000000000000036 /* model-tests.xctest */,
 				D4566B11309F9ECF0013DCF4 /* libwrappers.a */,
 				D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */,
@@ -480,9 +478,9 @@
 			productReference = D3A5000000000000000000A2 /* MC Mus.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D3A5000000000000000000F2 /* mcmusTests */ = {
+		D3A5000000000000000000F2 /* app-tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D3A5000000000000000000F6 /* Build configuration list for PBXNativeTarget "mcmusTests" */;
+			buildConfigurationList = D3A5000000000000000000F6 /* Build configuration list for PBXNativeTarget "app-tests" */;
 			buildPhases = (
 				D3A5000000000000000000F3 /* Sources */,
 				D3A5000000000000000000F4 /* Frameworks */,
@@ -495,12 +493,9 @@
 				D4DEF16A309FB0E700B3F3CB /* PBXTargetDependency */,
 				D41B86DF309FB23700136AE5 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				D47788FE309D80B30074B85B /* mcmusTests */,
-			);
-			name = mcmusTests;
+			name = "app-tests";
 			productName = mcmusTests;
-			productReference = D3A5000000000000000000F1 /* mcmusTests.xctest */;
+			productReference = D3A5000000000000000000F1 /* app-tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D4566B10309F9ECF0013DCF4 /* wrappers */ = {
@@ -620,7 +615,7 @@
 			projectRoot = "";
 			targets = (
 				D3A5000000000000000000C0 /* app */,
-				D3A5000000000000000000F2 /* mcmusTests */,
+				D3A5000000000000000000F2 /* app-tests */,
 				D4DEF141309FB00900B3F3CB /* model */,
 				D4B100000000000000000030 /* model-tests */,
 				D4566B10309F9ECF0013DCF4 /* wrappers */,
@@ -1156,7 +1151,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D3A5000000000000000000F6 /* Build configuration list for PBXNativeTarget "mcmusTests" */ = {
+		D3A5000000000000000000F6 /* Build configuration list for PBXNativeTarget "app-tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D3A5000000000000000000F7 /* Debug */,

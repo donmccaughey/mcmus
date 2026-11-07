@@ -126,19 +126,15 @@ unit tests placed in the `src/model/` subdirectory.
 The model library shall depend on the wrappers library; model unit tests shall
 also depend on the wrappers-fakes library.
 
+The MC Mus project shall place app code, configuration, assets and corresponding
+unit tests in the `src/app/` subdirectory.
+
 The MC Mus project shall organize user interface code around major UI elements
-and/or features. The primary files panel code shall live in `mcmus/files/`. Main
-view and main window code shall live in `mcmus/main/`. The primary queue panel
-code shall live in `mcmus/queue/`. The settings dialog code shall live in
-`mcmus/settings/`. Views, controls and UI utility code shared across major UI
-elements or feature shall live in `mcmus/components/`.
-
-The MC Mus project shall place all other code, app configuration and app asset
-files in the `mcmus/` subdirectory.
-
-The MC Mus project shall place unit tests for code under the `mcmus/` directory
-in the `mcmusTests/` directory, mirroring the directory organization in
-`mcmus/`.
+and/or features. The primary files panel code shall live in `src/app/files/`.
+Main view and main window code shall live in `src/app/main/`. The primary queue
+panel code shall live in `src/app/queue/`. The settings dialog code shall live
+in `src/app/settings/`. Views, controls and UI utility code shared across major
+UI elements or feature shall live in `src/app/components/`.
 
 
 # System service wrappers

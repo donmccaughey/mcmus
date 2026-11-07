@@ -30,8 +30,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D3A5000000000000000000F2"
-               BuildableName = "mcmusTests.xctest"
-               BlueprintName = "mcmusTests"
+               BuildableName = "app-tests.xctest"
+               BlueprintName = "app-tests"
                ReferencedContainer = "container:mcmus.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -54,8 +54,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D3A5000000000000000000F2"
-               BuildableName = "mcmusTests.xctest"
-               BlueprintName = "mcmusTests"
+               BuildableName = "app-tests.xctest"
+               BlueprintName = "app-tests"
                ReferencedContainer = "container:mcmus.xcodeproj">
             </BuildableReference>
          </TestableReference>
