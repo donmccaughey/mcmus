@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MCMusSceneDelegate : UIResponder <UIWindowSceneDelegate>
+@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
 
 @property (nonatomic, strong, nullable) UIWindow *window;
 

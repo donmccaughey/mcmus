@@ -210,7 +210,6 @@
 				"app/main/MainViewController-iOS.m",
 				"app/main/MainViewController-macOS.m",
 				app/main/MainWindowController.m,
-				app/MCMusSceneDelegate.m,
 				app/MusicLibraryStore.m,
 				app/queue/DropTargetView.m,
 				app/queue/LowerLineWidths.m,
@@ -222,6 +221,7 @@
 				"app/queue/QueuePanelViewController-macOS.m",
 				"app/queue/QueueTableView-iOS.m",
 				"app/queue/QueueTableView-macOS.m",
+				app/SceneDelegate.m,
 				app/settings/ReadOnlyTextField.m,
 				app/settings/SettingsWindowController.m,
 			);
@@ -297,7 +297,6 @@
 				"app/main/MainViewController-iOS.h",
 				"app/main/MainViewController-macOS.h",
 				app/main/MainWindowController.h,
-				app/MCMusSceneDelegate.h,
 				app/MusicLibraryStore.h,
 				app/queue/DropTargetView.h,
 				app/queue/LowerLineWidths.h,
@@ -309,6 +308,7 @@
 				"app/queue/QueuePanelViewController-macOS.h",
 				"app/queue/QueueTableView-iOS.h",
 				"app/queue/QueueTableView-macOS.h",
+				app/SceneDelegate.h,
 				app/settings/ReadOnlyTextField.h,
 				app/settings/SettingsWindowController.h,
 			);

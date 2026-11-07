@@ -1,10 +1,10 @@
-#import "MCMusSceneDelegate.h"
+#import "SceneDelegate.h"
 
 #if TARGET_OS_IOS
 #import "AppDelegate-iOS.h"
 #import "MainViewController-iOS.h"
 
-@implementation MCMusSceneDelegate
+@implementation SceneDelegate
 
 - (void)scene:(UIScene *)scene
     willConnectToSession:(UISceneSession *)session
