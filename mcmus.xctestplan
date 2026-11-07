@@ -1,27 +1,31 @@
 {
-  "configurations": [
+  "configurations" : [
     {
-      "id": "C5216A9F-C1BA-4FA5-9A24-FE80B53090D7",
-      "name": "Configuration 1",
-      "options": {}
+      "id" : "C5216A9F-C1BA-4FA5-9A24-FE80B53090D7",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
     }
   ],
-  "defaultOptions": {},
-  "testTargets": [
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
     {
-      "target": {
-        "containerPath": "container:mcmus.xcodeproj",
-        "identifier": "D3A5000000000000000000F2",
-        "name": "mcmusTests"
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D3A5000000000000000000F2",
+        "name" : "mcmusTests"
       }
     },
     {
-      "target": {
-        "containerPath": "container:mcmus.xcodeproj",
-        "identifier": "D4B100000000000000000030",
-        "name": "mcmusBaseTests"
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D4B100000000000000000030",
+        "name" : "model-tests"
       }
     }
   ],
-  "version": 1
+  "version" : 1
 }
