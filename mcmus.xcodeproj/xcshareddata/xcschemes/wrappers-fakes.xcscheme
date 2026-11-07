@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D4DEF0BC309FA6D800B3F3CB"
-               BuildableName = "libwrappersfakes.a"
-               BlueprintName = "wrappersfakes"
+               BuildableName = "libwrappers-fakes.a"
+               BlueprintName = "wrappers-fakes"
                ReferencedContainer = "container:mcmus.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -51,8 +51,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D4DEF0BC309FA6D800B3F3CB"
-            BuildableName = "libwrappersfakes.a"
-            BlueprintName = "wrappersfakes"
+            BuildableName = "libwrappers-fakes.a"
+            BlueprintName = "wrappers-fakes"
             ReferencedContainer = "container:mcmus.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
