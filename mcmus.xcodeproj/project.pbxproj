@@ -8,33 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		D4B10000000000000000003B /* libmcmusBase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B100000000000000000016 /* libmcmusBase.a */; };
-		D4B10000000000000000003C /* libmcmusBaseTestSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B100000000000000000026 /* libmcmusBaseTestSupport.a */; };
 		D4B100000000000000000040 /* libmcmusBase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B100000000000000000016 /* libmcmusBase.a */; };
 		D4B100000000000000000050 /* libmcmusBase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B100000000000000000016 /* libmcmusBase.a */; };
-		D4B100000000000000000051 /* libmcmusBaseTestSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B100000000000000000026 /* libmcmusBaseTestSupport.a */; };
+		D4DEF0B9309FA49800B3F3CB /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D4DEF0C6309FA71D00B3F3CB /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D4DEF0EE309FA8FF00B3F3CB /* libwrappersfakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappersfakes.a */; };
+		D4DEF0F1309FA95C00B3F3CB /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D4DEF0F2309FA97900B3F3CB /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D4DEF0F5309FA97900B3F3CB /* libwrappersfakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappersfakes.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D4B100000000000000000028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3A5000000000000000000E0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4B100000000000000000010;
-			remoteInfo = mcmusBase;
-		};
 		D4B100000000000000000038 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D4B100000000000000000010;
 			remoteInfo = mcmusBase;
-		};
-		D4B10000000000000000003A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3A5000000000000000000E0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4B100000000000000000020;
-			remoteInfo = mcmusBaseTestSupport;
 		};
 		D4B100000000000000000042 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -50,12 +40,54 @@
 			remoteGlobalIDString = D4B100000000000000000010;
 			remoteInfo = mcmusBase;
 		};
-		D4B100000000000000000055 /* PBXContainerItemProxy */ = {
+		D4DEF0BA309FA49800B3F3CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D4B100000000000000000020;
-			remoteInfo = mcmusBaseTestSupport;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D4DEF0C7309FA71D00B3F3CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D4DEF0CD309FA79500B3F3CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D4DEF0DB309FA7F100B3F3CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4DEF0BC309FA6D800B3F3CB;
+			remoteInfo = wrappersfakes;
+		};
+		D4DEF0DD309FA82E00B3F3CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D4DEF0F3309FA97900B3F3CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D4DEF0F6309FA97900B3F3CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4DEF0BC309FA6D800B3F3CB;
+			remoteInfo = wrappersfakes;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -64,11 +96,12 @@
 		D3A5000000000000000000F1 /* mcmusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mcmusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D41DFEB0308C305900FEA684 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D41DFEB1308C305900FEA684 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D4566B11309F9ECF0013DCF4 /* libwrappers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwrappers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45D240330998DFB00F84DF9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		D4B100000000000000000016 /* libmcmusBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmcmusBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4B100000000000000000026 /* libmcmusBaseTestSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmcmusBaseTestSupport.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4B100000000000000000036 /* mcmusBaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mcmusBaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4A78314308D0B4000325F1E /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		D4B100000000000000000016 /* libmcmusBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmcmusBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4B100000000000000000036 /* mcmusBaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mcmusBaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4DEF0C3309FA6D800B3F3CB /* libwrappersfakes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwrappersfakes.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4EE45C53099A628002C6BF9 /* mcmus.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = mcmus.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,6 +115,56 @@
 				queue/LowerLineWidths.m,
 			);
 			target = D3A5000000000000000000F2 /* mcmusTests */;
+		};
+		D4DEF0F9309FAA7800B3F3CB /* Exceptions for "wrappers" folder in "wrappers" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Audio.h,
+				AudioReal.h,
+				AudioReal.m,
+				FileSystem.h,
+				FileSystem.m,
+				FileSystemReal.h,
+				FileSystemReal.m,
+				Preferences.h,
+				PreferencesReal.h,
+				PreferencesReal.m,
+			);
+			publicHeaders = (
+				Audio.h,
+				AudioReal.h,
+				FileSystem.h,
+				FileSystemReal.h,
+				Preferences.h,
+				PreferencesReal.h,
+			);
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+		};
+		D4DEF10F309FAA9500B3F3CB /* Exceptions for "wrappersfakes" folder in "wrappersfakes" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AudioFake.h,
+				AudioFake.m,
+				AudioFakeCall.h,
+				AudioFakeCall.m,
+				FileSystemFake.h,
+				FileSystemFake.m,
+				FileSystemFakeErrorMatching.h,
+				FileSystemFakeErrorMatching.m,
+				NotificationCounter.h,
+				NotificationCounter.m,
+				PreferencesFake.h,
+				PreferencesFake.m,
+			);
+			publicHeaders = (
+				AudioFake.h,
+				AudioFakeCall.h,
+				FileSystemFake.h,
+				FileSystemFakeErrorMatching.h,
+				NotificationCounter.h,
+				PreferencesFake.h,
+			);
+			target = D4DEF0BC309FA6D800B3F3CB /* wrappersfakes */;
 		};
 		D4FF6D343092CDFA00FE2C42 /* Exceptions for "mcmus" folder in "mcmus" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -107,6 +190,14 @@
 			path = docs;
 			sourceTree = "<group>";
 		};
+		D4566B0C309F9E2F0013DCF4 /* wrappers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D4DEF0F9309FAA7800B3F3CB /* Exceptions for "wrappers" folder in "wrappers" target */,
+			);
+			path = wrappers;
+			sourceTree = "<group>";
+		};
 		D45D240630998E1900F84DF9 /* scripts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = scripts;
@@ -122,19 +213,9 @@
 			path = .claude;
 			sourceTree = "<group>";
 		};
-		D4B100000000000000000001 /* Wrappers */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Wrappers;
-			sourceTree = "<group>";
-		};
 		D4B100000000000000000002 /* Model */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Model;
-			sourceTree = "<group>";
-		};
-		D4B100000000000000000003 /* WrappersTestSupport */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WrappersTestSupport;
 			sourceTree = "<group>";
 		};
 		D4B100000000000000000004 /* ModelTests */ = {
@@ -142,9 +223,12 @@
 			path = ModelTests;
 			sourceTree = "<group>";
 		};
-		D4B100000000000000000005 /* WrappersTests */ = {
+		D4DEF0C5309FA6F900B3F3CB /* wrappersfakes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WrappersTests;
+			exceptions = (
+				D4DEF10F309FAA9500B3F3CB /* Exceptions for "wrappersfakes" folder in "wrappersfakes" target */,
+			);
+			path = wrappersfakes;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -155,6 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4B100000000000000000040 /* libmcmusBase.a in Frameworks */,
+				D4DEF0B9309FA49800B3F3CB /* libwrappers.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,19 +247,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4DEF0F1309FA95C00B3F3CB /* libwrappers.a in Frameworks */,
+				D4DEF0EE309FA8FF00B3F3CB /* libwrappersfakes.a in Frameworks */,
 				D4B100000000000000000050 /* libmcmusBase.a in Frameworks */,
-				D4B100000000000000000051 /* libmcmusBaseTestSupport.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D4B100000000000000000012 /* Frameworks */ = {
+		D4566B0F309F9ECF0013DCF4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D4B100000000000000000022 /* Frameworks */ = {
+		D4B100000000000000000012 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -186,7 +272,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4B10000000000000000003B /* libmcmusBase.a in Frameworks */,
-				D4B10000000000000000003C /* libmcmusBaseTestSupport.a in Frameworks */,
+				D4DEF0F2309FA97900B3F3CB /* libwrappers.a in Frameworks */,
+				D4DEF0F5309FA97900B3F3CB /* libwrappersfakes.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4DEF0BF309FA6D800B3F3CB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4DEF0C6309FA71D00B3F3CB /* libwrappers.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,10 +298,13 @@
 				D41DFEB1308C305900FEA684 /* README.md */,
 				D4A78311308D0B2500325F1E /* .claude */,
 				D41DFEB6308C307E00FEA684 /* docs */,
-				D45D240630998E1900F84DF9 /* scripts */,
+				D4B100000000000000000006 /* mcmusBase */,
 				D3A5000000000000000000A3 /* mcmus */,
 				D47788FE309D80B30074B85B /* mcmusTests */,
-				D4B100000000000000000006 /* mcmusBase */,
+				D45D240630998E1900F84DF9 /* scripts */,
+				D4566B0C309F9E2F0013DCF4 /* wrappers */,
+				D4DEF0C5309FA6F900B3F3CB /* wrappersfakes */,
+				D4DEF0B8309FA49800B3F3CB /* Frameworks */,
 				D3A5000000000000000000A1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -217,8 +315,9 @@
 				D3A5000000000000000000A2 /* MC Mus.app */,
 				D3A5000000000000000000F1 /* mcmusTests.xctest */,
 				D4B100000000000000000016 /* libmcmusBase.a */,
-				D4B100000000000000000026 /* libmcmusBaseTestSupport.a */,
 				D4B100000000000000000036 /* mcmusBaseTests.xctest */,
+				D4566B11309F9ECF0013DCF4 /* libwrappers.a */,
+				D4DEF0C3309FA6D800B3F3CB /* libwrappersfakes.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -226,16 +325,37 @@
 		D4B100000000000000000006 /* mcmusBase */ = {
 			isa = PBXGroup;
 			children = (
-				D4B100000000000000000001 /* Wrappers */,
 				D4B100000000000000000002 /* Model */,
-				D4B100000000000000000003 /* WrappersTestSupport */,
 				D4B100000000000000000004 /* ModelTests */,
-				D4B100000000000000000005 /* WrappersTests */,
 			);
 			path = mcmusBase;
 			sourceTree = "<group>";
 		};
+		D4DEF0B8309FA49800B3F3CB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D4566B0D309F9ECF0013DCF4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4DEF0BD309FA6D800B3F3CB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		D3A5000000000000000000C0 /* mcmus */ = {
@@ -250,6 +370,7 @@
 			);
 			dependencies = (
 				D4B100000000000000000041 /* PBXTargetDependency */,
+				D4DEF0BB309FA49800B3F3CB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D3A5000000000000000000A3 /* mcmus */,
@@ -270,8 +391,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				D4DEF0DE309FA82E00B3F3CB /* PBXTargetDependency */,
+				D4DEF0DC309FA7F100B3F3CB /* PBXTargetDependency */,
 				D4B100000000000000000052 /* PBXTargetDependency */,
-				D4B100000000000000000054 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D47788FE309D80B30074B85B /* mcmusTests */,
@@ -280,6 +402,25 @@
 			productName = mcmusTests;
 			productReference = D3A5000000000000000000F1 /* mcmusTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D4566B10309F9ECF0013DCF4 /* wrappers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4566B12309F9ECF0013DCF4 /* Build configuration list for PBXNativeTarget "wrappers" */;
+			buildPhases = (
+				D4566B0D309F9ECF0013DCF4 /* Headers */,
+				D4566B0E309F9ECF0013DCF4 /* Sources */,
+				D4566B0F309F9ECF0013DCF4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = wrappers;
+			packageProductDependencies = (
+			);
+			productName = wrappers;
+			productReference = D4566B11309F9ECF0013DCF4 /* libwrappers.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 		D4B100000000000000000010 /* mcmusBase */ = {
 			isa = PBXNativeTarget;
@@ -291,34 +432,14 @@
 			buildRules = (
 			);
 			dependencies = (
+				D4DEF0CE309FA79500B3F3CB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D4B100000000000000000001 /* Wrappers */,
 				D4B100000000000000000002 /* Model */,
 			);
 			name = mcmusBase;
 			productName = mcmusBase;
 			productReference = D4B100000000000000000016 /* libmcmusBase.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		D4B100000000000000000020 /* mcmusBaseTestSupport */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D4B100000000000000000023 /* Build configuration list for PBXNativeTarget "mcmusBaseTestSupport" */;
-			buildPhases = (
-				D4B100000000000000000021 /* Sources */,
-				D4B100000000000000000022 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D4B100000000000000000027 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D4B100000000000000000003 /* WrappersTestSupport */,
-			);
-			name = mcmusBaseTestSupport;
-			productName = mcmusBaseTestSupport;
-			productReference = D4B100000000000000000026 /* libmcmusBaseTestSupport.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D4B100000000000000000030 /* mcmusBaseTests */ = {
@@ -332,16 +453,36 @@
 			);
 			dependencies = (
 				D4B100000000000000000037 /* PBXTargetDependency */,
-				D4B100000000000000000039 /* PBXTargetDependency */,
+				D4DEF0F4309FA97900B3F3CB /* PBXTargetDependency */,
+				D4DEF0F7309FA97900B3F3CB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D4B100000000000000000004 /* ModelTests */,
-				D4B100000000000000000005 /* WrappersTests */,
 			);
 			name = mcmusBaseTests;
 			productName = mcmusBaseTests;
 			productReference = D4B100000000000000000036 /* mcmusBaseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D4DEF0BC309FA6D800B3F3CB /* wrappersfakes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4DEF0C0309FA6D800B3F3CB /* Build configuration list for PBXNativeTarget "wrappersfakes" */;
+			buildPhases = (
+				D4DEF0BD309FA6D800B3F3CB /* Headers */,
+				D4DEF0BE309FA6D800B3F3CB /* Sources */,
+				D4DEF0BF309FA6D800B3F3CB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D4DEF0C8309FA71D00B3F3CB /* PBXTargetDependency */,
+			);
+			name = wrappersfakes;
+			packageProductDependencies = (
+			);
+			productName = wrappers;
+			productReference = D4DEF0C3309FA6D800B3F3CB /* libwrappersfakes.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -359,10 +500,10 @@
 					D3A5000000000000000000F2 = {
 						CreatedOnToolsVersion = 26.3;
 					};
-					D4B100000000000000000010 = {
+					D4566B10309F9ECF0013DCF4 = {
 						CreatedOnToolsVersion = 26.3;
 					};
-					D4B100000000000000000020 = {
+					D4B100000000000000000010 = {
 						CreatedOnToolsVersion = 26.3;
 					};
 					D4B100000000000000000030 = {
@@ -387,8 +528,9 @@
 				D3A5000000000000000000C0 /* mcmus */,
 				D3A5000000000000000000F2 /* mcmusTests */,
 				D4B100000000000000000010 /* mcmusBase */,
-				D4B100000000000000000020 /* mcmusBaseTestSupport */,
 				D4B100000000000000000030 /* mcmusBaseTests */,
+				D4566B10309F9ECF0013DCF4 /* wrappers */,
+				D4DEF0BC309FA6D800B3F3CB /* wrappersfakes */,
 			);
 		};
 /* End PBXProject section */
@@ -425,14 +567,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D4B100000000000000000011 /* Sources */ = {
+		D4566B0E309F9ECF0013DCF4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D4B100000000000000000021 /* Sources */ = {
+		D4B100000000000000000011 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -446,23 +588,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4DEF0BE309FA6D800B3F3CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D4B100000000000000000027 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4B100000000000000000010 /* mcmusBase */;
-			targetProxy = D4B100000000000000000028 /* PBXContainerItemProxy */;
-		};
 		D4B100000000000000000037 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D4B100000000000000000010 /* mcmusBase */;
 			targetProxy = D4B100000000000000000038 /* PBXContainerItemProxy */;
-		};
-		D4B100000000000000000039 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4B100000000000000000020 /* mcmusBaseTestSupport */;
-			targetProxy = D4B10000000000000000003A /* PBXContainerItemProxy */;
 		};
 		D4B100000000000000000041 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -474,10 +613,40 @@
 			target = D4B100000000000000000010 /* mcmusBase */;
 			targetProxy = D4B100000000000000000053 /* PBXContainerItemProxy */;
 		};
-		D4B100000000000000000054 /* PBXTargetDependency */ = {
+		D4DEF0BB309FA49800B3F3CB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D4B100000000000000000020 /* mcmusBaseTestSupport */;
-			targetProxy = D4B100000000000000000055 /* PBXContainerItemProxy */;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D4DEF0BA309FA49800B3F3CB /* PBXContainerItemProxy */;
+		};
+		D4DEF0C8309FA71D00B3F3CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D4DEF0C7309FA71D00B3F3CB /* PBXContainerItemProxy */;
+		};
+		D4DEF0CE309FA79500B3F3CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D4DEF0CD309FA79500B3F3CB /* PBXContainerItemProxy */;
+		};
+		D4DEF0DC309FA7F100B3F3CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4DEF0BC309FA6D800B3F3CB /* wrappersfakes */;
+			targetProxy = D4DEF0DB309FA7F100B3F3CB /* PBXContainerItemProxy */;
+		};
+		D4DEF0DE309FA82E00B3F3CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D4DEF0DD309FA82E00B3F3CB /* PBXContainerItemProxy */;
+		};
+		D4DEF0F4309FA97900B3F3CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D4DEF0F3309FA97900B3F3CB /* PBXContainerItemProxy */;
+		};
+		D4DEF0F7309FA97900B3F3CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4DEF0BC309FA6D800B3F3CB /* wrappersfakes */;
+			targetProxy = D4DEF0F6309FA97900B3F3CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -721,6 +890,39 @@
 			};
 			name = Release;
 		};
+		D4566B13309F9ECF0013DCF4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4566B14309F9ECF0013DCF4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D4B100000000000000000014 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -733,7 +935,6 @@
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -750,41 +951,6 @@
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		D4B100000000000000000024 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K39VF43BJL;
-				EXECUTABLE_PREFIX = lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D4B100000000000000000025 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K39VF43BJL;
-				EXECUTABLE_PREFIX = lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -843,6 +1009,39 @@
 			};
 			name = Release;
 		};
+		D4DEF0C1309FA6D800B3F3CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4DEF0C2309FA6D800B3F3CB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -873,20 +1072,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		D4566B12309F9ECF0013DCF4 /* Build configuration list for PBXNativeTarget "wrappers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4566B13309F9ECF0013DCF4 /* Debug */,
+				D4566B14309F9ECF0013DCF4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D4B100000000000000000013 /* Build configuration list for PBXNativeTarget "mcmusBase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D4B100000000000000000014 /* Debug */,
 				D4B100000000000000000015 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D4B100000000000000000023 /* Build configuration list for PBXNativeTarget "mcmusBaseTestSupport" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D4B100000000000000000024 /* Debug */,
-				D4B100000000000000000025 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -900,8 +1099,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		D4DEF0C0309FA6D800B3F3CB /* Build configuration list for PBXNativeTarget "wrappersfakes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4DEF0C1309FA6D800B3F3CB /* Debug */,
+				D4DEF0C2309FA6D800B3F3CB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = D3A5000000000000000000E0 /* Project object */;
 }

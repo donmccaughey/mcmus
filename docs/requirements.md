@@ -66,23 +66,28 @@ Display Name](localized-display-name-2026-10.md) document for details.
 
 # Project organization
 
-The MC Mus project shall place app code, configuration and assets in the
-`mcmus/` subdirectory.
-
-The MC Mus project shall place supporting code modules in the `mcmusBase/`
-subdirectory, built as static libraries by targets of `mcmus.xcodeproj`.
+The MC Mus project shall place source files for artwork and other media in the
+`assets/` subdirectory.
 
 The MC Mus project shall place documentation files in the `docs/` subdirectory.
+
+The MC Mus project shall place script files in the `scripts/` subdirectory.
 
 
 ## Code organization
 
-The MC Mus project shall organize code into packages, modules, libraries and
-other units that have low coupling and high cohesion.
+The MC Mus project shall organize code into static libraries that have low
+coupling and high cohesion wherever practical.
 
-The MC Mus project shall place each class or struct representing a significant
-application concept in its own code file; extensions and small classes and
-structs may share a code file when they have a single consumer.
+The MC Mus project shall place each class, struct, function or set of related
+functions that represent a significant application concept in its own code file;
+Objective-C categories and extensions, C functions and small classes and structs
+may share a code file when they have a single consumer.
+
+The MC Mus project shall minimize the declarations that appear in header files
+wherever practical.
+
+The MC Mus project shall use static linkage for symbols wherever practical.
 
 The MC Mus project shall add the prefix `-iOS` or `-macOS` to the base name of
 code files that serve the same purpose in the app but cannot be shared between
@@ -95,15 +100,19 @@ for system services that are difficult to test in isolation, such as the file
 system, network, audio playback, time and random number generation.
 
 
-## Code locations
+## Libraries
 
 The MC Mus project shall place wrapper interfaces and their real implementations
-in `mcmusBase/Wrappers/`, part of the `mcmusBase` static library, and
-corresponding unit tests in `mcmusBase/WrappersTests/`, part of the
-`mcmusBaseTests` test bundle.
+in the wrappers library, with code placed in the `wrappers/` subdirectory.
 
-The MC Mus project shall place the fake implementations of wrapper interfaces in
-`mcmusBase/WrappersTestSupport/`, the `mcmusBaseTestSupport` static library.
+The wrappers library shall not depend on any other library in the MC Mus
+project.
+
+The MC Mus project shall place the fake implementations of wrapper interfaces,
+and test helpers in the wrappersfake library, with code placed in the
+`wrappersfake/` subdirectory.
+
+The wrappersfake library shall depend on the wrappers library.
 
 The MC Mus project shall place model code in `mcmusBase/Model/`, part of the
 `mcmusBase` static library, and corresponding unit tests in
