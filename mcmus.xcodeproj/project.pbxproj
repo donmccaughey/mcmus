@@ -181,6 +181,8 @@
 		D41B878C309FD21F00136AE5 /* Exceptions for "src" folder in "app" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"app/AppDelegate-iOS.m",
+				"app/AppDelegate-macOS.m",
 				app/AppIcon.icon,
 				"app/components/EmptyStateView-iOS.m",
 				"app/components/EmptyStateView-macOS.m",
@@ -208,8 +210,6 @@
 				"app/main/MainViewController-iOS.m",
 				"app/main/MainViewController-macOS.m",
 				app/main/MainWindowController.m,
-				"app/MCMusAppDelegate-iOS.m",
-				"app/MCMusAppDelegate-macOS.m",
 				app/MCMusSceneDelegate.m,
 				app/MusicLibraryStore.m,
 				app/queue/DropTargetView.m,
@@ -272,6 +272,8 @@
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = D3A5000000000000000000B1 /* Sources */;
 			membershipExceptions = (
+				"app/AppDelegate-iOS.h",
+				"app/AppDelegate-macOS.h",
 				"app/components/EmptyStateView-iOS.h",
 				"app/components/EmptyStateView-macOS.h",
 				app/components/HairlineView.h,
@@ -295,8 +297,6 @@
 				"app/main/MainViewController-iOS.h",
 				"app/main/MainViewController-macOS.h",
 				app/main/MainWindowController.h,
-				"app/MCMusAppDelegate-iOS.h",
-				"app/MCMusAppDelegate-macOS.h",
 				app/MCMusSceneDelegate.h,
 				app/MusicLibraryStore.h,
 				app/queue/DropTargetView.h,

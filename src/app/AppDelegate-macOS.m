@@ -1,4 +1,4 @@
-#import "MCMusAppDelegate-macOS.h"
+#import "AppDelegate-macOS.h"
 
 #if TARGET_OS_OSX
 #import "MainMenu.h"
@@ -7,7 +7,7 @@
 #import "Player.h"
 #import "SettingsWindowController.h"
 
-@implementation MCMusAppDelegate {
+@implementation AppDelegate {
     MusicLibraryStore *_store;
     Player *_player;
     MainWindowController *_Nullable _mainWindowController;

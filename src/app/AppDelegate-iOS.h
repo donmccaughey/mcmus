@@ -8,9 +8,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MCMusAppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (class, nonatomic, readonly) MCMusAppDelegate *shared;
+@property (class, nonatomic, readonly) AppDelegate *shared;
 
 @property (nonatomic, readonly) MusicLibraryStore *store;
 @property (nonatomic, readonly) Player *player;

@@ -1,10 +1,10 @@
-#import "MCMusAppDelegate-iOS.h"
+#import "AppDelegate-iOS.h"
 
 #if TARGET_OS_IOS
-@implementation MCMusAppDelegate
+@implementation AppDelegate
 
-+ (MCMusAppDelegate *)shared {
-    return (MCMusAppDelegate *)UIApplication.sharedApplication.delegate;
++ (AppDelegate *)shared {
+    return (AppDelegate *)UIApplication.sharedApplication.delegate;
 }
 
 - (instancetype)init {
