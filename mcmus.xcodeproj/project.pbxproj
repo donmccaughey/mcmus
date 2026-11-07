@@ -103,7 +103,6 @@
 		D4B100000000000000000036 /* model-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "model-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libwrappers-fakes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF148309FB00900B3F3CB /* libmodel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmodel.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4EE45C53099A628002C6BF9 /* mcmus.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = mcmus.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -409,7 +408,6 @@
 				D4DEF110309FAEC800B3F3CB /* src */,
 				D4A78314308D0B4000325F1E /* .gitignore */,
 				D41DFEB0308C305900FEA684 /* CLAUDE.md */,
-				D4EE45C53099A628002C6BF9 /* mcmus.xctestplan */,
 				D45D240330998DFB00F84DF9 /* Makefile */,
 				D41DFEB1308C305900FEA684 /* README.md */,
 				D4A78311308D0B2500325F1E /* .claude */,

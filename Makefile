@@ -9,7 +9,6 @@ app = $(release_dir)/$(product).app
 arch = $(shell uname -m)
 product = MC Mus
 project_files = \
-		mcmus.xctestplan \
 		mcmus.xcodeproj/project.pbxproj \
 		$(wildcard mcmus.xcodeproj/xcshareddata/xcschemes/*.xcscheme)
 release_dir = $(TMP)/Release

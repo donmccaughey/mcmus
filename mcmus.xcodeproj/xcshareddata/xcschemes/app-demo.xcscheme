@@ -44,7 +44,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:mcmus.xctestplan"
+            reference = "container:src/app/app.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
