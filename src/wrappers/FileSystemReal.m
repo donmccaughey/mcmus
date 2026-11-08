@@ -1,5 +1,7 @@
 #import "FileSystemReal.h"
 
+#include <sys/clonefile.h>
+
 // Prefetched by listDirectory so getFileInfo reads from the URL's cache
 // instead of going back to disk for each entry.
 static NSArray<NSURLResourceKey> *fileInfoKeys(void) {
@@ -57,6 +59,30 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void) {
                                              isRegularFile:[values[NSURLIsRegularFileKey] boolValue]
                                                  isPackage:[values[NSURLIsPackageKey] boolValue]
                                              localizedName:values[NSURLLocalizedNameKey]];
+}
+
+- (BOOL)removeItemAtURL:(NSURL *)URL
+                  error:(NSError **)error;
+{
+    return [[NSFileManager defaultManager] removeItemAtURL:URL error:error];
+}
+
+- (BOOL)cloneFile:(NSURL *)source
+           toFile:(NSURL *)destination
+            error:(NSError **)error;
+{
+    int flags = 0;
+    char const *sourcePath = source.fileSystemRepresentation;
+    char const *destinationPath = destination.fileSystemRepresentation;
+    
+    errno = 0;
+    int result = clonefile(sourcePath, destinationPath, flags);
+    if (0 == result) return YES;
+    
+    *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                 code:errno
+                             userInfo:nil];
+    return NO;
 }
 
 #if TARGET_OS_OSX

@@ -99,8 +99,10 @@ static void fail(NSString *path, NSError **error) {
 }
 
 - (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:(NSError **)error {
-    fail(@"getApplicationSupportDirectoryURL", error);
-    return nil;
+    if (!_applicationSupportDirectoryURL) {
+        fail(@"getApplicationSupportDirectoryURL", error);
+    }
+    return _applicationSupportDirectoryURL;
 }
 
 - (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error {
@@ -153,6 +155,27 @@ static void fail(NSString *path, NSError **error) {
         }
     }
     return nil;
+}
+
+- (BOOL)removeItemAtURL:(NSURL *)URL
+                  error:(NSError **)error;
+{
+    if (_removeItemAtURLError) {
+        if (error) *error = _removeItemAtURLError;
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)cloneFile:(NSURL *)source
+           toFile:(NSURL *)destination
+            error:(NSError **)error;
+{
+    if (_cloneFileToFileError) {
+        if (error) *error = _cloneFileToFileError;
+        return NO;
+    }
+    return YES;
 }
 
 #if TARGET_OS_OSX

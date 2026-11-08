@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error;
 - (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory error:(NSError **)error;
 - (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url error:(NSError **)error;
+- (BOOL)removeItemAtURL:(NSURL *)URL
+                  error:(NSError **)error;
+- (BOOL)cloneFile:(NSURL *)source
+           toFile:(NSURL *)destination
+            error:(NSError **)error;
 
 // Security-scoped bookmarks are a macOS App Sandbox feature; iOS
 // keeps its music inside the app container and needs none of this.

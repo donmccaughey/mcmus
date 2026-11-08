@@ -41,10 +41,13 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 @property (nonatomic, copy) NSSet<NSString *> *unresolvableBookmarks;
 @property (nonatomic, copy) NSSet<NSString *> *staleBookmarks;
 @property (nonatomic, copy) NSSet<NSString *> *inaccessiblePaths;
+@property (nonatomic, copy, nullable) NSURL *applicationSupportDirectoryURL;
 @property (nonatomic, copy, nullable) NSURL *musicDirectoryURL;
 @property (nonatomic, readonly, copy) NSArray<NSString *> *bookmarked;
 @property (nonatomic, readonly, copy) NSArray<NSString *> *started;
 @property (nonatomic, readonly, copy) NSArray<NSString *> *stopped;
+@property (nonatomic, nullable) NSError *removeItemAtURLError;
+@property (nonatomic, nullable) NSError *cloneFileToFileError;
 
 - (void)addPath:(NSString *)path;
 - (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind;
