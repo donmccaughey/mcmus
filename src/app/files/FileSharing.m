@@ -93,10 +93,25 @@ milliseconds_since(uint64_t start)
 {
     NSError *error = nil;
     if (_snapshotDirURL) {
-        removeSnapshot(_snapshotDirURL, _fileSystem, &error);
+        [self removeSnapshotAndReturnError:&error];
         _snapshotDirURL = nil;
     }
     [self didChangeIsSharing:NO error:error];
+}
+
+
+- (BOOL)removeSnapshotAndReturnError:(NSError **)error;
+{
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    BOOL removedSnapshot = removeSnapshot(_snapshotDirURL, _fileSystem, error);
+    if (removedSnapshot) {
+        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms",
+               _snapshotDirURL.path, milliseconds_since(start));
+    } else {
+        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms but failed: %{public}@",
+               _snapshotDirURL.path, milliseconds_since(start), *error);
+    }
+    return removedSnapshot;
 }
 
 
