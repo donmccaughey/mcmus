@@ -52,6 +52,7 @@ milliseconds_since(uint64_t start)
 {
     MusicLibraryStore *_store;
     id<FileSystem> _fileSystem;
+    NSURL *_Nullable _snapshotDirURL;
 }
 
 
@@ -82,44 +83,41 @@ milliseconds_since(uint64_t start)
 - (void)start;
 {
     NSError *error = nil;
-    NSURL *snapshotDir = [self takeSnapshotAndReturnError:&error];
-    [self didChangeIsSharing:(snapshotDir != nil) error:error];
+    _snapshotDirURL = getSnapshotDirURL(_fileSystem, &error);
+    BOOL tookSnapshot = _snapshotDirURL && [self takeSnapshotAndReturnError:&error];
+    [self didChangeIsSharing:tookSnapshot error:error];
 }
 
 
 - (void)stop;
 {
     NSError *error = nil;
-    NSURL *snapshotDir = getSnapshotDirURL(_fileSystem, &error);
-    if (snapshotDir) {
-        removeSnapshot(snapshotDir, _fileSystem, &error);
+    if (_snapshotDirURL) {
+        removeSnapshot(_snapshotDirURL, _fileSystem, &error);
+        _snapshotDirURL = nil;
     }
     [self didChangeIsSharing:NO error:error];
 }
 
 
-- (nullable NSURL *)takeSnapshotAndReturnError:(NSError **)error;
+- (BOOL)takeSnapshotAndReturnError:(NSError **)error;
 {
-    NSURL *snapshotDir = getSnapshotDirURL(_fileSystem, error);
-    if ( ! snapshotDir) return nil;
-
     NSURL *musicDir = _store.musicRootDirectory.url;
     if ( ! musicDir) {
         *error = no_music_root_directory_error();
-        return nil;
+        return NO;
     }
 
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    BOOL tookSnapshot = takeSnapshot(musicDir, snapshotDir, _fileSystem, error);
+    BOOL tookSnapshot = takeSnapshot(musicDir, _snapshotDirURL, _fileSystem, error);
     if (tookSnapshot) {
         os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
-               musicDir.path, snapshotDir.path, milliseconds_since(start));
-        return snapshotDir;
+               musicDir.path, _snapshotDirURL.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms but failed: %{public}@",
-               musicDir.path, snapshotDir.path, milliseconds_since(start), *error);
-        return nil;
+               musicDir.path, _snapshotDirURL.path, milliseconds_since(start), *error);
     }
+    return tookSnapshot;
 }
 
 
