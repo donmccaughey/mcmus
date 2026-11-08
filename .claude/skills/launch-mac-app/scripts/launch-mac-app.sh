@@ -35,11 +35,11 @@ cache_dir="${TMPDIR:-/tmp}/mcmus-launch-mac-app"
 mkdir -p "$cache_dir"
 
 if (( build )); then
-    xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme mcmus \
+    xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme app \
         -destination 'platform=macOS' -quiet build
 fi
 
-settings=$(xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme mcmus \
+settings=$(xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme app \
     -destination 'platform=macOS' -showBuildSettings 2>/dev/null)
 products_dir=$(print -r -- "$settings" | awk -F' = ' '/ BUILT_PRODUCTS_DIR =/{print $2}')
 product_name=$(print -r -- "$settings" | awk -F' = ' '/ FULL_PRODUCT_NAME =/{print $2}')

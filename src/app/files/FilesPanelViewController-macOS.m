@@ -2,6 +2,7 @@
 
 #if TARGET_OS_OSX
 #import "EmptyStateView-macOS.h"
+#import "FileSharing.h"
 #import "FilesTreeView.h"
 #import "NSStackView+SeparatedRows.h"
 #import "PanelView-macOS.h"
@@ -9,6 +10,7 @@
 
 @implementation FilesPanelViewController {
     MusicLibraryStore *_store;
+    FileSharing *_fileSharing;
     NSButton *_findButton;
     EmptyStateView *_emptyFilesView;
     FilesTreeView *_treeView;
@@ -20,10 +22,11 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _store = store;
+        _fileSharing = [[FileSharing alloc] initWithStore:store];
         _findButton = [NSButton buttonWithTitle:@"Find" target:nil action:nil];
         _emptyFilesView = [[EmptyStateView alloc] initWithTitle:@"No music" systemImage:@"folder" description:@""];
         _treeView = [[FilesTreeView alloc] init];
-        _libraryView = [NSStackView bodyOverFooter:_treeView footer:[[ShareStatusBarView alloc] init]];
+        _libraryView = [NSStackView bodyOverFooter:_treeView footer:[[ShareStatusBarView alloc] initWithFileSharing:_fileSharing]];
         _panelView = [[PanelView alloc] initWithTitle:@"Files" accessory:_findButton];
     }
     return self;

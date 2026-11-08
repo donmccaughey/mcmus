@@ -22,6 +22,7 @@
 		D4DEF16B309FB11D00B3F3CB /* libmodel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF148309FB00900B3F3CB /* libmodel.a */; };
 		D4EAD840309FF58900573748 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D4EAD84A309FFC8B00573748 /* libsnapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EAD844309FF58900573748 /* libsnapshot.a */; };
+		D4F1A00130A1A00000000001 /* libsnapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EAD844309FF58900573748 /* libsnapshot.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +125,13 @@
 			remoteInfo = wrappers;
 		};
 		D4EAD84B309FFC8B00573748 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4EAD83A309FF58900573748;
+			remoteInfo = snapshot;
+		};
+		D4F1A00230A1A00000000002 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
 			proxyType = 1;
@@ -245,6 +253,7 @@
 				"app/components/UIView+FillingSubview.m",
 				"app/demo-data.json",
 				"app/demo-track.mp3",
+				app/files/FileSharing.m,
 				"app/files/FilesPanelViewController-iOS.m",
 				"app/files/FilesPanelViewController-macOS.m",
 				app/files/FilesTableStackController.m,
@@ -324,6 +333,8 @@
 			membershipExceptions = (
 				app/components/PanelArrangement.m,
 				app/components/PanelArrangementTests.m,
+				app/files/FileSharing.m,
+				app/files/FileSharingTests.m,
 				app/files/FolderChildPasteboard.m,
 				app/files/FolderChildPasteboardTests.m,
 				app/MusicLibraryStore.m,
@@ -352,6 +363,7 @@
 				"app/components/PanelView-macOS.h",
 				"app/components/UIButton+Bordered.h",
 				"app/components/UIView+FillingSubview.h",
+				app/files/FileSharing.h,
 				"app/files/FilesPanelViewController-iOS.h",
 				"app/files/FilesPanelViewController-macOS.h",
 				app/files/FilesTableStackController.h,
@@ -432,6 +444,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4F1A00130A1A00000000001 /* libsnapshot.a in Frameworks */,
 				D4DEF0F1309FA95C00B3F3CB /* libwrappers.a in Frameworks */,
 				D4DEF168309FB0E700B3F3CB /* libmodel.a in Frameworks */,
 				D41B86DD309FB23700136AE5 /* libwrappers-fakes.a in Frameworks */,
@@ -495,14 +508,14 @@
 		D3A5000000000000000000A0 = {
 			isa = PBXGroup;
 			children = (
+				D4A78311308D0B2500325F1E /* .claude */,
+				D41DFEB6308C307E00FEA684 /* docs */,
+				D45D240630998E1900F84DF9 /* scripts */,
 				D4DEF110309FAEC800B3F3CB /* src */,
 				D4A78314308D0B4000325F1E /* .gitignore */,
 				D41DFEB0308C305900FEA684 /* CLAUDE.md */,
 				D45D240330998DFB00F84DF9 /* Makefile */,
 				D41DFEB1308C305900FEA684 /* README.md */,
-				D4A78311308D0B2500325F1E /* .claude */,
-				D41DFEB6308C307E00FEA684 /* docs */,
-				D45D240630998E1900F84DF9 /* scripts */,
 				D4EAD849309FFC8B00573748 /* Frameworks */,
 				D3A5000000000000000000A1 /* Products */,
 			);
@@ -598,6 +611,7 @@
 				D4DEF0DE309FA82E00B3F3CB /* PBXTargetDependency */,
 				D4DEF16A309FB0E700B3F3CB /* PBXTargetDependency */,
 				D41B86DF309FB23700136AE5 /* PBXTargetDependency */,
+				D4F1A00330A1A00000000003 /* PBXTargetDependency */,
 			);
 			name = "app-tests";
 			productName = mcmusTests;
@@ -922,6 +936,11 @@
 			isa = PBXTargetDependency;
 			target = D4EAD83A309FF58900573748 /* snapshot */;
 			targetProxy = D4EAD84B309FFC8B00573748 /* PBXContainerItemProxy */;
+		};
+		D4F1A00330A1A00000000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4EAD83A309FF58900573748 /* snapshot */;
+			targetProxy = D4F1A00230A1A00000000002 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

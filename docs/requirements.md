@@ -110,27 +110,34 @@ system, network, audio playback, time and random number generation.
 ## Libraries
 
 The MC Mus project shall place wrapper interfaces and their real implementations
-in the wrappers library, with code and unit tests placed in the `src/wrappers/`
-subdirectory.
+in the **wrappers** library, with code and unit tests placed in the
+`src/wrappers/` subdirectory.
 
 The wrappers library shall not depend on any other library in the MC Mus
 project.
 
 The MC Mus project shall place the fake implementations of wrapper interfaces,
-and test helpers in the wrappers-fakes library, with code and unit tests placed
-in the `src/wrappers/` subdirectory next to the wrapper interfaces and real
-implementations.
+and test helpers in the **wrappers-fakes** library, with code and unit tests
+placed in the `src/wrappers/` subdirectory next to the wrapper interfaces and
+real implementations.
 
 The wrappers-fakes library shall depend on the wrappers library.
 
-The MC Mus project shall place model code in the model library, with code and
-unit tests placed in the `src/model/` subdirectory.
+The MC Mus project shall place model code in the **model** library, with code
+and unit tests placed in the `src/model/` subdirectory.
 
 The model library shall depend on the wrappers library; model unit tests shall
 also depend on the wrappers-fakes library.
 
-The MC Mus project shall place app code, configuration, assets and corresponding
-unit tests in the `src/app/` subdirectory.
+The MC Mus project shall place code for file system snapshots in the
+**snapshot** library, with code and unit tests placed in the `src/snapshot/`
+subdirectory.
+
+The snapshot library shall depend on the wrappers library; snapshot unit tests
+shall also depend on the wrappers-fakes library.
+
+The MC Mus project shall place **app** code, configuration, assets and
+corresponding unit tests in the `src/app/` subdirectory.
 
 The MC Mus project shall organize user interface code around major UI elements
 and/or features. The primary files panel code shall live in `src/app/files/`.
@@ -617,6 +624,15 @@ text "Not sharing."
 
 On macOS, while the share switch is on, the share status label shall show the
 text "No device connected."
+
+On macOS, when the share switch is switched on, MC Mus shall create a snapshot
+of the music library and log the time needed to create the snapshot.
+
+On macOS, if creating a snapshot fails, MC Mus shall set the share switch state
+to off and report the error in the share status label.
+
+On macOS, when the share switch is switched off, MC Mus shall call remove the
+snapshot of the music library.
 
 
 ## Queue panel

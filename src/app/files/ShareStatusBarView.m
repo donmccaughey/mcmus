@@ -8,13 +8,15 @@ static const CGFloat verticalPadding = 8;
 static const CGFloat spacing = 8;
 
 @implementation ShareStatusBarView {
+    FileSharing *_fileSharing;
     NSSwitch *_shareSwitch;
     NSTextField *_statusLabel;
 }
 
-- (instancetype)init {
+- (instancetype)initWithFileSharing:(FileSharing *)fileSharing {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
+        _fileSharing = fileSharing;
         _shareSwitch = [[NSSwitch alloc] init];
         _statusLabel = [NSTextField labelWithString:@""];
         NSTextField *titleLabel = [NSTextField labelWithString:@"File Sharing"];
@@ -29,7 +31,7 @@ static const CGFloat spacing = 8;
         [_statusLabel setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow
                                                forOrientation:NSLayoutConstraintOrientationHorizontal];
         _shareSwitch.target = self;
-        _shareSwitch.action = @selector(update);
+        _shareSwitch.action = @selector(toggle);
         [_shareSwitch setAccessibilityLabel:@"File Sharing"];
 
         for (NSView *subview in @[titleLabel, _statusLabel, _shareSwitch]) {
@@ -47,16 +49,32 @@ static const CGFloat spacing = 8;
             [_shareSwitch.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-verticalPadding],
         ]];
         [self setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(update)
+                                                   name:FileSharing.didChangeNotification
+                                                 object:fileSharing];
         [self update];
     }
     return self;
 }
 
 - (NSString *)statusText {
-    return _shareSwitch.state == NSControlStateValueOn ? @"No device connected." : @"Not sharing.";
+    if (_fileSharing.error) {
+        return [NSString stringWithFormat:@"Snapshot failed: %@", _fileSharing.error.localizedDescription];
+    }
+    return _fileSharing.isSharing ? @"No device connected." : @"Not sharing.";
+}
+
+- (void)toggle {
+    if (_shareSwitch.state == NSControlStateValueOn) {
+        [_fileSharing start];
+    } else {
+        [_fileSharing stop];
+    }
 }
 
 - (void)update {
+    _shareSwitch.state = _fileSharing.isSharing ? NSControlStateValueOn : NSControlStateValueOff;
     _statusLabel.stringValue = self.statusText;
 }
 

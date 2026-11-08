@@ -20,7 +20,7 @@ removeSnapshot(NSURL *snapshotDir,
                id<FileSystem> fileSystem,
                NSError **error);
 
-NSURL *
+BOOL
 takeSnapshot(NSURL *musicDir,
              NSURL *snapshotDir,
              id<FileSystem> fileSystem,

@@ -71,9 +71,9 @@
                                                       userInfo:nil];
     
     NSError *error = nil;
-    NSURL *snapshotDir = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+    BOOL tookSnapshot = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
     
-    XCTAssertNil(snapshotDir);
+    XCTAssertFalse(tookSnapshot);
     XCTAssertNotNil(error);
     XCTAssertEqual(error.domain, NSCocoaErrorDomain);
     XCTAssertEqual(error.code, NSFileReadUnknownError);
@@ -91,9 +91,9 @@
                                                       userInfo:nil];
     
     NSError *error = nil;
-    NSURL *snapshotDir = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+    BOOL tookSnapshot = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
     
-    XCTAssertNil(snapshotDir);
+    XCTAssertFalse(tookSnapshot);
     XCTAssertNotNil(error);
     XCTAssertEqual(error.domain, NSPOSIXErrorDomain);
     XCTAssertEqual(error.code, ENOTSUP);
@@ -109,9 +109,9 @@
     fileSystem.cloneFileToFileError = nil;
     
     NSError *error = nil;
-    NSURL *snapshotDir = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+    BOOL tookSnapshot = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
     
-    XCTAssertNotNil(snapshotDir);
+    XCTAssertTrue(tookSnapshot);
     XCTAssertNil(error);
 }
 

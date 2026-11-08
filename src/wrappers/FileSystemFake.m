@@ -35,6 +35,8 @@ static void fail(NSString *path, NSError **error) {
     NSMutableArray<NSString *> *_bookmarked;
     NSMutableArray<NSString *> *_started;
     NSMutableArray<NSString *> *_stopped;
+    NSMutableArray<NSString *> *_clonedSources;
+    NSMutableArray<NSString *> *_clonedDestinations;
 }
 
 - (instancetype)init {
@@ -51,6 +53,8 @@ static void fail(NSString *path, NSError **error) {
         _bookmarked = [NSMutableArray array];
         _started = [NSMutableArray array];
         _stopped = [NSMutableArray array];
+        _clonedSources = [NSMutableArray array];
+        _clonedDestinations = [NSMutableArray array];
     }
     return self;
 }
@@ -73,6 +77,14 @@ static void fail(NSString *path, NSError **error) {
 
 - (NSArray<NSString *> *)stopped {
     return [_stopped copy];
+}
+
+- (NSArray<NSString *> *)clonedSources {
+    return [_clonedSources copy];
+}
+
+- (NSArray<NSString *> *)clonedDestinations {
+    return [_clonedDestinations copy];
 }
 
 - (void)addPath:(NSString *)path {
@@ -175,6 +187,8 @@ static void fail(NSString *path, NSError **error) {
         if (error) *error = _cloneFileToFileError;
         return NO;
     }
+    [_clonedSources addObject:source.path];
+    [_clonedDestinations addObject:destination.path];
     return YES;
 }
 
