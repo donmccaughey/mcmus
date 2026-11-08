@@ -151,18 +151,26 @@
 		D41B870A309FB43600136AE5 /* Exceptions for "src" folder in "wrappers-fakes" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"wrappers-fakes/AudioFake.h",
-				"wrappers-fakes/AudioFake.m",
-				"wrappers-fakes/AudioFakeCall.h",
-				"wrappers-fakes/AudioFakeCall.m",
-				"wrappers-fakes/FileSystemFake.h",
-				"wrappers-fakes/FileSystemFake.m",
-				"wrappers-fakes/FileSystemFakeErrorMatching.h",
-				"wrappers-fakes/FileSystemFakeErrorMatching.m",
-				"wrappers-fakes/NotificationCounter.h",
-				"wrappers-fakes/NotificationCounter.m",
-				"wrappers-fakes/PreferencesFake.h",
-				"wrappers-fakes/PreferencesFake.m",
+				wrappers/AudioFake.h,
+				wrappers/AudioFake.m,
+				wrappers/AudioFakeCall.h,
+				wrappers/AudioFakeCall.m,
+				wrappers/FileSystemFake.h,
+				wrappers/FileSystemFake.m,
+				wrappers/FileSystemFakeErrorMatching.h,
+				wrappers/FileSystemFakeErrorMatching.m,
+				wrappers/NotificationCounter.h,
+				wrappers/NotificationCounter.m,
+				wrappers/PreferencesFake.h,
+				wrappers/PreferencesFake.m,
+			);
+			publicHeaders = (
+				wrappers/AudioFake.h,
+				wrappers/AudioFakeCall.h,
+				wrappers/FileSystemFake.h,
+				wrappers/FileSystemFakeErrorMatching.h,
+				wrappers/NotificationCounter.h,
+				wrappers/PreferencesFake.h,
 			);
 			target = D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */;
 		};

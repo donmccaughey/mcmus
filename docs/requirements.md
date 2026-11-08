@@ -93,7 +93,8 @@ may share a code file when they have a single consumer.
 The MC Mus project shall minimize the declarations that appear in header files
 wherever practical.
 
-The MC Mus project shall use static linkage for symbols wherever practical.
+The MC Mus project shall use static (internal) linkage for symbols wherever
+practical.
 
 The MC Mus project shall add the prefix `-iOS` or `-macOS` to the base name of
 code files that serve the same purpose in the app but cannot be shared between
@@ -117,7 +118,8 @@ project.
 
 The MC Mus project shall place the fake implementations of wrapper interfaces,
 and test helpers in the wrappers-fakes library, with code and unit tests placed
-in the `src/wrappers-fakes/` subdirectory.
+in the `src/wrappers/` subdirectory next to the wrapper interfaces and real
+implementations.
 
 The wrappers-fakes library shall depend on the wrappers library.
 
