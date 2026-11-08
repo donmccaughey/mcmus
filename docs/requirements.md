@@ -619,11 +619,11 @@ status bar.
 On macOS, while the music library is not empty, the files panel shall show the
 share status bar at the bottom of the files panel.
 
-On macOS, while the share switch is off, the share status label shall show the
+On macOS, while file sharing is off, the share status label shall show the
 text "Not sharing."
 
-On macOS, while the share switch is on, the share status label shall show the
-text "No device connected."
+On macOS, while file sharing is on, the share status label shall show the text
+"No device connected."
 
 On macOS, when the share switch is switched on, MC Mus shall create a snapshot
 of the music library and log the time needed to create the snapshot.
@@ -631,8 +631,20 @@ of the music library and log the time needed to create the snapshot.
 On macOS, if creating a snapshot fails, MC Mus shall set the share switch state
 to off and report the error in the share status label.
 
-On macOS, when the share switch is switched off, MC Mus shall call remove the
+On macOS, when the share switch is switched off, MC Mus shall remove the
 snapshot of the music library.
+
+On macOS, MC Mus shall create and remove snapshots off the main thread so that
+the UI stays responsive.
+
+On macOS, while a snapshot is being created or removed, the share switch shall
+be disabled and ignore input.
+
+On macOS, if creating or removing a snapshot takes longer than a short delay,
+the share status label shall show the text "Creating snapshot…" or "Removing
+snapshot…" and an indeterminate progress indicator shall appear between the
+share status label and the share switch; once shown, they shall remain visible
+for a minimum duration so that they do not flicker.
 
 
 ## Queue panel

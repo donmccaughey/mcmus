@@ -11,11 +11,21 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+typedef NS_ENUM(NSInteger, FileSharingState) {
+    FileSharingStateOff,
+    FileSharingStateStarting,
+    FileSharingStateSharing,
+    FileSharingStateStopping,
+};
+
+
 @interface FileSharing : NSObject
 
 @property (class, nonatomic, readonly) NSNotificationName didChangeNotification;
 
+@property (nonatomic, readonly) FileSharingState state;
 @property (nonatomic, readonly) BOOL isSharing;
+@property (nonatomic, readonly) BOOL isChanging;
 @property (nonatomic, readonly, nullable) NSError *error;
 
 - (instancetype)initWithStore:(MusicLibraryStore *)store
@@ -24,7 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)start;
+- (void)startWithCompletion:(nullable void (^)(void))completion;
 - (void)stop;
+- (void)stopWithCompletion:(nullable void (^)(void))completion;
 
 @end
 

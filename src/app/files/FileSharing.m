@@ -40,11 +40,60 @@ snapshot_log(void)
 }
 
 
+static dispatch_queue_t
+snapshot_queue(void)
+{
+    return dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
+}
+
+
 static double
 milliseconds_since(uint64_t start)
 {
     uint64_t elapsed = clock_gettime_nsec_np(CLOCK_MONOTONIC) - start;
     return elapsed / 1e6;
+}
+
+
+static BOOL
+remove_snapshot_and_log_time(NSURL *snapshotDir,
+                             id<FileSystem> fileSystem,
+                             NSError **error)
+{
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    BOOL removedSnapshot = removeSnapshot(snapshotDir, fileSystem, error);
+    if (removedSnapshot) {
+        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms",
+               snapshotDir.path, milliseconds_since(start));
+    } else {
+        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms but failed: %{public}@",
+               snapshotDir.path, milliseconds_since(start), *error);
+    }
+    return removedSnapshot;
+}
+
+
+static BOOL
+take_snapshot_and_log_time(NSURL *_Nullable musicDir,
+                           NSURL *snapshotDir,
+                           id<FileSystem> fileSystem,
+                           NSError **error)
+{
+    if ( ! musicDir) {
+        *error = no_music_root_directory_error();
+        return NO;
+    }
+
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    BOOL tookSnapshot = takeSnapshot(musicDir, snapshotDir, fileSystem, error);
+    if (tookSnapshot) {
+        os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
+               musicDir.path, snapshotDir.path, milliseconds_since(start));
+    } else {
+        os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms but failed: %{public}@",
+               musicDir.path, snapshotDir.path, milliseconds_since(start), *error);
+    }
+    return tookSnapshot;
 }
 
 
@@ -80,65 +129,80 @@ milliseconds_since(uint64_t start)
 }
 
 
+- (BOOL)isSharing;
+{
+    return FileSharingStateSharing == _state;
+}
+
+
+- (BOOL)isChanging;
+{
+    return FileSharingStateStarting == _state || FileSharingStateStopping == _state;
+}
+
+
 - (void)start;
 {
-    NSError *error = nil;
-    _snapshotDirURL = getSnapshotDirURL(_fileSystem, &error);
-    BOOL tookSnapshot = _snapshotDirURL && [self takeSnapshotAndReturnError:&error];
-    [self didChangeIsSharing:tookSnapshot error:error];
+    [self startWithCompletion:nil];
+}
+
+
+- (void)startWithCompletion:(nullable void (^)(void))completion;
+{
+    if (FileSharingStateOff != _state) {
+        if (completion) completion();
+        return;
+    }
+    [self didChangeState:FileSharingStateStarting error:nil];
+
+    NSURL *musicDir = _store.musicRootDirectory.url;
+    id<FileSystem> fileSystem = _fileSystem;
+    dispatch_async(snapshot_queue(), ^{
+        NSError *error = nil;
+        NSURL *snapshotDir = getSnapshotDirURL(fileSystem, &error);
+        BOOL tookSnapshot = snapshotDir
+            && take_snapshot_and_log_time(musicDir, snapshotDir, fileSystem, &error);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self->_snapshotDirURL = tookSnapshot ? snapshotDir : nil;
+            [self didChangeState:(tookSnapshot ? FileSharingStateSharing : FileSharingStateOff)
+                           error:error];
+            if (completion) completion();
+        });
+    });
 }
 
 
 - (void)stop;
 {
-    NSError *error = nil;
-    if (_snapshotDirURL) {
-        [self removeSnapshotAndReturnError:&error];
-        _snapshotDirURL = nil;
-    }
-    [self didChangeIsSharing:NO error:error];
+    [self stopWithCompletion:nil];
 }
 
 
-- (BOOL)removeSnapshotAndReturnError:(NSError **)error;
+- (void)stopWithCompletion:(nullable void (^)(void))completion;
 {
-    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    BOOL removedSnapshot = removeSnapshot(_snapshotDirURL, _fileSystem, error);
-    if (removedSnapshot) {
-        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms",
-               _snapshotDirURL.path, milliseconds_since(start));
-    } else {
-        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms but failed: %{public}@",
-               _snapshotDirURL.path, milliseconds_since(start), *error);
+    if (FileSharingStateSharing != _state) {
+        if (completion) completion();
+        return;
     }
-    return removedSnapshot;
+    [self didChangeState:FileSharingStateStopping error:nil];
+
+    NSURL *snapshotDir = _snapshotDirURL;
+    id<FileSystem> fileSystem = _fileSystem;
+    dispatch_async(snapshot_queue(), ^{
+        NSError *error = nil;
+        remove_snapshot_and_log_time(snapshotDir, fileSystem, &error);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self->_snapshotDirURL = nil;
+            [self didChangeState:FileSharingStateOff error:error];
+            if (completion) completion();
+        });
+    });
 }
 
 
-- (BOOL)takeSnapshotAndReturnError:(NSError **)error;
+- (void)didChangeState:(FileSharingState)state error:(nullable NSError *)error;
 {
-    NSURL *musicDir = _store.musicRootDirectory.url;
-    if ( ! musicDir) {
-        *error = no_music_root_directory_error();
-        return NO;
-    }
-
-    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    BOOL tookSnapshot = takeSnapshot(musicDir, _snapshotDirURL, _fileSystem, error);
-    if (tookSnapshot) {
-        os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
-               musicDir.path, _snapshotDirURL.path, milliseconds_since(start));
-    } else {
-        os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms but failed: %{public}@",
-               musicDir.path, _snapshotDirURL.path, milliseconds_since(start), *error);
-    }
-    return tookSnapshot;
-}
-
-
-- (void)didChangeIsSharing:(BOOL)isSharing error:(nullable NSError *)error;
-{
-    _isSharing = isSharing;
+    _state = state;
     _error = error;
     [NSNotificationCenter.defaultCenter postNotificationName:FileSharing.didChangeNotification
                                                       object:self];
