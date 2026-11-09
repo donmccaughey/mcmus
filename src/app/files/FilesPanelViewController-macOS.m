@@ -23,13 +23,40 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _store = store;
-        _fileSharing = [[FileSharing alloc] initWithStore:store];
+        _fileSharing = [[FileSharing alloc] initWithMusicRootDirectoryURL:store.musicRootDirectory.url];
         _findButton = [NSButton buttonWithTitle:@"Find" target:nil action:nil];
         _emptyFilesView = [[EmptyStateView alloc] initWithTitle:@"No music" systemImage:@"folder" description:@""];
         _treeView = [[FilesTreeView alloc] init];
         _panelView = [[PanelView alloc] initWithTitle:@"Files" accessory:_findButton];
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(replaceFileSharing)
+                                                   name:MusicLibraryStore.musicRootDirectoryDidChangeNotification
+                                                 object:store];
     }
     return self;
+}
+
+- (void)replaceFileSharing {
+    [self retireFileSharing:_fileSharing];
+    _fileSharing = [[FileSharing alloc] initWithMusicRootDirectoryURL:_store.musicRootDirectory.url];
+    _shareStatusBar.fileSharing = _fileSharing;
+}
+
+// A share that is still starting ignores stop, so a root change during
+// snapshot creation would otherwise leave a snapshot that nothing removes.
+- (void)retireFileSharing:(FileSharing *)fileSharing {
+    if (fileSharing.isChanging) {
+        __block id observer = [NSNotificationCenter.defaultCenter
+            addObserverForName:FileSharing.didChangeNotification
+                        object:fileSharing
+                         queue:nil
+                    usingBlock:^(NSNotification *notification) {
+            [NSNotificationCenter.defaultCenter removeObserver:observer];
+            [self retireFileSharing:fileSharing];
+        }];
+        return;
+    }
+    [fileSharing stop];
 }
 
 - (void)loadView {

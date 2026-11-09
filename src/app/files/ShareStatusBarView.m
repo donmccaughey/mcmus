@@ -16,7 +16,6 @@ static const NSTimeInterval showProgressDelay = 0.75;
 static const NSTimeInterval minimumProgressDuration = 0.5;
 
 @implementation ShareStatusBarView {
-    FileSharing *_fileSharing;
     NSSwitch *_shareSwitch;
     NSTextField *_statusLabel;
     NSProgressIndicator *_spinner;
@@ -27,7 +26,6 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 - (instancetype)initWithFileSharing:(FileSharing *)fileSharing {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
-        _fileSharing = fileSharing;
         _shareSwitch = [[NSSwitch alloc] init];
         _statusLabel = [NSTextField labelWithString:@""];
         _spinner = [[NSProgressIndicator alloc] init];
@@ -69,13 +67,21 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
             [_shareSwitch.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-verticalPadding],
         ]];
         [self setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
-        [NSNotificationCenter.defaultCenter addObserver:self
-                                               selector:@selector(update)
-                                                   name:FileSharing.didChangeNotification
-                                                 object:fileSharing];
-        [self update];
+        self.fileSharing = fileSharing;
     }
     return self;
+}
+
+- (void)setFileSharing:(FileSharing *)fileSharing {
+    [NSNotificationCenter.defaultCenter removeObserver:self
+                                                  name:FileSharing.didChangeNotification
+                                                object:_fileSharing];
+    _fileSharing = fileSharing;
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(update)
+                                               name:FileSharing.didChangeNotification
+                                             object:fileSharing];
+    [self update];
 }
 
 - (NSString *)statusText {
@@ -100,12 +106,8 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
     }
 }
 
-// A share that is already running must stay switchable off, since
-// FileSharing does not stop on its own when the music root changes
-// to an empty folder.
 - (BOOL)switchEnabled {
-    if (_fileSharing.isChanging) return NO;
-    return _fileSharing.isSharing || !_libraryIsEmpty;
+    return !_fileSharing.isChanging && !_libraryIsEmpty;
 }
 
 - (void)setLibraryIsEmpty:(BOOL)libraryIsEmpty {

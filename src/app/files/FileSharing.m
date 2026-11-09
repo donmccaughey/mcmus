@@ -5,7 +5,6 @@
 
 #import "FileSharingThread.h"
 #import "FileSystemReal.h"
-#import "MusicLibraryStore.h"
 
 
 static NSErrorDomain const FileSharingErrorDomain = @"FileSharingErrorDomain";
@@ -28,7 +27,7 @@ no_music_root_directory_error(void)
 
 @implementation FileSharing
 {
-    MusicLibraryStore *_store;
+    NSURL *_Nullable _musicRootDirectoryURL;
     id<FileSystem> _fileSystem;
     id<FileSharingService> _Nullable _service;
 }
@@ -40,22 +39,23 @@ no_music_root_directory_error(void)
 }
 
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store
-                   fileSystem:(id<FileSystem>)fileSystem;
+- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+                                   fileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
     if ( ! self) return nil;
 
-    _store = store;
+    _musicRootDirectoryURL = musicRootDirectoryURL;
     _fileSystem = fileSystem;
 
     return self;
 }
 
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store;
+- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL;
 {
-    return [self initWithStore:store fileSystem:[[FileSystemReal alloc] init]];
+    return [self initWithMusicRootDirectoryURL:musicRootDirectoryURL
+                                    fileSystem:[[FileSystemReal alloc] init]];
 }
 
 
@@ -94,13 +94,12 @@ no_music_root_directory_error(void)
         });
     };
 
-    NSURL *musicDir = _store.musicRootDirectory.url;
-    if ( ! musicDir) {
+    if ( ! _musicRootDirectoryURL) {
         reply(no_music_root_directory_error());
         return;
     }
     _service = [[FileSharingThread alloc] initWithFileSystem:_fileSystem];
-    [_service startSharingMusicDirectory:musicDir reply:reply];
+    [_service startSharingMusicDirectory:_musicRootDirectoryURL reply:reply];
 }
 
 

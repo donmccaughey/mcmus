@@ -6,9 +6,7 @@
 
 #import "FileSharing.h"
 #import "FileSystemFake.h"
-#import "MusicLibraryStore.h"
 #import "NotificationCounter.h"
-#import "PreferencesFake.h"
 
 
 @interface FileSharingTests : XCTestCase
@@ -18,7 +16,6 @@
 @implementation FileSharingTests
 {
     FileSystemFake *_fileSystem;
-    MusicLibraryStore *_store;
     FileSharing *_fileSharing;
     NotificationCounter *_changes;
 }
@@ -32,12 +29,9 @@
     _fileSystem.applicationSupportDirectoryURL = [NSURL fileURLWithPath:@"/container/AppSupport"
                                                             isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
-    PreferencesFake *preferences = [[PreferencesFake alloc]
-        initWithMusicRootDirectoryBookmark:[FileSystemFake bookmarkForPath:@"/Users/user/Music"]];
-    _store = [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
-                                               preferences:preferences];
-    [self loadStoreAndWait];
-    _fileSharing = [[FileSharing alloc] initWithStore:_store fileSystem:_fileSystem];
+    NSURL *musicRootDirectoryURL = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
+    _fileSharing = [[FileSharing alloc] initWithMusicRootDirectoryURL:musicRootDirectoryURL
+                                                           fileSystem:_fileSystem];
     _changes = [[NotificationCounter alloc] initWithName:FileSharing.didChangeNotification
                                                   object:_fileSharing];
 }
@@ -47,16 +41,6 @@
 {
     if (_fileSharing.isSharing) [self stopAndWait:_fileSharing];
     [super tearDown];
-}
-
-
-- (void)loadStoreAndWait;
-{
-    XCTestExpectation *loaded = [self expectationWithDescription:@"loaded"];
-    [_store loadInBackgroundIsDemo:NO completion:^{
-        [loaded fulfill];
-    }];
-    [self waitForExpectations:@[loaded] timeout:5];
 }
 
 
@@ -174,9 +158,8 @@
 
 - (void)testStartReportsMissingMusicRootDirectory;
 {
-    MusicLibraryStore *store = [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
-                                                                 preferences:[PreferencesFake new]];
-    FileSharing *fileSharing = [[FileSharing alloc] initWithStore:store fileSystem:_fileSystem];
+    FileSharing *fileSharing = [[FileSharing alloc] initWithMusicRootDirectoryURL:nil
+                                                                       fileSystem:_fileSystem];
 
     [self startAndWait:fileSharing];
 

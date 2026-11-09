@@ -6,7 +6,6 @@
 
 
 @protocol FileSystem;
-@class MusicLibraryStore;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,9 +28,9 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 @property (nonatomic, readonly) BOOL isChanging;
 @property (nonatomic, readonly, nullable) NSError *error;
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store
-                   fileSystem:(id<FileSystem>)fileSystem NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithStore:(MusicLibraryStore *)store;
+- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+                                   fileSystem:(id<FileSystem>)fileSystem NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)start;
