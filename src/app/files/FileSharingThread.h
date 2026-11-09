@@ -5,7 +5,9 @@
 #import <Foundation/Foundation.h>
 
 #import "FileSharingService.h"
-#import "FileSystem.h"
+
+
+@protocol FileSystem;
 
 
 NS_ASSUME_NONNULL_BEGIN

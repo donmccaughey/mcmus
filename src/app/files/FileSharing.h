@@ -4,8 +4,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "FileSystem.h"
-#import "MusicLibraryStore.h"
+
+@protocol FileSystem;
+@class MusicLibraryStore;
 
 
 NS_ASSUME_NONNULL_BEGIN

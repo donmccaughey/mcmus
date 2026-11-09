@@ -5,6 +5,7 @@
 
 #import "FileSharingThread.h"
 #import "FileSystemReal.h"
+#import "MusicLibraryStore.h"
 
 
 static NSErrorDomain const FileSharingErrorDomain = @"FileSharingErrorDomain";
