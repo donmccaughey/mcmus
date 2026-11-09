@@ -520,6 +520,9 @@ app's music library store.
 While the music library is empty, the files panel shall show the empty files
 view.
 
+On macOS, while the music library is empty, the files panel shall show the empty
+files view filling the space above the share status bar.
+
 While the music library is not empty, the files panel shall hide the empty files
 view.
 
@@ -613,11 +616,11 @@ shall use a smaller font and lighter color than the "File Sharing" label.
 
 The share switch shall be off by default.
 
-On macOS, while the music library is empty, the files panel shall hide the share
-status bar.
+On macOS, while the music library is empty and file sharing is off, the share
+switch shall be disabled.
 
-On macOS, while the music library is not empty, the files panel shall show the
-share status bar at the bottom of the files panel.
+On macOS, the files panel shall show the share status bar at the bottom of the
+files panel, whether or not the music library is empty.
 
 On macOS, while file sharing is off, the share status label shall show the
 text "Not sharing."

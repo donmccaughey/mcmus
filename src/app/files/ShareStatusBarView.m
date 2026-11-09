@@ -100,6 +100,19 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
     }
 }
 
+// A share that is already running must stay switchable off, since
+// FileSharing does not stop on its own when the music root changes
+// to an empty folder.
+- (BOOL)switchEnabled {
+    if (_fileSharing.isChanging) return NO;
+    return _fileSharing.isSharing || !_libraryIsEmpty;
+}
+
+- (void)setLibraryIsEmpty:(BOOL)libraryIsEmpty {
+    _libraryIsEmpty = libraryIsEmpty;
+    _shareSwitch.enabled = self.switchEnabled;
+}
+
 - (void)toggle {
     if (_fileSharing.isChanging) {
         _shareSwitch.state = self.switchState;
@@ -121,7 +134,7 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 }
 
 - (void)beginChange {
-    _shareSwitch.enabled = NO;
+    _shareSwitch.enabled = self.switchEnabled;
     _shareSwitch.state = self.switchState;
     if (_progressShownAt) {
         _statusLabel.stringValue = self.progressText;
@@ -158,7 +171,7 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 
     [_spinner stopAnimation:nil];
     _progressShownAt = nil;
-    _shareSwitch.enabled = YES;
+    _shareSwitch.enabled = self.switchEnabled;
     _shareSwitch.state = self.switchState;
     _statusLabel.stringValue = self.statusText;
 }
