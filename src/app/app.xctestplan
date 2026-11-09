@@ -15,6 +15,13 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D49BFC4830A26EBF00AED804",
+        "name" : "file-sharing-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
         "identifier" : "D3A5000000000000000000F2",
         "name" : "app-tests"
       }
@@ -22,15 +29,15 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
-        "identifier" : "D48B390430A0016F00B21A13",
-        "name" : "snapshot-tests"
+        "identifier" : "D4B100000000000000000030",
+        "name" : "model-tests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
-        "identifier" : "D4B100000000000000000030",
-        "name" : "model-tests"
+        "identifier" : "D48B390430A0016F00B21A13",
+        "name" : "snapshot-tests"
       }
     }
   ],

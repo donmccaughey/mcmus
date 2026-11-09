@@ -136,6 +136,12 @@ subdirectory.
 The snapshot library shall depend on the wrappers library; snapshot unit tests
 shall also depend on the wrappers-fakes library.
 
+The MC Mus project shall pace code for file sharing in the **file-sharing** library, with code and unit tests placed in the `src/file-sharing/` subdirectory.
+
+The file-sharing library shall depend on the wrappers, model and snapshot
+libraries; file-sharing unit tests shall also depend on the wrappers-fakes
+library.
+
 The MC Mus project shall place **app** code, configuration, assets and
 corresponding unit tests in the `src/app/` subdirectory.
 
@@ -410,6 +416,32 @@ and enter the stopped state.
 While the queue is empty, the player shall ignore the play, stop, back, next and
 clear commands.
 
+
+# Snapshots
+
+The snapshot library shall export three functions: get snapshot directory,
+take snapshot and remove snapshot.
+
+The snapshot library functions shall take a file system wrapper object as a
+parameter.
+
+The **get snapshot directory** function shall return a path inside the app's
+application support director where the snapshot can reside.
+
+If lookup of the application support directory fails, the get snapshot directory
+function shall return `nil`.
+
+The **take snapshot** function shall remove any previous snapshot and take a new
+snapshot of the music root directory.
+
+If it cannot create the snapshot, the take snapshot function shall return an
+error.
+
+The **remove snapshot** function shall remove the snapshot.
+
+If it cannot remove the snapshot, the remove snapshot function shall return an
+error.
+s
 
 # Launch behavior
 
