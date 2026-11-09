@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) Track *nextTrack;
 
 - (instancetype)initWithAudio:(id<Audio>)audio NS_DESIGNATED_INITIALIZER;
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
 
 - (void)play;
 - (void)stop;

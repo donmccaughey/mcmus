@@ -10,28 +10,32 @@
     return @"PlayerDidChange";
 }
 
-- (instancetype)initWithAudio:(id<Audio>)audio {
+- (instancetype)initWithAudio:(id<Audio>)audio;
+{
     self = [super init];
-    if (self) {
-        _audio = audio;
-        _queue = [[Queue alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(queueDidChange)
-                                                     name:Queue.didChangeNotification
-                                                   object:_queue];
-        __weak typeof(self) weakSelf = self;
-        audio.onTrackFinished = ^{
-            [weakSelf audioDidFinishCurrentTrack];
-        };
-        audio.onPlaybackPositionChanged = ^(NSTimeInterval position) {
-            [weakSelf audioPositionDidChangeTo:position];
-        };
-    }
+    if ( ! self) return nil;
+    
+    _audio = audio;
+    _queue = [[Queue alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(queueDidChange)
+                                                 name:Queue.didChangeNotification
+                                               object:_queue];
+    __weak typeof(self) weakSelf = self;
+    audio.onTrackFinished = ^{
+        [weakSelf audioDidFinishCurrentTrack];
+    };
+    audio.onPlaybackPositionChanged = ^(NSTimeInterval position) {
+        [weakSelf audioPositionDidChangeTo:position];
+    };
+    
     return self;
 }
 
-- (instancetype)init {
-    return [self initWithAudio:[[AudioReal alloc] init]];
+- (instancetype)init;
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
 }
 
 - (nullable Track *)currentTrack {

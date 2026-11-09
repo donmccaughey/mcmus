@@ -3,7 +3,26 @@
 This document describes where my preferred Objective-C style differs from the
 commonly used Apple style.
 
-## Prefixes
+
+# Not operator spacing
+
+Ensure that the not `!` operator always has one space before and after. This
+makes it easier to spot negations when rapidly scanning code.
+
+    // ¡¡ incorrect !! - harder to scan rapidly
+    if (!is_enabled) return;
+
+    // correct - the `!` stands out
+    if ( ! is_enabled) return;
+
+
+# Single-line `if` statements
+
+When an `if` statement only has a single statement block and no corresponding
+`else` block, write it on a single line when that line is less than 80 columns.
+
+
+# Prefixes
 
 Apple reserves all prefixes of two capital letters for their use (e.g. `NS`,
 `UI`, `AV`, etc) and recommends that libraries use prefixes of three capital
@@ -26,9 +45,11 @@ For instance, the class name `AppDelegate` is clear throughout the app; there is
 no need to further qualify it as `<AppName>AppDelegate`.
 
 
-## Method braces
+# Curly braces
 
-Always put the opening brace of a method definition on its own line.
+Always put the opening brace of a method definition on its own line. This is
+sometimes called [Allman or BSD
+style](https://en.wikipedia.org/wiki/Indentation_style#Allman_style).
 
     // ¡¡ incorrect !!
     + (AppDelegate *)shared {
@@ -45,14 +66,14 @@ This creates wasted vertical space for short method parameter lists like the
 above snippet but greatly increases readability when a method's parameter list
 is long and needs to wrap across several lines.
 
-    // ¡¡ incorrect - where does the method body start? !!
+    // ¡¡ incorrect !! - where does the method body start?
     - (BOOL)application:(UIApplication *)application
         didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
         [_store loadInBackgroundIsDemo:[NSProcessInfo.processInfo.arguments containsObject:@"--demo"]];
         return YES;
     }
 
-    // correct - parameter list and method body are easy to find
+    // correct - parameter list and method body are easy to tell apart
     - (BOOL)application:(UIApplication *)application
         didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions;
     {
@@ -60,8 +81,24 @@ is long and needs to wrap across several lines.
         return YES;
     }
 
+Braces for statements and other blocks should place the opening brace on the
+same line, except when the statement needs to wrap across multiple lines.
 
-## Method parameter lists
+    // correct
+    if (is_foo) {
+        // do something
+    }
+    
+    // correct
+    if (
+        super_widget_happy_fun_count < max_super_widget_happy_fun_count
+        && special_widget_view_state == special_widget_view_state_active
+    ) {
+        // do something
+    }
+
+
+# Method parameter lists
 
 Always put a semicolon at the end of the parameter list of a method on both the
 declaration and the definition. The compiler allows this and this consistency,
@@ -88,3 +125,21 @@ edits from declaration to definition or vice versa.
     {
         [self addChildren:@[child]];
     }
+
+
+# Objective-C class initializers
+
+Follow the pattern below for init method definitions when practical.
+
+    - (instancetype)init;
+    {
+        self = [super init];
+        if ( ! self) return nil;
+        
+        // initialize instance variables
+        
+        return self;
+    }
+
+By using a single-line `if` for early return at the top, the initialization no
+longer needs to be indented.

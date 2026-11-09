@@ -1,25 +1,31 @@
 #import "AppDelegate-macOS.h"
 
 #if TARGET_OS_OSX
+#import "AudioReal.h"
 #import "MainMenu.h"
 #import "MainWindowController.h"
 #import "MusicLibraryStore.h"
 #import "Player.h"
 #import "SettingsWindowController.h"
 
-@implementation AppDelegate {
+@implementation AppDelegate
+{
+    id<Audio> _audio;
     MusicLibraryStore *_store;
     Player *_player;
     MainWindowController *_Nullable _mainWindowController;
     SettingsWindowController *_Nullable _settingsWindowController;
 }
 
-- (instancetype)init {
+- (instancetype)init;
+{
     self = [super init];
-    if (self) {
-        _store = [[MusicLibraryStore alloc] init];
-        _player = [[Player alloc] init];
-    }
+    if ( ! self) return nil;
+    
+    _audio = [AudioReal new];
+    _store = [[MusicLibraryStore alloc] init];
+    _player = [[Player alloc] initWithAudio:_audio];
+    
     return self;
 }
 
