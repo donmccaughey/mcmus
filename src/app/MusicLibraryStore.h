@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
                        preferences:(id<Preferences>)preferences NS_DESIGNATED_INITIALIZER;
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
 
 - (void)apply:(LoadResult *)result;
 

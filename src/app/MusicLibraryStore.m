@@ -78,19 +78,24 @@ static dispatch_queue_t loadQueue(void) {
     return @"MusicLibraryStoreMusicRootDirectoryDidChange";
 }
 
-- (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem preferences:(id<Preferences>)preferences {
+- (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
+                       preferences:(id<Preferences>)preferences;
+{
     self = [super init];
-    if (self) {
-        _library = [[MusicLibrary alloc] init];
-        _loadErrors = @[];
-        _fileSystem = fileSystem;
-        _preferences = preferences;
-    }
+    if ( ! self) return nil;
+
+    _library = [[MusicLibrary alloc] init];
+    _loadErrors = @[];
+    _fileSystem = fileSystem;
+    _preferences = preferences;
+
     return self;
 }
 
-- (instancetype)init {
-    return [self initWithFileSystem:[[FileSystemReal alloc] init] preferences:[[PreferencesReal alloc] init]];
+- (instancetype)init;
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
 }
 
 - (BOOL)loadDidFail {

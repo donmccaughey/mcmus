@@ -2,11 +2,15 @@
 
 #if TARGET_OS_IOS
 #include "AudioReal.h"
+#include "FileSystemReal.h"
+#include "PreferencesReal.h"
 
 
 @implementation AppDelegate
 {
     id<Audio> _audio;
+    id<FileSystem> _fileSystem;
+    id<Preferences> _preferences;
 }
 
 + (AppDelegate *)shared {
@@ -19,7 +23,11 @@
     if ( ! self) return nil;
     
     _audio = [AudioReal new];
-    _store = [[MusicLibraryStore alloc] init];
+    _fileSystem = [FileSystemReal new];
+    _preferences = [PreferencesReal new];
+    
+    _store = [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
+                                               preferences:_preferences];
     _player = [[Player alloc] initWithAudio:_audio];
     
     return self;

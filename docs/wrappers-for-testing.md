@@ -102,3 +102,10 @@ boilerplate behind fasçade methods.
 
 Where the wrapped library exposes complex domain objects to the caller, consider
 exposing wrapper classes or handles in the fasçade interface.
+
+
+## Injecting wrappers
+
+Create real wrappers at the top layers of the application and pass them down
+explicitly to functions, methods and objects that need them. This enables the
+sharing of real wrapper instances and makes data flow and dependencies clear.

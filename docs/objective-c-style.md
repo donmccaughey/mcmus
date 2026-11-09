@@ -143,3 +143,11 @@ Follow the pattern below for init method definitions when practical.
 
 By using a single-line `if` for early return at the top, the initialization no
 longer needs to be indented.
+
+
+# Prefer `+new` over `+alloc`/`-init`
+
+When calling the no-argument initializer, use the `+new` class method: it's
+easier to read than the equivalent nested `+alloc`/`-init` call. If the class
+has a `+newX:` class method equivalent to an `-initX:` method, prefer that as
+well.
