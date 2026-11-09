@@ -43,6 +43,13 @@
 }
 
 
+- (void)tearDown;
+{
+    if (_fileSharing.isSharing) [self stopAndWait:_fileSharing];
+    [super tearDown];
+}
+
+
 - (void)loadStoreAndWait;
 {
     XCTestExpectation *loaded = [self expectationWithDescription:@"loaded"];
