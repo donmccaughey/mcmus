@@ -273,68 +273,68 @@ string(NSData *data)
 }
 
 
-#pragma mark - formatCSV() tests
+#pragma mark - generateCSV() tests
 
 
-- (void)testFormatRecords;
+- (void)testGenerateRecords;
 {
-    NSData *data = formatCSV(@[@[@"a", @"b"], @[@"c", @"d"]]);
+    NSData *data = generateCSV(@[@[@"a", @"b"], @[@"c", @"d"]]);
 
     XCTAssertEqualObjects(@"a,b\r\nc,d\r\n", string(data));
 }
 
 
-- (void)testFormatEmptyFields;
+- (void)testGenerateEmptyFields;
 {
-    NSData *data = formatCSV(@[@[@"", @"a", @""], @[@""]]);
+    NSData *data = generateCSV(@[@[@"", @"a", @""], @[@""]]);
 
     XCTAssertEqualObjects(@",a,\r\n\r\n", string(data));
 }
 
 
-- (void)testFormatQuotesFieldWithComma;
+- (void)testGenerateQuotesFieldWithComma;
 {
-    NSData *data = formatCSV(@[@[@"a,b", @"c"]]);
+    NSData *data = generateCSV(@[@[@"a,b", @"c"]]);
 
     XCTAssertEqualObjects(@"\"a,b\",c\r\n", string(data));
 }
 
 
-- (void)testFormatQuotesFieldWithQuote;
+- (void)testGenerateQuotesFieldWithQuote;
 {
-    NSData *data = formatCSV(@[@[@"say \"hi\"", @"\""]]);
+    NSData *data = generateCSV(@[@[@"say \"hi\"", @"\""]]);
 
     XCTAssertEqualObjects(@"\"say \"\"hi\"\"\",\"\"\"\"\r\n", string(data));
 }
 
 
-- (void)testFormatQuotesFieldWithLineBreaks;
+- (void)testGenerateQuotesFieldWithLineBreaks;
 {
-    NSData *data = formatCSV(@[@[@"a\nb", @"c\rd", @"e\r\nf"]]);
+    NSData *data = generateCSV(@[@[@"a\nb", @"c\rd", @"e\r\nf"]]);
 
     XCTAssertEqualObjects(@"\"a\nb\",\"c\rd\",\"e\r\nf\"\r\n", string(data));
 }
 
 
-- (void)testFormatLeavesSpacesUnquoted;
+- (void)testGenerateLeavesSpacesUnquoted;
 {
-    NSData *data = formatCSV(@[@[@" a ", @"b c"]]);
+    NSData *data = generateCSV(@[@[@" a ", @"b c"]]);
 
     XCTAssertEqualObjects(@" a ,b c\r\n", string(data));
 }
 
 
-- (void)testFormatNoRecords;
+- (void)testGenerateNoRecords;
 {
-    NSData *data = formatCSV(@[]);
+    NSData *data = generateCSV(@[]);
 
     XCTAssertEqualObjects([NSData data], data);
 }
 
 
-- (void)testFormatNonASCII;
+- (void)testGenerateNonASCII;
 {
-    NSData *data = formatCSV(@[@[@"Björk", @"日本,語"]]);
+    NSData *data = generateCSV(@[@[@"Björk", @"日本,語"]]);
 
     XCTAssertEqualObjects(utf8(@"Björk,\"日本,語\"\r\n"), data);
 }
@@ -343,7 +343,7 @@ string(NSData *data)
 #pragma mark - round trip tests
 
 
-- (void)testFormatThenParseYieldsEqualRecords;
+- (void)testGenerateThenParseYieldsEqualRecords;
 {
     NSArray *source = @[
         @[@"path", @"size", @"hash"],
@@ -355,40 +355,40 @@ string(NSData *data)
     ];
 
     NSError *error = nil;
-    NSArray *records = parseCSV(formatCSV(source), &error);
+    NSArray *records = parseCSV(generateCSV(source), &error);
 
     XCTAssertNil(error);
     XCTAssertEqualObjects(source, records);
 }
 
 
-- (void)testFormatThenParseSingleEmptyField;
+- (void)testGenerateThenParseSingleEmptyField;
 {
     NSArray *source = @[@[@""], @[@""]];
 
-    NSArray *records = parseCSV(formatCSV(source), NULL);
+    NSArray *records = parseCSV(generateCSV(source), NULL);
 
     XCTAssertEqualObjects(source, records);
 }
 
 
-- (void)testParseThenFormatNormalizesEndingsAndQuotes;
+- (void)testParseThenGenerateNormalizesEndingsAndQuotes;
 {
     NSData *source = utf8(@"\"path\",\"size\"\n\"a b\",\"1\"\r\"c,d\",2\r\n\"e\"\"f\",\" \"");
 
     NSError *error = nil;
-    NSData *data = formatCSV(parseCSV(source, &error));
+    NSData *data = generateCSV(parseCSV(source, &error));
 
     XCTAssertNil(error);
     XCTAssertEqualObjects(@"path,size\r\na b,1\r\n\"c,d\",2\r\n\"e\"\"f\", \r\n", string(data));
 }
 
 
-- (void)testParseThenFormatPreservesCanonicalData;
+- (void)testParseThenGeneratePreservesCanonicalData;
 {
     NSData *source = utf8(@"path,size\r\n\"a,b\",1\r\n\"say \"\"hi\"\"\",\"x\r\ny\"\r\n,\r\n");
 
-    NSData *data = formatCSV(parseCSV(source, NULL));
+    NSData *data = generateCSV(parseCSV(source, NULL));
 
     XCTAssertEqualObjects(source, data);
 }

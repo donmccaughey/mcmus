@@ -30,7 +30,7 @@ parseCSV(NSData *data, NSError **error);
 // record must have at least one field: CSV cannot represent an empty record,
 // so `@[]` would read back as `@[@""]`.
 NSData *
-formatCSV(NSArray<NSArray<NSString *> *> *records);
+generateCSV(NSArray<NSArray<NSString *> *> *records);
 
 
 NS_ASSUME_NONNULL_END

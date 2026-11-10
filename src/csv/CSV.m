@@ -362,7 +362,7 @@ format_record(NSArray<NSString *> *record)
 
 
 NSData *
-formatCSV(NSArray<NSArray<NSString *> *> *records)
+generateCSV(NSArray<NSArray<NSString *> *> *records)
 {
     NSMutableString *csv = [NSMutableString new];
     for (NSArray<NSString *> *record in records) {
