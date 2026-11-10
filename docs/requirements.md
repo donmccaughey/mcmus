@@ -280,16 +280,21 @@ is the list of errors encountered while loading, which is empty when loading
 succeeded completely.
 
 MC Mus shall have a **load music library** function that is called with the path
-of the music root directory. The load music library function shall create a root
-folder with folders and tracks created by walking the given music root directory
-and return a load result containing a new music library initialized with the
-root folder.
+of the music root directory.
+
+The load music library function shall create a root folder with folders and
+tracks created by walking the given music root directory and return a load
+result containing a new music library initialized with the root folder.
+
+The load music library function shall omit any folder from the tree (other than
+the root folder) which has no tracks that are direct children or descendents.
 
 If it cannot list the music root directory, the load music library function
 shall return a load result containing an empty music library and the error.
 
 If it encounters an error while walking a subdirectory or file, the load music
 library function shall add the error to the load result and continue walking.
+
 
 ## Folder
 
@@ -464,7 +469,7 @@ The **remove snapshot** function shall remove the snapshot.
 
 If it cannot remove the snapshot, the remove snapshot function shall return an
 error.
-s
+
 
 # Launch behavior
 

@@ -3,6 +3,12 @@
 #import "Folder.h"
 #import "Track.h"
 
+// Trackless folders are pruned bottom-up, so any surviving child is either a
+// track or a folder that contains tracks somewhere below it.
+static BOOL hasTrackDescendants(NSArray<id<FolderChild>> *children) {
+    return children.count > 0;
+}
+
 // folderName and parentFolderName are nil for the root folder and its
 // children respectively, which is how tracks fall back to "(no album)" and
 // "(no artist)".
@@ -33,7 +39,9 @@ static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
         NSString *name = info.localizedName ?: url.lastPathComponent;
         if (info.isDirectory) {
             NSArray<id<FolderChild>> *grandchildren = loadChildren(url, name, folderName, fileSystem, errors);
-            [children addObject:[[Folder alloc] initWithPath:url.path name:name children:grandchildren]];
+            if (hasTrackDescendants(grandchildren)) {
+                [children addObject:[[Folder alloc] initWithPath:url.path name:name children:grandchildren]];
+            }
         } else if (info.isRegularFile) {
             Track *track = [[Track alloc] initWithDisplayName:name
                                                 pathExtension:url.pathExtension

@@ -176,13 +176,61 @@
     [fileSystem addPath:@"/Music/Track 10.mp3"];
     [fileSystem addPath:@"/Music/track 2.mp3"];
     [fileSystem addPath:@"/Music/B folder" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/B folder/Song.mp3"];
     [fileSystem addPath:@"/Music/a folder" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/a folder/Song.mp3"];
 
     MusicLibrary *library = [self load:fileSystem];
 
     XCTAssertEqualObjects([library.rootFolder.children valueForKey:@"name"], (@[
         @"a folder", @"B folder", @"track 2", @"Track 10",
     ]));
+}
+
+- (void)testFolderWithoutTracksIsOmitted {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Artwork" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Artwork/cover.jpg"];
+    [fileSystem addPath:@"/Music/Artwork/notes.txt"];
+    [fileSystem addPath:@"/Music/Song.mp3"];
+
+    MusicLibrary *library = [self load:fileSystem];
+
+    XCTAssertEqualObjects(library.rootFolder.children, (@[
+        [self track:@"Song" path:@"/Music/Song.mp3"],
+    ]));
+}
+
+- (void)testFolderWhoseSubfoldersHaveNoTracksIsOmitted {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Lossless" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Lossless/Album" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Lossless/Album/01 Song.flac"];
+    [fileSystem addPath:@"/Music/Artist" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Artist/Album" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Artist/Album/01 Song.mp3"];
+
+    MusicLibrary *library = [self load:fileSystem];
+
+    XCTAssertEqualObjects(library.rootFolder.children, (@[
+        [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
+            [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album" children:@[
+                [self track:@"01 Song" path:@"/Music/Artist/Album/01 Song.mp3" album:@"Album" artist:@"Artist"],
+            ]],
+        ]],
+    ]));
+}
+
+- (void)testOnlyTracklessFoldersGivesEmptyLibrary {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Empty" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Pictures" kind:FileSystemFakeKindDirectory];
+    [fileSystem addPath:@"/Music/Pictures/cover.jpg"];
+
+    LoadResult *result = [self loadResult:fileSystem];
+
+    XCTAssertTrue(result.library.isEmpty);
+    XCTAssertEqual(result.errors.count, 0UL);
 }
 
 - (void)testUnlistableRootGivesEmptyLibraryAndReportsFailure {
@@ -197,7 +245,7 @@
     XCTAssertEqualObjects(fileSystemFakeErrorPaths(result.errors), @[@"/Music"]);
 }
 
-- (void)testUnlistableSubfolderBecomesEmptyFolderAndReportsFailure {
+- (void)testUnlistableSubfolderIsOmittedAndReportsFailure {
     FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
     [fileSystem addPath:@"/Music/Broken" kind:FileSystemFakeKindDirectory];
     [fileSystem addPath:@"/Music/Song.mp3"];
@@ -206,7 +254,6 @@
     LoadResult *result = [self loadResult:fileSystem];
 
     XCTAssertEqualObjects(result.library.rootFolder.children, (@[
-        [[Folder alloc] initWithPath:@"/Music/Broken" name:@"Broken" children:@[]],
         [self track:@"Song" path:@"/Music/Song.mp3"],
     ]));
     XCTAssertEqual(result.errors.count, 1UL);
