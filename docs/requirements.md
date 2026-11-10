@@ -138,6 +138,11 @@ subdirectory.
 The snapshot library shall depend on the wrappers library; snapshot unit tests
 shall also depend on the wrappers-fakes library.
 
+The MC Mus project shall place CSV parsing and formatting code in the **csv**
+library, with code and unit tests placed in the `src/csv/` subdirectory.
+
+The csv library shall not depend on any other library in the MC Mus project.
+
 The MC Mus project shall pace code for file sharing in the **file-sharing** library, with code and unit tests placed in the `src/file-sharing/` subdirectory.
 
 The file-sharing library shall depend on the wrappers, model and snapshot

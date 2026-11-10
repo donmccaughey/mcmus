@@ -15,6 +15,13 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D4C5A00030A400000000000B",
+        "name" : "csv-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
         "identifier" : "D49BFC4830A26EBF00AED804",
         "name" : "file-sharing-tests"
       }
