@@ -39,6 +39,13 @@
         "identifier" : "D48B390430A0016F00B21A13",
         "name" : "snapshot-tests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D4C0FFEE30A3000000000017",
+        "name" : "wrappers-tests"
+      }
     }
   ],
   "version" : 1

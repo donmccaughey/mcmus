@@ -74,11 +74,11 @@ done
 # The arch keeps xcodebuild from warning about the Rosetta destination.
 destination="platform=iOS Simulator,id=$udid,arch=$(uname -m)"
 if (( build )); then
-    xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme mcmus \
+    xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme app \
         -destination "$destination" -quiet build
 fi
 
-settings=$(xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme mcmus \
+settings=$(xcodebuild -project "$project_dir/mcmus.xcodeproj" -scheme app \
     -destination "$destination" -showBuildSettings 2>/dev/null)
 products_dir=$(print -r -- "$settings" | awk -F' = ' '/ BUILT_PRODUCTS_DIR =/{print $2}')
 product_name=$(print -r -- "$settings" | awk -F' = ' '/ FULL_PRODUCT_NAME =/{print $2}')

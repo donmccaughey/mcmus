@@ -26,11 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)apply:(LoadResult *)result;
 
-- (void)loadInBackgroundIsDemo:(BOOL)isDemo;
+- (void)loadInBackground;
 // The completion runs on the main queue once the load has finished,
 // whether or not a later load superseded it.
-- (void)loadInBackgroundIsDemo:(BOOL)isDemo
-                    completion:(nullable void (^)(void))completion;
+- (void)loadInBackgroundWithCompletion:(nullable void (^)(void))completion;
 
 #if TARGET_OS_OSX
 - (void)changeMusicRootDirectoryTo:(NSURL *)url;

@@ -2,6 +2,7 @@
 
 #if TARGET_OS_IOS
 #include "AudioReal.h"
+#include "DemoMode.h"
 #include "FileSystemReal.h"
 #include "PreferencesReal.h"
 
@@ -24,6 +25,10 @@
     
     _audio = [AudioReal new];
     _fileSystem = [FileSystemReal new];
+    if (isDemoMode()) {
+        _audio = demoAudioWrapping(_audio);
+        _fileSystem = demoFileSystemWrapping(_fileSystem);
+    }
     _preferences = [PreferencesReal new];
     
     _store = [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
@@ -35,7 +40,7 @@
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
-    [_store loadInBackgroundIsDemo:[NSProcessInfo.processInfo.arguments containsObject:@"--demo"]];
+    [_store loadInBackground];
     return YES;
 }
 

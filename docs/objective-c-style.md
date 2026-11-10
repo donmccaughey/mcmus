@@ -69,7 +69,7 @@ is long and needs to wrap across several lines.
     // ¡¡ incorrect !! - where does the method body start?
     - (BOOL)application:(UIApplication *)application
         didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
-        [_store loadInBackgroundIsDemo:[NSProcessInfo.processInfo.arguments containsObject:@"--demo"]];
+        [_store loadInBackground];
         return YES;
     }
 
@@ -77,7 +77,7 @@ is long and needs to wrap across several lines.
     - (BOOL)application:(UIApplication *)application
         didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions;
     {
-        [_store loadInBackgroundIsDemo:[NSProcessInfo.processInfo.arguments containsObject:@"--demo"]];
+        [_store loadInBackground];
         return YES;
     }
 

@@ -116,6 +116,8 @@ in the **wrappers** library, with code and unit tests placed in the
 The wrappers library shall not depend on any other library in the MC Mus
 project.
 
+The wrappers unit tests shall depend on the wrappers-fakes library.
+
 The MC Mus project shall place the fake implementations of wrapper interfaces,
 and test helpers in the **wrappers-fakes** library, with code and unit tests
 placed in the `src/wrappers/` subdirectory next to the wrapper interfaces and
@@ -173,6 +175,51 @@ The audio library shall support gapless playback of `.mp3` and `.m4a` files.
 
 The **audio wrapper** shall wrap the audio library, exposing high level
 operations in the application domain.
+
+
+## Demo wrappers
+
+In demo mode, MC Mus shall wrap the file system wrapper in the **demo file
+system wrapper** and the audio wrapper in the **demo audio wrapper**.
+
+The demo file system wrapper shall be created from the contents of the
+`demo-data.json` file and a wrapped file system wrapper. The first JSON object
+in the file with member `"type"="directory"` is the **demo root directory**;
+its `"name"` member is the path of the directory, or `/` when absent.
+
+The demo file system wrapper shall list the contents of directories inside the
+demo root directory and report information about them, using all applicable
+rules on the file and directory names and ignoring rules that only apply to
+real directories and files: entries without names and entries whose names begin
+with `.` shall be omitted; directories whose names end with the `.itlp`
+extension shall be reported as packages.
+
+The demo file system wrapper shall report the demo root directory as the music
+directory.
+
+On macOS, the demo file system wrapper shall resolve a saved security-scoped
+bookmark to the demo root directory and shall grant access to the demo root
+directory without the wrapped file system wrapper. A bookmark created through
+the demo file system wrapper shall resolve to its own directory, so that a music
+root directory chosen in demo mode is loaded from the real file system.
+
+On iOS, the demo file system wrapper shall report the parent of the demo root
+directory as the application support directory and shall create the demo root
+directory and exclude it from backup without the wrapped file system wrapper.
+Because the iOS music root directory is the `Music` subdirectory of the
+application support directory, the demo root directory shall be named `Music`.
+
+The demo file system wrapper shall forward all other operations, and operations
+on paths outside the demo root directory, to the wrapped file system wrapper.
+
+If the demo data cannot be parsed or contains no directory object, the demo file
+system wrapper shall report the error from the operations used to locate the
+music root directory.
+
+The demo audio wrapper shall be created from the URL of the `demo-track.mp3`
+file and a wrapped audio wrapper. The demo audio wrapper shall pass the demo
+track URL to the wrapped audio wrapper in place of every track URL, so that
+every demo track is playable, and shall forward all other operations.
 
 
 # Model
@@ -243,30 +290,6 @@ shall return a load result containing an empty music library and the error.
 
 If it encounters an error while walking a subdirectory or file, the load music
 library function shall add the error to the load result and continue walking.
-
-MC Mus shall have a **load demo music library** function that is called without
-arguments. The load demo music library function shall read the `demo-data.json`
-file from the app bundle then create a root folder with folders and tracks
-created by walking the first JSON object in the file with member
-`"type"="directory"`.
-
-The load demo music library function shall set the path property of each track
-to the path of the `demo-track.mp3` file from the app bundle instead of
-calculating the path from `demo-data.json`.
-
-The load demo music library function shall use all applicable rules on the file
-and directory names when creating folders and tracks, ignoring rules that only
-apply to real directories and files.
-
-The load demo music library function shall discard directories that end with the
-`.itlp` extension, as these directories are packages.
-
-If it encounters an error, the load demo music library function shall return a
-load result containing an empty music library and the error.
-
-When it completes, the load demo music library function shall return a load
-result containing the new music library and no errors.
-
 
 ## Folder
 
@@ -458,16 +481,21 @@ with other views.
 When the app launches, MC Mus shall create a player with an empty queue and
 share the player with other views.
 
-When the app launches and the `--demo` command line option is not given, MC Mus
-shall call the load music library function in the background, passing it the
-path of the music root directory.
+When the app launches and the `--demo` command line option is given, MC Mus is
+in **demo mode** and shall wrap the file system wrapper in the demo file system
+wrapper, created from the `demo-data.json` file in the app bundle, and the audio
+wrapper in the demo audio wrapper, created with the URL of the `demo-track.mp3`
+file in the app bundle, before creating the music library store and the player.
 
-When the app launches and the `--demo` command line option is given, MC Mus
-shall call the load demo music library function in the background.
+When the app launches, MC Mus shall locate the music root directory and call the
+load music library function in the background, passing it the path of the music
+root directory.
 
-If locating the music root directory or reading the demo files from the app
-bundle fails, MC Mus shall treat the failure as a load result containing an
-empty music library and the error.
+If locating the music root directory fails, MC Mus shall treat the failure as a
+load result containing an empty music library and the error.
+
+File sharing is not available in demo mode, since the demo root directory does
+not exist on the local file system.
 
 When a background load completes, MC Mus shall apply its load result to the
 music library store on the main thread, replacing the library and the load

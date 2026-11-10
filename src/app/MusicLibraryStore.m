@@ -1,51 +1,14 @@
 #import "MusicLibraryStore.h"
 
-#import "FileSystemReal.h"
-#import "LoadDemoMusicLibrary.h"
 #import "LoadMusicLibrary.h"
-#import "PreferencesReal.h"
-
-static NSErrorDomain const MissingDemoResourceErrorDomain = @"MissingDemoResourceErrorDomain";
-
-typedef NS_ENUM(NSInteger, MissingDemoResourceErrorCode) {
-    MissingDemoResourceErrorCodeNotFound = 1,
-};
-
-static NSError *missingDemoResourceError(NSString *name) {
-    return [NSError errorWithDomain:MissingDemoResourceErrorDomain
-                               code:MissingDemoResourceErrorCodeNotFound
-                           userInfo:@{NSFilePathErrorKey: name}];
-}
 
 static LoadResult *failedResult(NSArray<NSError *> *errors) {
     return [[LoadResult alloc] initWithLibrary:[[MusicLibrary alloc] init] errors:errors];
 }
 
-static LoadResult *loadDemoLibrary(void) {
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSURL *dataURL = [bundle URLForResource:@"demo-data" withExtension:@"json"];
-    if (!dataURL) {
-        return failedResult(@[missingDemoResourceError(@"demo-data.json")]);
-    }
-    NSURL *trackURL = [bundle URLForResource:@"demo-track" withExtension:@"mp3"];
-    if (!trackURL) {
-        return failedResult(@[missingDemoResourceError(@"demo-track.mp3")]);
-    }
-    NSError *error;
-    NSData *demoData = [NSData dataWithContentsOfURL:dataURL options:0 error:&error];
-    if (!demoData) {
-        return failedResult(@[error]);
-    }
-    return loadDemoMusicLibrary(demoData, trackURL.path);
-}
-
 static LoadResult *loadLibrary(MusicRootDirectory *_Nullable musicRootDirectory,
                                NSError *_Nullable locateError,
-                               BOOL isDemo,
                                id<FileSystem> fileSystem) {
-    if (isDemo) {
-        return loadDemoLibrary();
-    }
     if (!musicRootDirectory) {
         return failedResult(locateError ? @[locateError] : @[]);
     }
@@ -109,16 +72,15 @@ static dispatch_queue_t loadQueue(void) {
                                                         object:self];
 }
 
-- (void)loadInBackgroundIsDemo:(BOOL)isDemo {
-    [self loadInBackgroundIsDemo:isDemo completion:nil];
+- (void)loadInBackground {
+    [self loadInBackgroundWithCompletion:nil];
 }
 
-- (void)loadInBackgroundIsDemo:(BOOL)isDemo completion:(nullable void (^)(void))completion {
+- (void)loadInBackgroundWithCompletion:(nullable void (^)(void))completion {
     NSInteger generation = [self nextLoadGeneration];
     id<FileSystem> fileSystem = _fileSystem;
     id<Preferences> preferences = _preferences;
     dispatch_async(loadQueue(), ^{
-        // Located even in demo mode so the settings dialog can show it.
         NSError *locateError;
         MusicRootDirectory *musicRootDirectory = [MusicRootDirectory locateWithFileSystem:fileSystem
                                                                               preferences:preferences
@@ -126,7 +88,7 @@ static dispatch_queue_t loadQueue(void) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.musicRootDirectory = musicRootDirectory;
         });
-        LoadResult *result = loadLibrary(musicRootDirectory, locateError, isDemo, fileSystem);
+        LoadResult *result = loadLibrary(musicRootDirectory, locateError, fileSystem);
         dispatch_async(dispatch_get_main_queue(), ^{
             [self finishLoad:result generation:generation completion:completion];
         });
