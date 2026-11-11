@@ -2,6 +2,7 @@
 
 #if TARGET_OS_OSX
 #import "FilesTreeNode.h"
+#import "Folder.h"
 #import "FolderChildPasteboard.h"
 
 static NSUserInterfaceItemIdentifier const cellIdentifier = @"FilesTreeCell";

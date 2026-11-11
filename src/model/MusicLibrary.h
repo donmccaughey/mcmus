@@ -1,8 +1,12 @@
 #import <Foundation/Foundation.h>
 
-#import "Folder.h"
+
+@class Folder;
+@class Track;
+
 
 NS_ASSUME_NONNULL_BEGIN
+
 
 @interface MusicLibrary : NSObject
 
@@ -12,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRootFolder:(Folder *)rootFolder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init;
 
+- (NSArray<Track *> *)getTracks;
+
 @end
+
 
 NS_ASSUME_NONNULL_END
