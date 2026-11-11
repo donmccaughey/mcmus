@@ -16,6 +16,18 @@ static NSData *foxContents(void) {
     return [@"The quick brown fox jumps over the lazy dog" dataUsingEncoding:NSUTF8StringEncoding];
 }
 
+static NSArray<NSString *> *trackDescriptions(NSArray<id<FolderChild>> *children) {
+    return [[children valueForKeyPath:@"@unionOfArrays.trackDescendants"] valueForKey:@"description"];
+}
+
+// Tracks are equal when their paths are, so equal trees can still differ in
+// the tracks' other properties; their descriptions cover all of them.
+#define AssertEqualChildren(actual, expected) \
+    do { \
+        XCTAssertEqualObjects(actual, expected); \
+        XCTAssertEqualObjects(trackDescriptions(actual), trackDescriptions(expected)); \
+    } while (0)
+
 @implementation LoadMusicLibraryTests {
     NSURL *_root;
 }
@@ -89,7 +101,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3"],
     ]));
     XCTAssertEqual(result.errors.count, 0UL);
@@ -103,7 +115,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
             [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album" children:@[
                 [self track:@"01 Song" path:@"/Music/Artist/Album/01 Song.mp3" album:@"Album" artist:@"Artist"],
@@ -119,7 +131,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [[Folder alloc] initWithPath:@"/Music/Album" name:@"Album" children:@[
             [self track:@"Song" path:@"/Music/Album/Song.m4a" album:@"Album"],
         ]],
@@ -141,7 +153,7 @@ static NSData *foxContents(void) {
     XCTAssertNotNil(artist);
     NSArray<id<FolderChild>> *album = artist.firstObject.children;
     XCTAssertNotNil(album);
-    XCTAssertEqualObjects(album, (@[
+    AssertEqualChildren(album, (@[
         [self track:@"Song" path:@"/Music/Genre/Artist/Album/Song.mp3" album:@"Album" artist:@"Artist"],
     ]));
 }
@@ -156,7 +168,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [self track:@"Loud" path:@"/Music/Loud.MP3"],
         [self track:@"Quiet" path:@"/Music/Quiet.M4A"],
     ]));
@@ -170,7 +182,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3"],
     ]));
 }
@@ -182,7 +194,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3"],
     ]));
 }
@@ -195,7 +207,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [[Folder alloc] initWithPath:@"/Music/Musica" name:@"Música" children:@[
             [self track:@"Hidden" path:@"/Music/Musica/Hidden.mp3" album:@"Música"],
             [self track:@"Shown" path:@"/Music/Musica/Shown.mp3" album:@"Música"],
@@ -228,7 +240,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3"],
     ]));
 }
@@ -244,7 +256,7 @@ static NSData *foxContents(void) {
 
     MusicLibrary *library = [self load:fileSystem];
 
-    XCTAssertEqualObjects(library.rootFolder.children, (@[
+    AssertEqualChildren(library.rootFolder.children, (@[
         [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
             [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album" children:@[
                 [self track:@"01 Song" path:@"/Music/Artist/Album/01 Song.mp3" album:@"Album" artist:@"Artist"],
@@ -285,7 +297,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3"],
     ]));
     XCTAssertEqual(result.errors.count, 1UL);
@@ -298,7 +310,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3" size:0],
     ]));
     XCTAssertEqual(result.errors.count, 0UL);
@@ -311,7 +323,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Empty" path:@"/Music/Empty.m4a" size:0],
         [self track:@"Song" path:@"/Music/Song.mp3" size:4096],
     ]));
@@ -326,7 +338,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3" size:4096],
     ]));
     XCTAssertEqual(result.errors.count, 0UL);
@@ -340,7 +352,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Good" path:@"/Music/Good.mp3" size:8192],
     ]));
     XCTAssertEqual(result.errors.count, 1UL);
@@ -353,7 +365,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3" size:0 fileHash:0],
     ]));
     XCTAssertEqual(result.errors.count, 0UL);
@@ -366,7 +378,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackHash];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Empty" path:@"/Music/Empty.m4a" size:0 fileHash:emptyFileHash],
         [self track:@"Song" path:@"/Music/Song.mp3" size:0 fileHash:foxFileHash],
     ]));
@@ -379,7 +391,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize | LoadOptionsTrackHash];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3" size:43 fileHash:foxFileHash],
     ]));
     XCTAssertEqual(result.errors.count, 0UL);
@@ -393,7 +405,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackHash];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Song" path:@"/Music/Song.mp3" size:0 fileHash:foxFileHash],
     ]));
     XCTAssertEqual(result.errors.count, 0UL);
@@ -407,7 +419,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackHash];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Bad" path:@"/Music/Bad.mp3" size:0 fileHash:0],
         [self track:@"Good" path:@"/Music/Good.mp3" size:0 fileHash:foxFileHash],
     ]));
@@ -423,7 +435,7 @@ static NSData *foxContents(void) {
 
     LoadResult *result = [self loadResult:fileSystem];
 
-    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+    AssertEqualChildren(result.library.rootFolder.children, (@[
         [self track:@"Good" path:@"/Music/Good.mp3"],
     ]));
     XCTAssertEqual(result.errors.count, 1UL);

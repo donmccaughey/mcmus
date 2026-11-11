@@ -51,6 +51,8 @@
 
     XCTAssertTrue([child isKindOfClass:[Track class]]);
     XCTAssertEqualObjects(child, _track);
+    // Track equality only compares paths.
+    XCTAssertEqualObjects(child.description, _track.description);
 }
 
 - (void)testItemWithoutFolderChildDataYieldsNil {

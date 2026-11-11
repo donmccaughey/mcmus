@@ -15,15 +15,6 @@
                                        size:size];
 }
 
-- (Track *)trackWithFileHash:(NSUInteger)fileHash {
-    return [[Track alloc] initWithTrackName:@"Song"
-                                  albumName:@"Album"
-                                 artistName:@"Artist"
-                                       path:@"/Music/Artist/Album/Song.mp3"
-                                       size:4096
-                                   fileHash:fileHash];
-}
-
 - (void)testInitWithoutSizeGivesZeroSize {
     Track *track = [[Track alloc] initWithTrackName:@"Song"
                                           albumName:@"Album"
@@ -31,29 +22,16 @@
                                                path:@"/Music/Artist/Album/Song.mp3"];
 
     XCTAssertEqual(track.size, 0ULL);
-    XCTAssertEqualObjects(track, [self trackWithSize:0]);
-}
-
-- (void)testInitWithDisplayNameKeepsSize {
-    Track *track = [[Track alloc] initWithDisplayName:@"Song.mp3"
-                                        pathExtension:@"mp3"
-                                                 path:@"/Music/Artist/Album/Song.mp3"
-                                           folderName:@"Album"
-                                     parentFolderName:@"Artist"
-                                                 size:4096
-                                             fileHash:0];
-
-    XCTAssertEqualObjects(track, [self trackWithSize:4096]);
 }
 
 - (void)testInitWithoutFileHashGivesZeroFileHash {
     Track *track = [self trackWithSize:4096];
 
+    XCTAssertEqual(track.size, 4096ULL);
     XCTAssertEqual(track.fileHash, 0UL);
-    XCTAssertEqualObjects(track, [self trackWithFileHash:0]);
 }
 
-- (void)testInitWithDisplayNameKeepsFileHash {
+- (void)testInitWithDisplayNameKeepsEveryProperty {
     Track *track = [[Track alloc] initWithDisplayName:@"Song.mp3"
                                         pathExtension:@"mp3"
                                                  path:@"/Music/Artist/Album/Song.mp3"
@@ -62,8 +40,12 @@
                                                  size:4096
                                              fileHash:0xCE7D19A5418FB365];
 
+    XCTAssertEqualObjects(track.trackName, @"Song");
+    XCTAssertEqualObjects(track.albumName, @"Album");
+    XCTAssertEqualObjects(track.artistName, @"Artist");
+    XCTAssertEqualObjects(track.path, @"/Music/Artist/Album/Song.mp3");
+    XCTAssertEqual(track.size, 4096ULL);
     XCTAssertEqual(track.fileHash, 0xCE7D19A5418FB365);
-    XCTAssertEqualObjects(track, [self trackWithFileHash:0xCE7D19A5418FB365]);
 }
 
 - (void)testInitWithDisplayNameRejectsNonMusicExtension {
@@ -78,30 +60,51 @@
     XCTAssertNil(track);
 }
 
-- (void)testTracksWithDifferentSizesAreNotEqual {
-    Track *small = [self trackWithSize:4096];
-    Track *large = [self trackWithSize:8192];
+- (void)testTracksWithSamePathAreEqualWhateverElseDiffers {
+    Track *loaded = [[Track alloc] initWithTrackName:@"Song"
+                                           albumName:@"Album"
+                                          artistName:@"Artist"
+                                                path:@"/Music/Artist/Album/Song.mp3"
+                                                size:4096
+                                            fileHash:0xCE7D19A5418FB365];
+    Track *bare = [[Track alloc] initWithTrackName:@"Other"
+                                         albumName:Track.noAlbum
+                                        artistName:Track.noArtist
+                                              path:@"/Music/Artist/Album/Song.mp3"];
 
-    XCTAssertNotEqualObjects(small, large);
-    XCTAssertNotEqual(small.hash, large.hash);
+    XCTAssertEqualObjects(loaded, bare);
+    XCTAssertEqual(loaded.hash, bare.hash);
 }
 
-- (void)testTracksWithSameSizeAreEqual {
-    XCTAssertEqualObjects([self trackWithSize:4096], [self trackWithSize:4096]);
-    XCTAssertEqual([self trackWithSize:4096].hash, [self trackWithSize:4096].hash);
-}
-
-- (void)testTracksWithDifferentFileHashesAreNotEqual {
-    Track *first = [self trackWithFileHash:1];
-    Track *second = [self trackWithFileHash:2];
+- (void)testTracksWithDifferentPathsAreNotEqual {
+    Track *first = [[Track alloc] initWithTrackName:@"Song"
+                                          albumName:@"Album"
+                                         artistName:@"Artist"
+                                               path:@"/Music/Artist/Album/Song.mp3"
+                                               size:4096
+                                           fileHash:1];
+    Track *second = [[Track alloc] initWithTrackName:@"Song"
+                                           albumName:@"Album"
+                                          artistName:@"Artist"
+                                                path:@"/Music/Artist/Album/Song.m4a"
+                                                size:4096
+                                            fileHash:1];
 
     XCTAssertNotEqualObjects(first, second);
     XCTAssertNotEqual(first.hash, second.hash);
 }
 
-- (void)testTracksWithSameFileHashAreEqual {
-    XCTAssertEqualObjects([self trackWithFileHash:1], [self trackWithFileHash:1]);
-    XCTAssertEqual([self trackWithFileHash:1].hash, [self trackWithFileHash:1].hash);
+- (void)testTrackIsNotEqualToItsPath {
+    XCTAssertNotEqualObjects([self trackWithSize:4096], @"/Music/Artist/Album/Song.mp3");
+}
+
+- (void)testSetHoldsOneTrackPerPath {
+    NSSet<Track *> *tracks = [NSSet setWithArray:@[
+        [self trackWithSize:0],
+        [self trackWithSize:4096],
+    ]];
+
+    XCTAssertEqual(tracks.count, 1UL);
 }
 
 - (void)testMusicFileExtensionsAreCaseInsensitive {

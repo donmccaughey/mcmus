@@ -110,22 +110,11 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
         return NO;
     }
     Track *other = object;
-    return [_trackName isEqualToString:other.trackName]
-        && [_albumName isEqualToString:other.albumName]
-        && [_artistName isEqualToString:other.artistName]
-        && [_path isEqualToString:other.path]
-        && _size == other.size
-        && _fileHash == other.fileHash;
+    return [_path isEqualToString:other.path];
 }
 
 - (NSUInteger)hash {
-    NSUInteger hash = _trackName.hash;
-    hash = hash * 31 + _albumName.hash;
-    hash = hash * 31 + _artistName.hash;
-    hash = hash * 31 + _path.hash;
-    hash = hash * 31 + (NSUInteger)_size;
-    hash = hash * 31 + _fileHash;
-    return hash;
+    return _path.hash;
 }
 
 - (NSString *)description {
