@@ -1,9 +1,5 @@
 #import "Track.h"
 
-static BOOL isMusicFileExtension(NSString *pathExtension) {
-    return [@[@"mp3", @"m4a"] containsObject:pathExtension.lowercaseString];
-}
-
 // The display name already omits the extension when the Finder hides it,
 // so only strip an extension that is still present.
 static NSString *trackName(NSString *displayName, NSString *pathExtension) {
@@ -29,32 +25,50 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
     return @"(no artist)";
 }
 
++ (BOOL)isMusicFileExtension:(NSString *)pathExtension;
+{
+    return [@[@"mp3", @"m4a"] containsObject:pathExtension.lowercaseString];
+}
+
 - (instancetype)initWithTrackName:(NSString *)trackName
                         albumName:(NSString *)albumName
                        artistName:(NSString *)artistName
-                             path:(NSString *)path {
+                             path:(NSString *)path
+                             size:(unsigned long long)size;
+{
     self = [super init];
-    if (self) {
-        _trackName = [trackName copy];
-        _albumName = [albumName copy];
-        _artistName = [artistName copy];
-        _path = [path copy];
-    }
+    if ( ! self) return nil;
+
+    _trackName = [trackName copy];
+    _albumName = [albumName copy];
+    _artistName = [artistName copy];
+    _path = [path copy];
+    _size = size;
+
     return self;
+}
+
+- (instancetype)initWithTrackName:(NSString *)trackName
+                        albumName:(NSString *)albumName
+                       artistName:(NSString *)artistName
+                             path:(NSString *)path;
+{
+    return [self initWithTrackName:trackName albumName:albumName artistName:artistName path:path size:0];
 }
 
 - (nullable instancetype)initWithDisplayName:(NSString *)displayName
                                pathExtension:(NSString *)pathExtension
                                         path:(NSString *)path
                                   folderName:(nullable NSString *)folderName
-                            parentFolderName:(nullable NSString *)parentFolderName {
-    if (!isMusicFileExtension(pathExtension)) {
-        return nil;
-    }
+                            parentFolderName:(nullable NSString *)parentFolderName
+                                        size:(unsigned long long)size;
+{
+    if ( ! [Track isMusicFileExtension:pathExtension]) return nil;
     return [self initWithTrackName:trackName(displayName, pathExtension)
                          albumName:folderName ?: Track.noAlbum
                         artistName:parentFolderName ?: Track.noArtist
-                              path:path];
+                              path:path
+                              size:size];
 }
 
 - (NSURL *)url {
@@ -81,7 +95,8 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
     return [_trackName isEqualToString:other.trackName]
         && [_albumName isEqualToString:other.albumName]
         && [_artistName isEqualToString:other.artistName]
-        && [_path isEqualToString:other.path];
+        && [_path isEqualToString:other.path]
+        && _size == other.size;
 }
 
 - (NSUInteger)hash {
@@ -89,11 +104,12 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
     hash = hash * 31 + _albumName.hash;
     hash = hash * 31 + _artistName.hash;
     hash = hash * 31 + _path.hash;
+    hash = hash * 31 + (NSUInteger)_size;
     return hash;
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@)", _trackName, _albumName, _artistName, _path];
+    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@, %llu)", _trackName, _albumName, _artistName, _path, _size];
 }
 
 @end

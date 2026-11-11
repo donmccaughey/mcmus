@@ -12,7 +12,7 @@ static LoadResult *loadLibrary(MusicRootDirectory *_Nullable musicRootDirectory,
     if (!musicRootDirectory) {
         return failedResult(locateError ? @[locateError] : @[]);
     }
-    return loadMusicLibrary(musicRootDirectory.url, fileSystem);
+    return loadMusicLibrary(musicRootDirectory.url, LoadOptionsNone, fileSystem);
 }
 
 static dispatch_queue_t loadQueue(void) {
@@ -115,7 +115,7 @@ static dispatch_queue_t loadQueue(void) {
     NSInteger generation = [self nextLoadGeneration];
     id<FileSystem> fileSystem = _fileSystem;
     dispatch_async(loadQueue(), ^{
-        LoadResult *result = loadMusicLibrary(musicRootDirectory.url, fileSystem);
+        LoadResult *result = loadMusicLibrary(musicRootDirectory.url, LoadOptionsNone, fileSystem);
         dispatch_async(dispatch_get_main_queue(), ^{
             [self finishLoad:result generation:generation completion:completion];
         });

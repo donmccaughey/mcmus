@@ -20,7 +20,11 @@
 }
 
 - (LoadResult *)loadResult:(FileSystemFake *)fileSystem {
-    return loadMusicLibrary(_root, fileSystem);
+    return [self loadResult:fileSystem options:LoadOptionsNone];
+}
+
+- (LoadResult *)loadResult:(FileSystemFake *)fileSystem options:(LoadOptions)options {
+    return loadMusicLibrary(_root, options, fileSystem);
 }
 
 - (MusicLibrary *)load:(FileSystemFake *)fileSystem {
@@ -40,6 +44,14 @@
                                   albumName:album ?: Track.noAlbum
                                  artistName:artist ?: Track.noArtist
                                        path:path];
+}
+
+- (Track *)track:(NSString *)name path:(NSString *)path size:(unsigned long long)size {
+    return [[Track alloc] initWithTrackName:name
+                                  albumName:Track.noAlbum
+                                 artistName:Track.noArtist
+                                       path:path
+                                       size:size];
 }
 
 - (void)testEmptyDirectoryGivesEmptyLibrary {
@@ -258,6 +270,61 @@
     ]));
     XCTAssertEqual(result.errors.count, 1UL);
     XCTAssertEqualObjects(fileSystemFakeErrorPaths(result.errors), @[@"/Music/Broken"]);
+}
+
+- (void)testTrackSizeIsZeroWhenNotRequested {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Song.mp3" size:4096];
+
+    LoadResult *result = [self loadResult:fileSystem];
+
+    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+        [self track:@"Song" path:@"/Music/Song.mp3" size:0],
+    ]));
+    XCTAssertEqual(result.errors.count, 0UL);
+}
+
+- (void)testTrackSizeIsReadWhenRequested {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Song.mp3" size:4096];
+    [fileSystem addPath:@"/Music/Empty.m4a" size:0];
+
+    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
+
+    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+        [self track:@"Empty" path:@"/Music/Empty.m4a" size:0],
+        [self track:@"Song" path:@"/Music/Song.mp3" size:4096],
+    ]));
+    XCTAssertEqual(result.errors.count, 0UL);
+}
+
+- (void)testNonMusicFilesAreNotSizedWhenRequested {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/cover.jpg"];
+    [fileSystem addPath:@"/Music/Song.mp3" size:4096];
+    fileSystem.unsizeableFiles = [NSSet setWithObject:@"/Music/cover.jpg"];
+
+    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
+
+    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+        [self track:@"Song" path:@"/Music/Song.mp3" size:4096],
+    ]));
+    XCTAssertEqual(result.errors.count, 0UL);
+}
+
+- (void)testUnsizeableTrackIsSkippedAndReportsFailure {
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Bad.mp3" size:4096];
+    [fileSystem addPath:@"/Music/Good.mp3" size:8192];
+    fileSystem.unsizeableFiles = [NSSet setWithObject:@"/Music/Bad.mp3"];
+
+    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
+
+    XCTAssertEqualObjects(result.library.rootFolder.children, (@[
+        [self track:@"Good" path:@"/Music/Good.mp3" size:8192],
+    ]));
+    XCTAssertEqual(result.errors.count, 1UL);
+    XCTAssertEqualObjects(fileSystemFakeErrorPaths(result.errors), @[@"/Music/Bad.mp3"]);
 }
 
 - (void)testUnreadableEntryIsSkippedAndReportsFailure {

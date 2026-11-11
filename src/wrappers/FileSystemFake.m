@@ -18,14 +18,25 @@ static void fail(NSString *path, NSError **error) {
 
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
-               localizedName:(nullable NSString *)localizedName {
+               localizedName:(nullable NSString *)localizedName
+                        size:(unsigned long long)size;
+{
     self = [super init];
-    if (self) {
-        _path = [path copy];
-        _kind = kind;
-        _localizedName = [localizedName copy];
-    }
+    if ( ! self) return nil;
+
+    _path = [path copy];
+    _kind = kind;
+    _localizedName = [localizedName copy];
+    _size = size;
+
     return self;
+}
+
+- (instancetype)initWithPath:(NSString *)path
+                        kind:(FileSystemFakeKind)kind
+               localizedName:(nullable NSString *)localizedName;
+{
+    return [self initWithPath:path kind:kind localizedName:localizedName size:0];
 }
 
 @end
@@ -45,6 +56,7 @@ static void fail(NSString *path, NSError **error) {
         _entries = [NSMutableArray array];
         _unlistableDirectories = [NSSet set];
         _unreadableEntries = [NSSet set];
+        _unsizeableFiles = [NSSet set];
         _uncreatableDirectories = [NSSet set];
         _unbookmarkablePaths = [NSSet set];
         _unresolvableBookmarks = [NSSet set];
@@ -97,6 +109,14 @@ static void fail(NSString *path, NSError **error) {
 
 - (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind localizedName:(nullable NSString *)localizedName {
     [_entries addObject:[[FileSystemFakeEntry alloc] initWithPath:path kind:kind localizedName:localizedName]];
+}
+
+- (void)addPath:(NSString *)path size:(unsigned long long)size;
+{
+    [_entries addObject:[[FileSystemFakeEntry alloc] initWithPath:path
+                                                             kind:FileSystemFakeKindFile
+                                                    localizedName:nil
+                                                             size:size]];
 }
 
 + (NSData *)bookmarkForPath:(NSString *)path {
@@ -158,6 +178,19 @@ static void fail(NSString *path, NSError **error) {
               isRegularFile:entry.kind == FileSystemFakeKindFile
                   isPackage:entry.kind == FileSystemFakeKindPackage
               localizedName:entry.localizedName];
+}
+
+- (BOOL)getSize:(unsigned long long *)size
+         ofFile:(NSURL *)url
+          error:(NSError **)error;
+{
+    FileSystemFakeEntry *entry = [self entryForPath:url.path];
+    if ([_unsizeableFiles containsObject:url.path] || ! entry) {
+        fail(url.path, error);
+        return NO;
+    }
+    *size = entry.size;
+    return YES;
 }
 
 - (nullable FileSystemFakeEntry *)entryForPath:(NSString *)path {

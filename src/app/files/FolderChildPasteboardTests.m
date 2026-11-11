@@ -31,7 +31,8 @@
     _track = [[Track alloc] initWithTrackName:@"Loose"
                                     albumName:Track.noAlbum
                                    artistName:Track.noArtist
-                                         path:@"/Music/Loose.m4a"];
+                                         path:@"/Music/Loose.m4a"
+                                         size:4096];
 }
 
 - (void)testNestedFolderRoundTripsThroughPasteboardItem {

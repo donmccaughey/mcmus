@@ -322,6 +322,7 @@
 				model/MusicRootDirectoryTests.m,
 				model/PlayerTests.m,
 				model/QueueTests.m,
+				model/TrackTests.m,
 			);
 			target = D4B100000000000000000030 /* model-tests */;
 		};

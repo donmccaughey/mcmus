@@ -50,6 +50,29 @@
     return info;
 }
 
+- (void)testDemoFilesHaveZeroSize {
+    FileSystemDemo *demo = [self demoWithTrackInRoot];
+
+    unsigned long long size = 42;
+    NSError *error;
+    BOOL ok = [demo getSize:&size ofFile:[self file:@"/Users/demo/Music/Song.mp3"] error:&error];
+
+    XCTAssertTrue(ok, @"%@", error);
+    XCTAssertEqual(size, 0ULL);
+}
+
+- (void)testSizeOfFileOutsideDemoRootComesFromWrappedFileSystem {
+    FileSystemDemo *demo = [self demoWithTrackInRoot];
+    [_fileSystem addPath:@"/Users/real/Music/Song.mp3" size:4096];
+
+    unsigned long long size = 0;
+    NSError *error;
+    BOOL ok = [demo getSize:&size ofFile:[self file:@"/Users/real/Music/Song.mp3"] error:&error];
+
+    XCTAssertTrue(ok, @"%@", error);
+    XCTAssertEqual(size, 4096ULL);
+}
+
 - (void)testRootDirectoryNameBecomesRootURL {
     FileSystemDemo *demo = [self demo:@"[{'type':'directory','name':'/Users/demo/Music','contents':[]}]"];
 

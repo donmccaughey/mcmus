@@ -177,6 +177,17 @@ index_directory(NSDictionary *entry,
 }
 
 
+// The demo data has no sizes, so demo files report the "not gathered" size.
+- (BOOL)getSize:(unsigned long long *)size
+         ofFile:(NSURL *)url
+          error:(NSError **)error;
+{
+    if ( ! _infoByPath[url.path]) return [_fileSystem getSize:size ofFile:url error:error];
+    *size = 0;
+    return YES;
+}
+
+
 - (BOOL)removeItemAtURL:(NSURL *)URL
                   error:(NSError **)error;
 {

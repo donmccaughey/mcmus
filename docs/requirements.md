@@ -294,6 +294,11 @@ result containing a new music library initialized with the root folder.
 The load music library function shall omit any folder from the tree (other than
 the root folder) which has no tracks that are direct children or descendents.
 
+The load music library function shall accept a bit flag parameter that controls
+what track metadata it gathers or calculates; the "track size" flag causes the
+function to read the file size in bytes from `stat.st_size` or equivalent
+library call.
+
 If it cannot list the music root directory, the load music library function
 shall return a load result containing an empty music library and the error.
 
@@ -316,12 +321,16 @@ An **empty folder** is a folder with a path value of `nil`, a name value of
 ## Track
 
 A **track** is a leaf node of the music library that corresponds to a music
-file. A track exposes these properties: **track name** is the localized display
-name of the music file with the extension removed; **album name** is the
-localized display name of the parent folder or "(no album)" if the track is a
-child of the root folder; **artist name** is the localized display name of the
-grandparent folder or "(no artist)" if the track is a child or grandchild of the
-root folder; **path** is the absolute path to the music file.
+file. A track exposes these properties: 
+    - **track name** is the localized display name of the music file with the
+      extension removed
+    - **album name** is the localized display name of the parent folder or "(no
+      album)" if the track is a child of the root folder
+    - **artist name** is the localized display name of the grandparent folder or
+      "(no artist)" if the track is a child or grandchild of the root folder
+    - **path** is the absolute path to the music file
+    - **size** is the music file size in bytes, as given by `stat.st_size`, or
+      zero if size was not gathered when loading the music library
 
 
 ## Queue

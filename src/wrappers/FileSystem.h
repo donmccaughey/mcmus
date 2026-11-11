@@ -35,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error;
 - (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory error:(NSError **)error;
 - (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url error:(NSError **)error;
+- (BOOL)getSize:(unsigned long long *)size
+         ofFile:(NSURL *)url
+          error:(NSError **)error;
 - (BOOL)removeItemAtURL:(NSURL *)URL
                   error:(NSError **)error;
 - (BOOL)cloneFile:(NSURL *)source
