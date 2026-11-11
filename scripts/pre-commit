@@ -1,2 +1,2 @@
 #!/bin/sh
-make check
+time make --jobs --warn-undefined-variables "$@"
