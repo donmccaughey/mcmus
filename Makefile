@@ -32,7 +32,7 @@ check : $(TMP)/checked-iOS.stamp $(TMP)/checked-macOS.stamp
 
 .PHONY : check-format
 check-format :
-	xcrun clang-format --dry-run --style=file:.clang-format --Werror $(format_files)
+	@scripts/check-format --no-echo --style=file:.clang-format --Werror $(format_files)
 
 
 .PHONY : format
