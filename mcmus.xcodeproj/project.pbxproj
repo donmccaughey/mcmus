@@ -243,6 +243,7 @@
 		D4C0FFEE30A3000000000014 /* wrappers-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "wrappers-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C5A00030A4000000000003 /* libcsv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcsv.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C5A00030A4000000000004 /* csv-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "csv-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4D092A030A4F93D009FBA83 /* libxxHash.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxxHash.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libwrappers-fakes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF148309FB00900B3F3CB /* libmodel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmodel.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4EAD844309FF58900573748 /* libsnapshot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsnapshot.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -449,6 +450,17 @@
 			);
 			target = D4C5A00030A400000000000B /* csv-tests */;
 		};
+		D4D092A230A4F96C009FBA83 /* Exceptions for "lib" folder in "xxHash" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"xxHash-0.8.4/xxhash.c",
+				"xxHash-0.8.4/xxhash.h",
+			);
+			publicHeaders = (
+				"xxHash-0.8.4/xxhash.h",
+			);
+			target = D4D0929930A4F93D009FBA83 /* xxHash */;
+		};
 		D4DEF126309FAED500B3F3CB /* Exceptions for "src" folder in "wrappers" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -558,6 +570,14 @@
 		D4A78311308D0B2500325F1E /* .claude */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = .claude;
+			sourceTree = "<group>";
+		};
+		D4D0929830A4E318009FBA83 /* lib */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D4D092A230A4F96C009FBA83 /* Exceptions for "lib" folder in "xxHash" target */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 		D4DEF110309FAEC800B3F3CB /* src */ = {
@@ -678,6 +698,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4D0929C30A4F93D009FBA83 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4DEF0BF309FA6D800B3F3CB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -710,6 +737,7 @@
 			children = (
 				D4A78311308D0B2500325F1E /* .claude */,
 				D41DFEB6308C307E00FEA684 /* docs */,
+				D4D0929830A4E318009FBA83 /* lib */,
 				D45D240630998E1900F84DF9 /* scripts */,
 				D4DEF110309FAEC800B3F3CB /* src */,
 				D4A78314308D0B4000325F1E /* .gitignore */,
@@ -737,6 +765,7 @@
 				D4C0FFEE30A3000000000014 /* wrappers-tests.xctest */,
 				D4C5A00030A4000000000003 /* libcsv.a */,
 				D4C5A00030A4000000000004 /* csv-tests.xctest */,
+				D4D092A030A4F93D009FBA83 /* libxxHash.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -766,6 +795,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D4C5A00030A4000000000009 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4D0929A30A4F93D009FBA83 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -991,6 +1027,25 @@
 			productReference = D4C5A00030A4000000000004 /* csv-tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		D4D0929930A4F93D009FBA83 /* xxHash */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4D0929D30A4F93D009FBA83 /* Build configuration list for PBXNativeTarget "xxHash" */;
+			buildPhases = (
+				D4D0929A30A4F93D009FBA83 /* Headers */,
+				D4D0929B30A4F93D009FBA83 /* Sources */,
+				D4D0929C30A4F93D009FBA83 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = xxHash;
+			packageProductDependencies = (
+			);
+			productName = csv;
+			productReference = D4D092A030A4F93D009FBA83 /* libxxHash.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D4DEF0C0309FA6D800B3F3CB /* Build configuration list for PBXNativeTarget "wrappers-fakes" */;
@@ -1102,6 +1157,7 @@
 				D4566B10309F9ECF0013DCF4 /* wrappers */,
 				D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */,
 				D4C0FFEE30A3000000000017 /* wrappers-tests */,
+				D4D0929930A4F93D009FBA83 /* xxHash */,
 			);
 		};
 /* End PBXProject section */
@@ -1188,6 +1244,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D4C5A00030A400000000000D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4D0929B30A4F93D009FBA83 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1962,6 +2025,39 @@
 			};
 			name = Release;
 		};
+		D4D0929E30A4F93D009FBA83 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4D0929F30A4F93D009FBA83 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D4DEF0C1309FA6D800B3F3CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2159,6 +2255,15 @@
 			buildConfigurations = (
 				D4C5A00030A4000000000011 /* Debug */,
 				D4C5A00030A4000000000012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4D0929D30A4F93D009FBA83 /* Build configuration list for PBXNativeTarget "xxHash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4D0929E30A4F93D009FBA83 /* Debug */,
+				D4D0929F30A4F93D009FBA83 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
