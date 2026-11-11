@@ -80,6 +80,41 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void) {
     return NO;
 }
 
+static BOOL posixFailure(NSURL *url, NSError **error) {
+    if (error) {
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                     code:errno
+                                 userInfo:@{NSURLErrorKey: url}];
+    }
+    return NO;
+}
+
+- (BOOL)readFile:(NSURL *)url
+          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+           error:(NSError **)error;
+{
+    static const size_t bufferSize = 256 * 1024;
+    int file = open(url.fileSystemRepresentation, O_RDONLY | O_CLOEXEC);
+    if (file < 0) return posixFailure(url, error);
+
+    void *buffer = malloc(bufferSize);
+    BOOL ok = buffer != NULL;
+    if ( ! ok) posixFailure(url, error);
+    while (ok) {
+        ssize_t count = read(file, buffer, bufferSize);
+        if (count == 0) break;
+        if (count < 0 && errno == EINTR) continue;
+        if (count < 0) {
+            ok = posixFailure(url, error);
+        } else {
+            chunk(buffer, (size_t)count);
+        }
+    }
+    free(buffer);
+    close(file);
+    return ok;
+}
+
 - (BOOL)removeItemAtURL:(NSURL *)URL
                   error:(NSError **)error;
 {

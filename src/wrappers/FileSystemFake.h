@@ -24,11 +24,17 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 @property (nonatomic, readonly) FileSystemFakeKind kind;
 @property (nonatomic, readonly, copy, nullable) NSString *localizedName;
 @property (nonatomic, readonly) unsigned long long size;
+@property (nonatomic, readonly, copy, nullable) NSData *contents;
 
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName
-                        size:(unsigned long long)size NS_DESIGNATED_INITIALIZER;
+                        size:(unsigned long long)size
+                    contents:(nullable NSData *)contents NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPath:(NSString *)path
+                        kind:(FileSystemFakeKind)kind
+               localizedName:(nullable NSString *)localizedName
+                        size:(unsigned long long)size;
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName;
@@ -42,6 +48,7 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 @property (nonatomic, copy) NSSet<NSString *> *unlistableDirectories;
 @property (nonatomic, copy) NSSet<NSString *> *unreadableEntries;
 @property (nonatomic, copy) NSSet<NSString *> *unsizeableFiles;
+@property (nonatomic, copy) NSSet<NSString *> *unreadableFiles;
 @property (nonatomic, copy) NSSet<NSString *> *uncreatableDirectories;
 @property (nonatomic, copy) NSSet<NSString *> *unbookmarkablePaths;
 @property (nonatomic, copy) NSSet<NSString *> *unresolvableBookmarks;
@@ -61,6 +68,7 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 - (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind;
 - (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind localizedName:(nullable NSString *)localizedName;
 - (void)addPath:(NSString *)path size:(unsigned long long)size;
+- (void)addPath:(NSString *)path contents:(NSData *)contents;
 
 + (NSData *)bookmarkForPath:(NSString *)path;
 

@@ -73,6 +73,34 @@
     XCTAssertEqual(size, 4096ULL);
 }
 
+- (void)testDemoFilesHaveNoContents {
+    FileSystemDemo *demo = [self demoWithTrackInRoot];
+
+    __block NSUInteger chunks = 0;
+    NSError *error;
+    BOOL ok = [demo readFile:[self file:@"/Users/demo/Music/Song.mp3"]
+                      chunks:^(const void *bytes, size_t length) { chunks += 1; }
+                       error:&error];
+
+    XCTAssertTrue(ok, @"%@", error);
+    XCTAssertEqual(chunks, 0UL);
+}
+
+- (void)testContentsOfFileOutsideDemoRootComeFromWrappedFileSystem {
+    FileSystemDemo *demo = [self demoWithTrackInRoot];
+    NSData *contents = [@"0123456789" dataUsingEncoding:NSUTF8StringEncoding];
+    [_fileSystem addPath:@"/Users/real/Music/Song.mp3" contents:contents];
+
+    NSMutableData *read = [NSMutableData data];
+    NSError *error;
+    BOOL ok = [demo readFile:[self file:@"/Users/real/Music/Song.mp3"]
+                      chunks:^(const void *bytes, size_t length) { [read appendBytes:bytes length:length]; }
+                       error:&error];
+
+    XCTAssertTrue(ok, @"%@", error);
+    XCTAssertEqualObjects(read, contents);
+}
+
 - (void)testRootDirectoryNameBecomesRootURL {
     FileSystemDemo *demo = [self demo:@"[{'type':'directory','name':'/Users/demo/Music','contents':[]}]"];
 

@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)getSize:(unsigned long long *)size
          ofFile:(NSURL *)url
           error:(NSError **)error;
+- (BOOL)readFile:(NSURL *)url
+          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+           error:(NSError **)error;
 - (BOOL)removeItemAtURL:(NSURL *)URL
                   error:(NSError **)error;
 - (BOOL)cloneFile:(NSURL *)source

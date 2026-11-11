@@ -34,6 +34,7 @@
 		D4DEF16B309FB11D00B3F3CB /* libmodel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF148309FB00900B3F3CB /* libmodel.a */; };
 		D4EAD840309FF58900573748 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D4F1A00130A1A00000000001 /* libsnapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EAD844309FF58900573748 /* libsnapshot.a */; };
+		D4D092B030A5000000000001 /* libxxHash.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D092A030A4F93D009FBA83 /* libxxHash.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -225,6 +226,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = D4EAD83A309FF58900573748;
 			remoteInfo = snapshot;
+		};
+		D4D092B030A5000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4D0929930A4F93D009FBA83;
+			remoteInfo = xxHash;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -718,6 +726,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4DEF162309FB05B00B3F3CB /* libwrappers.a in Frameworks */,
+				D4D092B030A5000000000001 /* libxxHash.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1078,6 +1087,7 @@
 			);
 			dependencies = (
 				D4DEF164309FB05B00B3F3CB /* PBXTargetDependency */,
+				D4D092B030A5000000000003 /* PBXTargetDependency */,
 			);
 			name = model;
 			packageProductDependencies = (
@@ -1415,6 +1425,11 @@
 			isa = PBXTargetDependency;
 			target = D4EAD83A309FF58900573748 /* snapshot */;
 			targetProxy = D4F1A00230A1A00000000002 /* PBXContainerItemProxy */;
+		};
+		D4D092B030A5000000000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4D0929930A4F93D009FBA83 /* xxHash */;
+			targetProxy = D4D092B030A5000000000002 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

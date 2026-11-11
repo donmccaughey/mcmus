@@ -34,7 +34,8 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
                         albumName:(NSString *)albumName
                        artistName:(NSString *)artistName
                              path:(NSString *)path
-                             size:(unsigned long long)size;
+                             size:(unsigned long long)size
+                         fileHash:(NSUInteger)fileHash;
 {
     self = [super init];
     if ( ! self) return nil;
@@ -44,8 +45,23 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
     _artistName = [artistName copy];
     _path = [path copy];
     _size = size;
+    _fileHash = fileHash;
 
     return self;
+}
+
+- (instancetype)initWithTrackName:(NSString *)trackName
+                        albumName:(NSString *)albumName
+                       artistName:(NSString *)artistName
+                             path:(NSString *)path
+                             size:(unsigned long long)size;
+{
+    return [self initWithTrackName:trackName
+                         albumName:albumName
+                        artistName:artistName
+                              path:path
+                              size:size
+                          fileHash:0];
 }
 
 - (instancetype)initWithTrackName:(NSString *)trackName
@@ -61,14 +77,16 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
                                         path:(NSString *)path
                                   folderName:(nullable NSString *)folderName
                             parentFolderName:(nullable NSString *)parentFolderName
-                                        size:(unsigned long long)size;
+                                        size:(unsigned long long)size
+                                    fileHash:(NSUInteger)fileHash;
 {
     if ( ! [Track isMusicFileExtension:pathExtension]) return nil;
     return [self initWithTrackName:trackName(displayName, pathExtension)
                          albumName:folderName ?: Track.noAlbum
                         artistName:parentFolderName ?: Track.noArtist
                               path:path
-                              size:size];
+                              size:size
+                          fileHash:fileHash];
 }
 
 - (NSURL *)url {
@@ -96,7 +114,8 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
         && [_albumName isEqualToString:other.albumName]
         && [_artistName isEqualToString:other.artistName]
         && [_path isEqualToString:other.path]
-        && _size == other.size;
+        && _size == other.size
+        && _fileHash == other.fileHash;
 }
 
 - (NSUInteger)hash {
@@ -105,11 +124,13 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
     hash = hash * 31 + _artistName.hash;
     hash = hash * 31 + _path.hash;
     hash = hash * 31 + (NSUInteger)_size;
+    hash = hash * 31 + _fileHash;
     return hash;
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@, %llu)", _trackName, _albumName, _artistName, _path, _size];
+    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@, %llu, 0x%016lx)",
+                                      _trackName, _albumName, _artistName, _path, _size, (unsigned long)_fileHash];
 }
 
 @end

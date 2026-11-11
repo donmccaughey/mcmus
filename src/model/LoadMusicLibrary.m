@@ -1,7 +1,15 @@
 #import "LoadMusicLibrary.h"
 
+#import <assert.h>
+
 #import "Folder.h"
 #import "Track.h"
+#import "xxhash.h"
+
+NSErrorDomain const LoadMusicLibraryErrorDomain = @"LoadMusicLibraryErrorDomain";
+
+static_assert(sizeof(XXH64_hash_t) == sizeof(NSUInteger),
+              "Track stores the XXH3-64 digest in an NSUInteger");
 
 // Trackless folders are pruned bottom-up, so any surviving child is either a
 // track or a folder that contains tracks somewhere below it.
@@ -17,6 +25,58 @@ static BOOL readTrackSize(NSURL *url,
     *size = 0;
     if ( ! (options & LoadOptionsTrackSize)) return YES;
     return [fileSystem getSize:size ofFile:url error:error];
+}
+
+static NSError *hashFailed(NSURL *url) {
+    return [NSError errorWithDomain:LoadMusicLibraryErrorDomain
+                               code:LoadMusicLibraryErrorCodeHashFailed
+                           userInfo:@{NSFilePathErrorKey: url.path}];
+}
+
+static BOOL hashFile(NSURL *url,
+                     id<FileSystem> fileSystem,
+                     XXH3_state_t *state,
+                     NSUInteger *fileHash,
+                     NSError **error) {
+    if (XXH_OK != XXH3_64bits_reset(state)) {
+        *error = hashFailed(url);
+        return NO;
+    }
+    __block XXH_errorcode updated = XXH_OK;
+    BOOL read = [fileSystem readFile:url
+                              chunks:^(const void *bytes, size_t length) {
+        if (XXH_OK == updated) updated = XXH3_64bits_update(state, bytes, length);
+    }
+                               error:error];
+    if ( ! read) return NO;
+    if (XXH_OK != updated) {
+        *error = hashFailed(url);
+        return NO;
+    }
+    *fileHash = XXH3_64bits_digest(state);
+    return YES;
+}
+
+// A track whose hash cannot be gathered stays in the library with the
+// "not gathered" hash of zero.
+static NSUInteger readTrackHash(NSURL *url,
+                                LoadOptions options,
+                                id<FileSystem> fileSystem,
+                                NSMutableArray<NSError *> *errors) {
+    if ( ! (options & LoadOptionsTrackHash)) return 0;
+    XXH3_state_t *state = XXH3_createState();
+    if ( ! state) {
+        [errors addObject:hashFailed(url)];
+        return 0;
+    }
+    NSUInteger fileHash = 0;
+    NSError *error;
+    if ( ! hashFile(url, fileSystem, state, &fileHash, &error)) {
+        [errors addObject:error];
+        fileHash = 0;
+    }
+    XXH3_freeState(state);
+    return fileHash;
 }
 
 // folderName and parentFolderName are nil for the root folder and its
@@ -59,12 +119,14 @@ static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
                 [errors addObject:error];
                 continue;
             }
+            NSUInteger fileHash = readTrackHash(url, options, fileSystem, errors);
             [children addObject:[[Track alloc] initWithDisplayName:name
                                                      pathExtension:url.pathExtension
                                                               path:url.path
                                                         folderName:folderName
                                                   parentFolderName:parentFolderName
-                                                              size:size]];
+                                                              size:size
+                                                          fileHash:fileHash]];
         }
     }
     return FolderChildrenSortedByName(children);

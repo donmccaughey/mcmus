@@ -19,7 +19,8 @@ static void fail(NSString *path, NSError **error) {
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName
-                        size:(unsigned long long)size;
+                        size:(unsigned long long)size
+                    contents:(nullable NSData *)contents;
 {
     self = [super init];
     if ( ! self) return nil;
@@ -28,8 +29,17 @@ static void fail(NSString *path, NSError **error) {
     _kind = kind;
     _localizedName = [localizedName copy];
     _size = size;
+    _contents = [contents copy];
 
     return self;
+}
+
+- (instancetype)initWithPath:(NSString *)path
+                        kind:(FileSystemFakeKind)kind
+               localizedName:(nullable NSString *)localizedName
+                        size:(unsigned long long)size;
+{
+    return [self initWithPath:path kind:kind localizedName:localizedName size:size contents:nil];
 }
 
 - (instancetype)initWithPath:(NSString *)path
@@ -57,6 +67,7 @@ static void fail(NSString *path, NSError **error) {
         _unlistableDirectories = [NSSet set];
         _unreadableEntries = [NSSet set];
         _unsizeableFiles = [NSSet set];
+        _unreadableFiles = [NSSet set];
         _uncreatableDirectories = [NSSet set];
         _unbookmarkablePaths = [NSSet set];
         _unresolvableBookmarks = [NSSet set];
@@ -117,6 +128,15 @@ static void fail(NSString *path, NSError **error) {
                                                              kind:FileSystemFakeKindFile
                                                     localizedName:nil
                                                              size:size]];
+}
+
+- (void)addPath:(NSString *)path contents:(NSData *)contents;
+{
+    [_entries addObject:[[FileSystemFakeEntry alloc] initWithPath:path
+                                                             kind:FileSystemFakeKindFile
+                                                    localizedName:nil
+                                                             size:contents.length
+                                                         contents:contents]];
 }
 
 + (NSData *)bookmarkForPath:(NSString *)path {
@@ -190,6 +210,26 @@ static void fail(NSString *path, NSError **error) {
         return NO;
     }
     *size = entry.size;
+    return YES;
+}
+
+// Contents arrive a few bytes at a time so tests see callers handle a file
+// that spans several chunks.
+- (BOOL)readFile:(NSURL *)url
+          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+           error:(NSError **)error;
+{
+    static const NSUInteger chunkLength = 4;
+    FileSystemFakeEntry *entry = [self entryForPath:url.path];
+    if ([_unreadableFiles containsObject:url.path] || ! entry) {
+        fail(url.path, error);
+        return NO;
+    }
+    NSData *contents = entry.contents ?: [NSData data];
+    const uint8_t *bytes = contents.bytes;
+    for (NSUInteger offset = 0; offset < contents.length; offset += chunkLength) {
+        chunk(bytes + offset, MIN(chunkLength, contents.length - offset));
+    }
     return YES;
 }
 

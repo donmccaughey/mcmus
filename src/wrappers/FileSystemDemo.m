@@ -188,6 +188,16 @@ index_directory(NSDictionary *entry,
 }
 
 
+// The demo data has no contents either, so demo files read as empty.
+- (BOOL)readFile:(NSURL *)url
+          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+           error:(NSError **)error;
+{
+    if ( ! _infoByPath[url.path]) return [_fileSystem readFile:url chunks:chunk error:error];
+    return YES;
+}
+
+
 - (BOOL)removeItemAtURL:(NSURL *)URL
                   error:(NSError **)error;
 {
