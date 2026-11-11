@@ -7,6 +7,7 @@ TEST_FLAGS ?= -quiet
 
 app = $(release_dir)/$(product).app
 arch = $(shell uname -m)
+format_files = $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
 product = MC Mus
 project_files = \
 		mcmus.xcodeproj/project.pbxproj \
@@ -29,8 +30,18 @@ ver = 1.0
 check : $(TMP)/checked-iOS.stamp $(TMP)/checked-macOS.stamp
 
 
+.PHONY : check-format
+check-format :
+	xcrun clang-format --dry-run --style=file:.clang-format --Werror $(format_files)
+
+
+.PHONY : format
+format :
+	xcrun clang-format -i --style=file:.clang-format $(format_files)
+
+
 .PHONY : release
-release : $(TMP)/made-disk-image.stamp
+release: $(TMP)/made-disk-image.stamp
 
 
 .PHONY : list-simulators
