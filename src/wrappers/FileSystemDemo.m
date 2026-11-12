@@ -4,23 +4,19 @@
 NSErrorDomain const FileSystemDemoErrorDomain = @"FileSystemDemoErrorDomain";
 
 
-static NSString *_Nullable
-string_value(NSDictionary *entry, NSString *key)
+static NSString *_Nullable string_value(NSDictionary *entry, NSString *key)
 {
     id value = entry[key];
     return [value isKindOfClass:[NSString class]] ? value : nil;
 }
 
 
-static NSDictionary *_Nullable
-first_directory_entry(id json)
+static NSDictionary *_Nullable first_directory_entry(id json)
 {
-    if ( ! [json isKindOfClass:[NSArray class]]) return nil;
+    if (![json isKindOfClass:[NSArray class]]) return nil;
     for (id entry in json) {
-        if (
-            [entry isKindOfClass:[NSDictionary class]]
-            && [string_value(entry, @"type") isEqualToString:@"directory"]
-        ) {
+        if ([entry isKindOfClass:[NSDictionary class]] &&
+            [string_value(entry, @"type") isEqualToString:@"directory"]) {
             return entry;
         }
     }
@@ -28,8 +24,7 @@ first_directory_entry(id json)
 }
 
 
-static NSError *
-no_directory_entry_error(void)
+static NSError *no_directory_entry_error(void)
 {
     return [NSError errorWithDomain:FileSystemDemoErrorDomain
                                code:FileSystemDemoErrorCodeNoDirectoryEntry
@@ -40,36 +35,37 @@ no_directory_entry_error(void)
 // The demo data has only names, so the localized display name rule cannot
 // apply. The hidden file rule is applied by leading dot and the package rule
 // by flagging `.itlp` directories, the only packages in the data.
-static void
-index_directory(NSDictionary *entry,
-                NSString *path,
-                NSMutableDictionary<NSString *, FileSystemItemInfo *> *infoByPath,
-                NSMutableDictionary<NSString *, NSArray<NSURL *> *> *contentsByPath)
+static void index_directory(NSDictionary *entry, NSString *path,
+    NSMutableDictionary<NSString *, FileSystemItemInfo *> *infoByPath,
+    NSMutableDictionary<NSString *, NSArray<NSURL *> *> *contentsByPath)
 {
     NSMutableArray<NSURL *> *contents = [NSMutableArray array];
     id children = entry[@"contents"];
-    if ( ! [children isKindOfClass:[NSArray class]]) children = @[];
+    if (![children isKindOfClass:[NSArray class]]) children = @[];
     for (id child in children) {
-        if ( ! [child isKindOfClass:[NSDictionary class]]) continue;
+        if (![child isKindOfClass:[NSDictionary class]]) continue;
         NSString *name = string_value(child, @"name");
-        if ( ! name || [name hasPrefix:@"."]) continue;
+        if (!name || [name hasPrefix:@"."]) continue;
         NSString *type = string_value(child, @"type");
         NSString *childPath = [path stringByAppendingPathComponent:name];
         BOOL isDirectory = [type isEqualToString:@"directory"];
-        BOOL isPackage = isDirectory && [name.pathExtension.lowercaseString isEqualToString:@"itlp"];
-        infoByPath[childPath] = [[FileSystemItemInfo alloc] initWithIsDirectory:isDirectory
-                                                                  isRegularFile:[type isEqualToString:@"file"]
-                                                                      isPackage:isPackage
-                                                                  localizedName:nil];
-        [contents addObject:[NSURL fileURLWithPath:childPath isDirectory:isDirectory]];
-        if (isDirectory) index_directory(child, childPath, infoByPath, contentsByPath);
+        BOOL isPackage = isDirectory &&
+            [name.pathExtension.lowercaseString isEqualToString:@"itlp"];
+        infoByPath[childPath] = [[FileSystemItemInfo alloc]
+            initWithIsDirectory:isDirectory
+                  isRegularFile:[type isEqualToString:@"file"]
+                      isPackage:isPackage
+                  localizedName:nil];
+        [contents addObject:[NSURL fileURLWithPath:childPath
+                                       isDirectory:isDirectory]];
+        if (isDirectory)
+            index_directory(child, childPath, infoByPath, contentsByPath);
     }
     contentsByPath[path] = [contents copy];
 }
 
 
-@implementation FileSystemDemo
-{
+@implementation FileSystemDemo {
     id<FileSystem> _fileSystem;
     NSError *_Nullable _error;
     NSDictionary<NSString *, FileSystemItemInfo *> *_infoByPath;
@@ -84,7 +80,7 @@ index_directory(NSDictionary *entry,
                       fileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _fileSystem = fileSystem;
     _infoByPath = @{};
@@ -101,19 +97,22 @@ index_directory(NSDictionary *entry,
 - (void)indexDemoData:(NSData *)demoData;
 {
     NSError *error;
-    id json = [NSJSONSerialization JSONObjectWithData:demoData options:0 error:&error];
-    if ( ! json) {
+    id json = [NSJSONSerialization JSONObjectWithData:demoData options:0
+                                                error:&error];
+    if (!json) {
         _error = error;
         return;
     }
     NSDictionary *rootEntry = first_directory_entry(json);
-    if ( ! rootEntry) {
+    if (!rootEntry) {
         _error = no_directory_entry_error();
         return;
     }
     NSString *rootPath = string_value(rootEntry, @"name") ?: @"/";
-    NSMutableDictionary<NSString *, FileSystemItemInfo *> *infoByPath = [NSMutableDictionary dictionary];
-    NSMutableDictionary<NSString *, NSArray<NSURL *> *> *contentsByPath = [NSMutableDictionary dictionary];
+    NSMutableDictionary<NSString *, FileSystemItemInfo *> *infoByPath =
+        [NSMutableDictionary dictionary];
+    NSMutableDictionary<NSString *, NSArray<NSURL *> *> *contentsByPath =
+        [NSMutableDictionary dictionary];
     index_directory(rootEntry, rootPath, infoByPath, contentsByPath);
     _rootURL = [NSURL fileURLWithPath:rootPath isDirectory:YES];
     _infoByPath = [infoByPath copy];
@@ -123,7 +122,7 @@ index_directory(NSDictionary *entry,
 
 - (nullable NSURL *)rootURLAndReturnError:(NSError **)error;
 {
-    if ( ! _rootURL && error) *error = _error;
+    if (!_rootURL && error) *error = _error;
     return _rootURL;
 }
 
@@ -143,7 +142,8 @@ index_directory(NSDictionary *entry,
 // iOS locates its music root directory at `Music` inside Application Support,
 // so the demo root's parent stands in for Application Support and the demo
 // root directory must be named `Music`.
-- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:(NSError **)error;
+- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:
+    (NSError **)error;
 {
 #if TARGET_OS_IOS
     return [self rootURLAndReturnError:error].URLByDeletingLastPathComponent;
@@ -155,23 +155,28 @@ index_directory(NSDictionary *entry,
 
 - (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error;
 {
-    return [self isRootURL:url] || [_fileSystem createDirectoryAt:url error:error];
+    return
+        [self isRootURL:url] || [_fileSystem createDirectoryAt:url error:error];
 }
 
 
 - (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error;
 {
-    return [self isRootURL:url] || [_fileSystem excludeFromBackup:url error:error];
+    return
+        [self isRootURL:url] || [_fileSystem excludeFromBackup:url error:error];
 }
 
 
-- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory error:(NSError **)error;
+- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory
+                                       error:(NSError **)error;
 {
-    return _contentsByPath[directory.path] ?: [_fileSystem listDirectory:directory error:error];
+    return _contentsByPath[directory.path]
+        ?: [_fileSystem listDirectory:directory error:error];
 }
 
 
-- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url error:(NSError **)error;
+- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url
+                                       error:(NSError **)error;
 {
     return _infoByPath[url.path] ?: [_fileSystem getFileInfo:url error:error];
 }
@@ -182,7 +187,8 @@ index_directory(NSDictionary *entry,
          ofFile:(NSURL *)url
           error:(NSError **)error;
 {
-    if ( ! _infoByPath[url.path]) return [_fileSystem getSize:size ofFile:url error:error];
+    if (!_infoByPath[url.path])
+        return [_fileSystem getSize:size ofFile:url error:error];
     *size = 0;
     return YES;
 }
@@ -190,16 +196,16 @@ index_directory(NSDictionary *entry,
 
 // The demo data has no contents either, so demo files read as empty.
 - (BOOL)readFile:(NSURL *)url
-          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+          chunks:(void(NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
            error:(NSError **)error;
 {
-    if ( ! _infoByPath[url.path]) return [_fileSystem readFile:url chunks:chunk error:error];
+    if (!_infoByPath[url.path])
+        return [_fileSystem readFile:url chunks:chunk error:error];
     return YES;
 }
 
 
-- (BOOL)removeItemAtURL:(NSURL *)URL
-                  error:(NSError **)error;
+- (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 {
     return [_fileSystem removeItemAtURL:URL error:error];
 }
@@ -214,9 +220,11 @@ index_directory(NSDictionary *entry,
 
 
 #if TARGET_OS_OSX
-- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url error:(NSError **)error;
+- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url
+                                             error:(NSError **)error;
 {
-    NSData *bookmark = [_fileSystem makeSecurityScopedBookmarkFor:url error:error];
+    NSData *bookmark = [_fileSystem makeSecurityScopedBookmarkFor:url
+                                                            error:error];
     if (bookmark) [self recordMintedBookmark:bookmark];
     return bookmark;
 }
@@ -226,20 +234,21 @@ index_directory(NSDictionary *entry,
 // made in this session for a directory chosen in Settings resolves to that
 // directory. Locating runs off the main thread and choosing runs on it, hence
 // the lock around the minted bookmarks.
-- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark error:(NSError **)error;
+- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark
+                                                       error:(NSError **)error;
 {
     if ([self wasMinted:bookmark]) {
         return [_fileSystem resolveSecurityScopedBookmark:bookmark error:error];
     }
     NSURL *rootURL = [self rootURLAndReturnError:error];
-    if ( ! rootURL) return nil;
+    if (!rootURL) return nil;
     return [[ResolvedBookmark alloc] initWithURL:rootURL isStale:NO];
 }
 
 
 - (void)recordMintedBookmark:(NSData *)bookmark;
 {
-    @synchronized (_mintedBookmarks) {
+    @synchronized(_mintedBookmarks) {
         [_mintedBookmarks addObject:bookmark];
     }
 }
@@ -247,7 +256,7 @@ index_directory(NSDictionary *entry,
 
 - (BOOL)wasMinted:(NSData *)bookmark;
 {
-    @synchronized (_mintedBookmarks) {
+    @synchronized(_mintedBookmarks) {
         return [_mintedBookmarks containsObject:bookmark];
     }
 }
@@ -261,7 +270,7 @@ index_directory(NSDictionary *entry,
 
 - (void)stopAccessing:(NSURL *)url;
 {
-    if ( ! [self isRootURL:url]) [_fileSystem stopAccessing:url];
+    if (![self isRootURL:url]) [_fileSystem stopAccessing:url];
 }
 #endif
 

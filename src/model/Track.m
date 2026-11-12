@@ -2,13 +2,15 @@
 
 // The display name already omits the extension when the Finder hides it,
 // so only strip an extension that is still present.
-static NSString *trackName(NSString *displayName, NSString *pathExtension) {
+static NSString *trackName(NSString *displayName, NSString *pathExtension)
+{
     if (pathExtension.length == 0) {
         return displayName;
     }
     NSString *suffix = [@"." stringByAppendingString:pathExtension];
     NSRange range = [displayName rangeOfString:suffix
-                                       options:NSCaseInsensitiveSearch | NSAnchoredSearch | NSBackwardsSearch];
+                                       options:NSCaseInsensitiveSearch
+        | NSAnchoredSearch | NSBackwardsSearch];
     if (range.location == NSNotFound) {
         return displayName;
     }
@@ -17,11 +19,13 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
 
 @implementation Track
 
-+ (NSString *)noAlbum {
++ (NSString *)noAlbum
+{
     return @"(no album)";
 }
 
-+ (NSString *)noArtist {
++ (NSString *)noArtist
+{
     return @"(no artist)";
 }
 
@@ -36,7 +40,7 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
                              path:(NSString *)path;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _trackName = [trackName copy];
     _albumName = [albumName copy];
@@ -50,32 +54,38 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
                                pathExtension:(NSString *)pathExtension
                                         path:(NSString *)path
                                   folderName:(nullable NSString *)folderName
-                            parentFolderName:(nullable NSString *)parentFolderName;
+                            parentFolderName:
+                                (nullable NSString *)parentFolderName;
 {
-    if ( ! [Track isMusicFileExtension:pathExtension]) return nil;
+    if (![Track isMusicFileExtension:pathExtension]) return nil;
     return [self initWithTrackName:trackName(displayName, pathExtension)
                          albumName:folderName ?: Track.noAlbum
                         artistName:parentFolderName ?: Track.noArtist
                               path:path];
 }
 
-- (NSURL *)url {
+- (NSURL *)url
+{
     return [NSURL fileURLWithPath:_path isDirectory:NO];
 }
 
-- (NSString *)name {
+- (NSString *)name
+{
     return _trackName;
 }
 
-- (NSArray<id<FolderChild>> *)children {
+- (NSArray<id<FolderChild>> *)children
+{
     return @[];
 }
 
-- (NSArray<Track *> *)trackDescendants {
+- (NSArray<Track *> *)trackDescendants
+{
     return @[self];
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if (![object isKindOfClass:[Track class]]) {
         return NO;
     }
@@ -83,13 +93,15 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension) {
     return [_path isEqualToString:other.path];
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
     return _path.hash;
 }
 
-- (NSString *)description {
-    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@)",
-                                      _trackName, _albumName, _artistName, _path];
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@)", _trackName,
+        _albumName, _artistName, _path];
 }
 
 @end

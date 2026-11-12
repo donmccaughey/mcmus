@@ -2,7 +2,9 @@
 
 @implementation PreferencesFake
 
-- (instancetype)initWithMusicRootDirectoryBookmark:(nullable NSData *)musicRootDirectoryBookmark {
+- (instancetype)initWithMusicRootDirectoryBookmark:
+    (nullable NSData *)musicRootDirectoryBookmark
+{
     self = [super init];
     if (self) {
         _musicRootDirectoryBookmark = [musicRootDirectoryBookmark copy];
@@ -10,11 +12,13 @@
     return self;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
     return [self initWithMusicRootDirectoryBookmark:nil];
 }
 
-- (nullable NSData *)getMusicRootDirectoryBookmark {
+- (nullable NSData *)getMusicRootDirectoryBookmark
+{
     return _musicRootDirectoryBookmark;
 }
 

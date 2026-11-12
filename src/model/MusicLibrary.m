@@ -11,10 +11,10 @@
 - (instancetype)initWithRootFolder:(Folder *)rootFolder;
 {
     self = [super init];
-    if ( ! self) return nil;
-    
+    if (!self) return nil;
+
     _rootFolder = rootFolder;
-    
+
     return self;
 }
 
@@ -34,13 +34,14 @@
 - (NSArray<Track *> *)getTracks;
 {
     NSMutableArray<Track *> *tracks = [NSMutableArray new];
-    NSMutableArray<id<FolderChild>> *stack = [[NSMutableArray alloc] initWithCapacity:_rootFolder.children.count];
-    
+    NSMutableArray<id<FolderChild>> *stack =
+        [[NSMutableArray alloc] initWithCapacity:_rootFolder.children.count];
+
     [stack addObject:_rootFolder];
     while (stack.count) {
         id<FolderChild> child = stack.lastObject;
         [stack removeLastObject];
-        
+
         if ([child isKindOfClass:[Track class]]) {
             Track *track = child;
             [tracks addObject:track];
@@ -50,14 +51,16 @@
                 [stack addObject:folder.children[i]];
             }
         } else {
-            NSString *reason = [NSString stringWithFormat:@"Unexpected child %@ of class %@",
-                                child, [child class]];
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:reason
-                                         userInfo:nil];
+            NSString *reason =
+                [NSString stringWithFormat:@"Unexpected child %@ of class %@",
+                    child, [child class]];
+            @throw
+                [NSException exceptionWithName:NSInternalInconsistencyException
+                                        reason:reason
+                                      userInfo:nil];
         }
     }
-    
+
     return tracks;
 }
 

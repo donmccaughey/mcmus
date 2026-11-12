@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) Folder *rootFolder;
 @property (nonatomic, readonly) BOOL isEmpty;
 
-- (instancetype)initWithRootFolder:(Folder *)rootFolder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRootFolder:(Folder *)rootFolder
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init;
 
 - (NSArray<Track *> *)getTracks;

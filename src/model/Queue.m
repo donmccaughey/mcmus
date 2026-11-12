@@ -4,11 +4,13 @@
     NSMutableArray<QueuedTrack *> *_queuedTracks;
 }
 
-+ (NSNotificationName)didChangeNotification {
++ (NSNotificationName)didChangeNotification
+{
     return @"QueueDidChange";
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super init];
     if (self) {
         _queuedTracks = [NSMutableArray array];
@@ -16,27 +18,33 @@
     return self;
 }
 
-- (NSArray<QueuedTrack *> *)queuedTracks {
+- (NSArray<QueuedTrack *> *)queuedTracks
+{
     return [_queuedTracks copy];
 }
 
-- (NSArray<Track *> *)tracks {
-    NSMutableArray<Track *> *tracks = [NSMutableArray arrayWithCapacity:_queuedTracks.count];
+- (NSArray<Track *> *)tracks
+{
+    NSMutableArray<Track *> *tracks =
+        [NSMutableArray arrayWithCapacity:_queuedTracks.count];
     for (QueuedTrack *queuedTrack in _queuedTracks) {
         [tracks addObject:queuedTrack.track];
     }
     return tracks;
 }
 
-- (BOOL)isEmpty {
+- (BOOL)isEmpty
+{
     return _queuedTracks.count == 0;
 }
 
-- (void)add:(id<FolderChild>)child {
+- (void)add:(id<FolderChild>)child
+{
     [self addChildren:@[child]];
 }
 
-- (void)addChildren:(NSArray<id<FolderChild>> *)children {
+- (void)addChildren:(NSArray<id<FolderChild>> *)children
+{
     NSMutableArray<Track *> *tracks = [NSMutableArray array];
     for (id<FolderChild> child in children) {
         [tracks addObjectsFromArray:child.trackDescendants];
@@ -50,7 +58,8 @@
     [self postDidChange];
 }
 
-- (void)removeFirst {
+- (void)removeFirst
+{
     if (_queuedTracks.count == 0) {
         return;
     }
@@ -58,7 +67,8 @@
     [self postDidChange];
 }
 
-- (void)clear {
+- (void)clear
+{
     if (_queuedTracks.count == 0) {
         return;
     }
@@ -66,8 +76,11 @@
     [self postDidChange];
 }
 
-- (void)postDidChange {
-    [[NSNotificationCenter defaultCenter] postNotificationName:Queue.didChangeNotification object:self];
+- (void)postDidChange
+{
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:Queue.didChangeNotification
+                      object:self];
 }
 
 @end

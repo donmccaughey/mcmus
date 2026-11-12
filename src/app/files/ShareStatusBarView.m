@@ -23,23 +23,33 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
     NSDate *_progressShownAt;
 }
 
-- (instancetype)initWithFileSharing:(FileSharing *)fileSharing {
+- (instancetype)initWithFileSharing:(FileSharing *)fileSharing
+{
     self = [super initWithFrame:NSZeroRect];
     if (self) {
         _shareSwitch = [[NSSwitch alloc] init];
         _statusLabel = [NSTextField labelWithString:@""];
         _spinner = [[NSProgressIndicator alloc] init];
         NSTextField *titleLabel = [NSTextField labelWithString:@"File Sharing"];
-        titleLabel.font = [NSFont preferredFontForTextStyle:NSFontTextStyleBody options:@{}];
-        [titleLabel setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
-        [titleLabel setContentCompressionResistancePriority:NSLayoutPriorityRequired
-                                             forOrientation:NSLayoutConstraintOrientationHorizontal];
-        _statusLabel.font = [NSFont preferredFontForTextStyle:NSFontTextStyleSubheadline options:@{}];
+        titleLabel.font = [NSFont preferredFontForTextStyle:NSFontTextStyleBody
+                                                    options:@{}];
+        [titleLabel
+            setContentHuggingPriority:NSLayoutPriorityRequired
+                       forOrientation:NSLayoutConstraintOrientationHorizontal];
+        [titleLabel
+            setContentCompressionResistancePriority:NSLayoutPriorityRequired
+                                     forOrientation:
+                                         NSLayoutConstraintOrientationHorizontal];
+        _statusLabel.font =
+            [NSFont preferredFontForTextStyle:NSFontTextStyleSubheadline
+                                      options:@{}];
         _statusLabel.textColor = NSColor.secondaryLabelColor;
         _statusLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         _statusLabel.maximumNumberOfLines = 1;
-        [_statusLabel setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow
-                                               forOrientation:NSLayoutConstraintOrientationHorizontal];
+        [_statusLabel
+            setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow
+                                     forOrientation:
+                                         NSLayoutConstraintOrientationHorizontal];
         _spinner.style = NSProgressIndicatorStyleSpinning;
         _spinner.controlSize = NSControlSizeSmall;
         _spinner.indeterminate = YES;
@@ -48,74 +58,101 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
         _shareSwitch.action = @selector(toggle);
         [_shareSwitch setAccessibilityLabel:@"File Sharing"];
 
-        for (NSView *subview in @[titleLabel, _statusLabel, _spinner, _shareSwitch]) {
+        for (NSView *subview in
+            @[titleLabel, _statusLabel, _spinner, _shareSwitch]) {
             subview.translatesAutoresizingMaskIntoConstraints = NO;
             [self addSubview:subview];
         }
         [NSLayoutConstraint activateConstraints:@[
-            [titleLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingPadding],
-            [titleLabel.centerYAnchor constraintEqualToAnchor:_shareSwitch.centerYAnchor],
-            [_statusLabel.leadingAnchor constraintEqualToAnchor:titleLabel.trailingAnchor constant:spacing],
-            [_statusLabel.trailingAnchor constraintEqualToAnchor:_spinner.leadingAnchor constant:-spacing],
-            [_statusLabel.firstBaselineAnchor constraintEqualToAnchor:titleLabel.firstBaselineAnchor],
+            [titleLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                     constant:leadingPadding],
+            [titleLabel.centerYAnchor
+                constraintEqualToAnchor:_shareSwitch.centerYAnchor],
+            [_statusLabel.leadingAnchor
+                constraintEqualToAnchor:titleLabel.trailingAnchor
+                               constant:spacing],
+            [_statusLabel.trailingAnchor
+                constraintEqualToAnchor:_spinner.leadingAnchor
+                               constant:-spacing],
+            [_statusLabel.firstBaselineAnchor
+                constraintEqualToAnchor:titleLabel.firstBaselineAnchor],
             [_spinner.widthAnchor constraintEqualToConstant:spinnerSize],
             [_spinner.heightAnchor constraintEqualToConstant:spinnerSize],
-            [_spinner.centerYAnchor constraintEqualToAnchor:_shareSwitch.centerYAnchor],
-            [_spinner.trailingAnchor constraintEqualToAnchor:_shareSwitch.leadingAnchor constant:-spacing],
-            [_shareSwitch.topAnchor constraintEqualToAnchor:self.topAnchor constant:verticalPadding],
-            [_shareSwitch.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-trailingPadding],
-            [_shareSwitch.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-verticalPadding],
+            [_spinner.centerYAnchor
+                constraintEqualToAnchor:_shareSwitch.centerYAnchor],
+            [_spinner.trailingAnchor
+                constraintEqualToAnchor:_shareSwitch.leadingAnchor
+                               constant:-spacing],
+            [_shareSwitch.topAnchor constraintEqualToAnchor:self.topAnchor
+                                                   constant:verticalPadding],
+            [_shareSwitch.trailingAnchor
+                constraintEqualToAnchor:self.trailingAnchor
+                               constant:-trailingPadding],
+            [_shareSwitch.bottomAnchor
+                constraintEqualToAnchor:self.bottomAnchor
+                               constant:-verticalPadding],
         ]];
-        [self setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
+        [self setContentHuggingPriority:NSLayoutPriorityRequired
+                         forOrientation:NSLayoutConstraintOrientationVertical];
         self.fileSharing = fileSharing;
     }
     return self;
 }
 
-- (void)setFileSharing:(FileSharing *)fileSharing {
-    [NSNotificationCenter.defaultCenter removeObserver:self
-                                                  name:FileSharing.didChangeNotification
-                                                object:_fileSharing];
+- (void)setFileSharing:(FileSharing *)fileSharing
+{
+    [NSNotificationCenter.defaultCenter
+        removeObserver:self
+                  name:FileSharing.didChangeNotification
+                object:_fileSharing];
     _fileSharing = fileSharing;
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(update)
-                                               name:FileSharing.didChangeNotification
-                                             object:fileSharing];
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(update)
+               name:FileSharing.didChangeNotification
+             object:fileSharing];
     [self update];
 }
 
-- (NSString *)statusText {
+- (NSString *)statusText
+{
     if (_fileSharing.error) {
-        return [NSString stringWithFormat:@"Snapshot failed: %@", _fileSharing.error.localizedDescription];
+        return [NSString stringWithFormat:@"Snapshot failed: %@",
+            _fileSharing.error.localizedDescription];
     }
     return _fileSharing.isSharing ? @"No device connected." : @"Not sharing.";
 }
 
-- (NSString *)progressText {
-    return FileSharingStateStarting == _fileSharing.state ? @"Creating snapshot…" : @"Removing snapshot…";
+- (NSString *)progressText
+{
+    return FileSharingStateStarting == _fileSharing.state
+        ? @"Creating snapshot…"
+        : @"Removing snapshot…";
 }
 
-- (NSControlStateValue)switchState {
+- (NSControlStateValue)switchState
+{
     switch (_fileSharing.state) {
-        case FileSharingStateStarting:
-        case FileSharingStateSharing:
-            return NSControlStateValueOn;
-        case FileSharingStateOff:
-        case FileSharingStateStopping:
-            return NSControlStateValueOff;
+    case FileSharingStateStarting:
+    case FileSharingStateSharing: return NSControlStateValueOn;
+    case FileSharingStateOff:
+    case FileSharingStateStopping: return NSControlStateValueOff;
     }
 }
 
-- (BOOL)switchEnabled {
+- (BOOL)switchEnabled
+{
     return !_fileSharing.isChanging && !_libraryIsEmpty;
 }
 
-- (void)setLibraryIsEmpty:(BOOL)libraryIsEmpty {
+- (void)setLibraryIsEmpty:(BOOL)libraryIsEmpty
+{
     _libraryIsEmpty = libraryIsEmpty;
     _shareSwitch.enabled = self.switchEnabled;
 }
 
-- (void)toggle {
+- (void)toggle
+{
     if (_fileSharing.isChanging) {
         _shareSwitch.state = self.switchState;
         return;
@@ -127,7 +164,8 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
     }
 }
 
-- (void)update {
+- (void)update
+{
     if (_fileSharing.isChanging) {
         [self beginChange];
     } else {
@@ -135,39 +173,44 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
     }
 }
 
-- (void)beginChange {
+- (void)beginChange
+{
     _shareSwitch.enabled = self.switchEnabled;
     _shareSwitch.state = self.switchState;
     if (_progressShownAt) {
         _statusLabel.stringValue = self.progressText;
-    } else if ( ! _showProgressTimer) {
-        _showProgressTimer = [NSTimer scheduledTimerWithTimeInterval:showProgressDelay
-                                                              target:self
-                                                            selector:@selector(showProgress)
-                                                            userInfo:nil
-                                                             repeats:NO];
+    } else if (!_showProgressTimer) {
+        _showProgressTimer =
+            [NSTimer scheduledTimerWithTimeInterval:showProgressDelay
+                                             target:self
+                                           selector:@selector(showProgress)
+                                           userInfo:nil
+                                            repeats:NO];
     }
 }
 
-- (void)showProgress {
+- (void)showProgress
+{
     _showProgressTimer = nil;
     _progressShownAt = [NSDate date];
     _statusLabel.stringValue = self.progressText;
     [_spinner startAnimation:nil];
 }
 
-- (void)finishChange {
+- (void)finishChange
+{
     [_showProgressTimer invalidate];
     _showProgressTimer = nil;
 
     NSTimeInterval remaining = self.remainingProgressDuration;
     if (remaining > 0) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_SEC)),
-                       dispatch_get_main_queue(), ^{
-            if ( ! self->_fileSharing.isChanging) {
-                [self finishChange];
-            }
-        });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                           (int64_t)(remaining * NSEC_PER_SEC)),
+            dispatch_get_main_queue(), ^{
+                if (!self->_fileSharing.isChanging) {
+                    [self finishChange];
+                }
+            });
         return;
     }
 
@@ -178,8 +221,9 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
     _statusLabel.stringValue = self.statusText;
 }
 
-- (NSTimeInterval)remainingProgressDuration {
-    if ( ! _progressShownAt) return 0;
+- (NSTimeInterval)remainingProgressDuration
+{
+    if (!_progressShownAt) return 0;
     return minimumProgressDuration + _progressShownAt.timeIntervalSinceNow;
 }
 

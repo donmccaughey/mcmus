@@ -1,8 +1,7 @@
 #import "AudioDemo.h"
 
 
-@implementation AudioDemo
-{
+@implementation AudioDemo {
     NSURL *_demoTrackURL;
     id<Audio> _audio;
 }
@@ -12,7 +11,7 @@
                                audio:(id<Audio>)audio;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _demoTrackURL = [demoTrackURL copy];
     _audio = audio;
@@ -45,15 +44,19 @@
 }
 
 
-- (void)setOnPlaybackPositionChanged:(void (^_Nullable)(NSTimeInterval))onPlaybackPositionChanged;
+- (void)setOnPlaybackPositionChanged:
+    (void (^_Nullable)(NSTimeInterval))onPlaybackPositionChanged;
 {
     _audio.onPlaybackPositionChanged = onPlaybackPositionChanged;
 }
 
 
-- (void)play:(NSURL *)trackURL from:(NSTimeInterval)timeIndex thenPlay:(nullable NSURL *)nextTrackURL;
+- (void)play:(NSURL *)trackURL
+        from:(NSTimeInterval)timeIndex
+    thenPlay:(nullable NSURL *)nextTrackURL;
 {
-    [_audio play:_demoTrackURL from:timeIndex thenPlay:[self demoTrackFor:nextTrackURL]];
+    [_audio play:_demoTrackURL from:timeIndex
+        thenPlay:[self demoTrackFor:nextTrackURL]];
 }
 
 

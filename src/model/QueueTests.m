@@ -13,25 +13,26 @@
     Track *_single;
 }
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
-    _song = [[Track alloc] initWithTrackName:@"Song"
-                                   albumName:@"Album"
+    _song = [[Track alloc] initWithTrackName:@"Song" albumName:@"Album"
                                   artistName:@"Artist"
                                         path:@"/Music/Artist/Album/Song.mp3"];
-    _single = [[Track alloc] initWithTrackName:@"Single"
-                                     albumName:@"Artist"
+    _single = [[Track alloc] initWithTrackName:@"Single" albumName:@"Artist"
                                     artistName:Track.noArtist
                                           path:@"/Music/Artist/Single.m4a"];
 }
 
-- (void)testStartsEmpty {
+- (void)testStartsEmpty
+{
     Queue *queue = [[Queue alloc] init];
     XCTAssertTrue(queue.isEmpty);
     XCTAssertEqual(queue.tracks.count, 0UL);
 }
 
-- (void)testAddingTrackAppendsIt {
+- (void)testAddingTrackAppendsIt
+{
     Queue *queue = [[Queue alloc] init];
     [queue add:_single];
     [queue add:_song];
@@ -39,39 +40,49 @@
     XCTAssertEqualObjects(queue.tracks, (@[_single, _song]));
 }
 
-- (void)testAddingSameTrackTwiceQueuesTwoDistinctEntries {
+- (void)testAddingSameTrackTwiceQueuesTwoDistinctEntries
+{
     Queue *queue = [[Queue alloc] init];
     [queue add:_song];
     [queue add:_song];
     XCTAssertEqualObjects(queue.tracks, (@[_song, _song]));
-    XCTAssertNotEqualObjects(queue.queuedTracks[0].identifier, queue.queuedTracks[1].identifier);
+    XCTAssertNotEqualObjects(
+        queue.queuedTracks[0].identifier, queue.queuedTracks[1].identifier);
 }
 
-- (void)testAddingFolderAppendsTrackDescendantsInPreorder {
-    Folder *folder = [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
-        [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album" children:@[_song]],
-        _single,
-    ]];
+- (void)testAddingFolderAppendsTrackDescendantsInPreorder
+{
+    Folder *folder =
+        [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
+            [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album"
+                                children:@[_song]],
+            _single,
+        ]];
     Queue *queue = [[Queue alloc] init];
     [queue add:folder];
     XCTAssertEqualObjects(queue.tracks, (@[_song, _single]));
 }
 
-- (void)testAddingEmptyFolderChangesNothing {
+- (void)testAddingEmptyFolderChangesNothing
+{
     Queue *queue = [[Queue alloc] init];
     [queue add:_song];
     [queue add:[[Folder alloc] init]];
     XCTAssertEqualObjects(queue.tracks, @[_song]);
 }
 
-- (void)testAddingChildrenDispatchesOnKind {
-    Folder *album = [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album" children:@[_song]];
+- (void)testAddingChildrenDispatchesOnKind
+{
+    Folder *album = [[Folder alloc] initWithPath:@"/Music/Artist/Album"
+                                            name:@"Album"
+                                        children:@[_song]];
     Queue *queue = [[Queue alloc] init];
     [queue addChildren:@[_single, album]];
     XCTAssertEqualObjects(queue.tracks, (@[_single, _song]));
 }
 
-- (void)testRemovingFirstDropsTheHeadOfTheQueue {
+- (void)testRemovingFirstDropsTheHeadOfTheQueue
+{
     Queue *queue = [[Queue alloc] init];
     [queue add:_song];
     [queue add:_single];
@@ -79,13 +90,15 @@
     XCTAssertEqualObjects(queue.tracks, @[_single]);
 }
 
-- (void)testRemovingFirstFromEmptyQueueChangesNothing {
+- (void)testRemovingFirstFromEmptyQueueChangesNothing
+{
     Queue *queue = [[Queue alloc] init];
     [queue removeFirst];
     XCTAssertTrue(queue.isEmpty);
 }
 
-- (void)testClearingRemovesAllTracks {
+- (void)testClearingRemovesAllTracks
+{
     Queue *queue = [[Queue alloc] init];
     [queue add:_song];
     [queue add:_single];
@@ -93,28 +106,40 @@
     XCTAssertTrue(queue.isEmpty);
 }
 
-- (void)testMutationsPostDidChange {
+- (void)testMutationsPostDidChange
+{
     Queue *queue = [[Queue alloc] init];
-    NotificationCounter *changes = [[NotificationCounter alloc] initWithName:Queue.didChangeNotification object:queue];
+    NotificationCounter *changes =
+        [[NotificationCounter alloc] initWithName:Queue.didChangeNotification
+                                           object:queue];
     [queue add:_song];
-    [queue add:[[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[_single]]];
+    [queue add:[[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist"
+                                   children:@[_single]]];
     [queue removeFirst];
     [queue clear];
     XCTAssertEqual(changes.count, 4UL);
 }
 
-- (void)testAddingChildrenPostsOnce {
-    Folder *album = [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album" children:@[_song]];
+- (void)testAddingChildrenPostsOnce
+{
+    Folder *album = [[Folder alloc] initWithPath:@"/Music/Artist/Album"
+                                            name:@"Album"
+                                        children:@[_song]];
     Queue *queue = [[Queue alloc] init];
-    NotificationCounter *changes = [[NotificationCounter alloc] initWithName:Queue.didChangeNotification object:queue];
+    NotificationCounter *changes =
+        [[NotificationCounter alloc] initWithName:Queue.didChangeNotification
+                                           object:queue];
     [queue addChildren:@[_single, album]];
     XCTAssertEqualObjects(queue.tracks, (@[_single, _song]));
     XCTAssertEqual(changes.count, 1UL);
 }
 
-- (void)testAddingNothingPostsNothing {
+- (void)testAddingNothingPostsNothing
+{
     Queue *queue = [[Queue alloc] init];
-    NotificationCounter *changes = [[NotificationCounter alloc] initWithName:Queue.didChangeNotification object:queue];
+    NotificationCounter *changes =
+        [[NotificationCounter alloc] initWithName:Queue.didChangeNotification
+                                           object:queue];
     [queue add:[[Folder alloc] init]];
     [queue removeFirst];
     [queue clear];

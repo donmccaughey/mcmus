@@ -2,15 +2,20 @@
 
 @implementation NotificationCounter
 
-- (instancetype)initWithName:(NSNotificationName)name object:(nullable id)object {
+- (instancetype)initWithName:(NSNotificationName)name object:(nullable id)object
+{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notified) name:name object:object];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(notified)
+                                                     name:name
+                                                   object:object];
     }
     return self;
 }
 
-- (void)notified {
+- (void)notified
+{
     _count++;
 }
 

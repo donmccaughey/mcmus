@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) FileSharing *fileSharing;
 @property (nonatomic) BOOL libraryIsEmpty;
 
-- (instancetype)initWithFileSharing:(FileSharing *)fileSharing NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFileSharing:(FileSharing *)fileSharing
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(NSRect)frame NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;

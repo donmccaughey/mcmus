@@ -14,67 +14,68 @@ typedef NS_ENUM(NSInteger, ParseState) {
 };
 
 
-static NSError *
-error_at(CSVErrorCode code, NSString *description, NSUInteger line, NSUInteger column)
+static NSError *error_at(CSVErrorCode code, NSString *description,
+    NSUInteger line, NSUInteger column)
 {
-    NSString *located = [NSString stringWithFormat:@"%@ at line %lu, column %lu.",
-                         description, (unsigned long)line, (unsigned long)column];
-    return [NSError errorWithDomain:CSVErrorDomain
-                               code:code
-                           userInfo:@{
-                               NSLocalizedDescriptionKey: located,
-                               CSVErrorLineKey: @(line),
-                               CSVErrorColumnKey: @(column),
-                           }];
+    NSString *located =
+        [NSString stringWithFormat:@"%@ at line %lu, column %lu.", description,
+            (unsigned long)line, (unsigned long)column];
+    return [NSError errorWithDomain:CSVErrorDomain code:code userInfo:@{
+        NSLocalizedDescriptionKey: located,
+        CSVErrorLineKey: @(line),
+        CSVErrorColumnKey: @(column),
+    }];
 }
 
 
-static NSError *
-invalid_utf8_error(NSUInteger line, NSUInteger column)
+static NSError *invalid_utf8_error(NSUInteger line, NSUInteger column)
 {
-    return error_at(CSVErrorCodeInvalidUTF8, @"Invalid UTF-8 in field starting", line, column);
+    return error_at(CSVErrorCodeInvalidUTF8, @"Invalid UTF-8 in field starting",
+        line, column);
 }
 
 
-static NSError *
-unterminated_quoted_field_error(NSUInteger line, NSUInteger column)
+static NSError *unterminated_quoted_field_error(
+    NSUInteger line, NSUInteger column)
 {
-    return error_at(CSVErrorCodeUnterminatedQuotedField, @"Unterminated quoted field starting", line, column);
+    return error_at(CSVErrorCodeUnterminatedQuotedField,
+        @"Unterminated quoted field starting", line, column);
 }
 
 
-static NSError *
-quote_in_unquoted_field_error(NSUInteger line, NSUInteger column)
+static NSError *quote_in_unquoted_field_error(
+    NSUInteger line, NSUInteger column)
 {
-    return error_at(CSVErrorCodeQuoteInUnquotedField, @"Double quote in unquoted field", line, column);
+    return error_at(CSVErrorCodeQuoteInUnquotedField,
+        @"Double quote in unquoted field", line, column);
 }
 
 
-static NSError *
-text_after_closing_quote_error(NSUInteger line, NSUInteger column)
+static NSError *text_after_closing_quote_error(
+    NSUInteger line, NSUInteger column)
 {
-    return error_at(CSVErrorCodeTextAfterClosingQuote, @"Text after closing quote", line, column);
+    return error_at(CSVErrorCodeTextAfterClosingQuote,
+        @"Text after closing quote", line, column);
 }
 
 
-static NSError *
-inconsistent_field_count_error(NSUInteger count, NSUInteger expected, NSUInteger line)
+static NSError *inconsistent_field_count_error(
+    NSUInteger count, NSUInteger expected, NSUInteger line)
 {
-    NSString *description = [NSString stringWithFormat:@"Record has %lu fields, expected %lu, starting",
-                             (unsigned long)count, (unsigned long)expected];
+    NSString *description = [NSString
+        stringWithFormat:@"Record has %lu fields, expected %lu, starting",
+        (unsigned long)count, (unsigned long)expected];
     return error_at(CSVErrorCodeInconsistentFieldCount, description, line, 1);
 }
 
 
-static BOOL
-is_utf8_continuation_byte(uint8_t byte)
+static BOOL is_utf8_continuation_byte(uint8_t byte)
 {
     return (byte & 0xC0) == 0x80;
 }
 
 
-static BOOL
-is_line_break(uint8_t byte)
+static BOOL is_line_break(uint8_t byte)
 {
     return byte == '\r' || byte == '\n';
 }
@@ -92,8 +93,7 @@ is_line_break(uint8_t byte)
 @end
 
 
-@implementation Parser
-{
+@implementation Parser {
     NSData *_data;
     const uint8_t *_bytes;
     NSUInteger _length;
@@ -114,7 +114,7 @@ is_line_break(uint8_t byte)
 - (instancetype)initWithData:(NSData *)data;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _data = data;
     _bytes = data.bytes;
@@ -133,36 +133,39 @@ is_line_break(uint8_t byte)
 - (nullable NSArray<NSArray<NSString *> *> *)parse;
 {
     [self skipByteOrderMark];
-    while (_index < _length && ! _error) {
+    while (_index < _length && !_error) {
         [self consumeByte:_bytes[_index]];
     }
-    if ( ! _error) [self consumeEndOfInput];
+    if (!_error) [self consumeEndOfInput];
     return _error ? nil : [_records copy];
 }
 
 
 - (void)skipByteOrderMark;
 {
-    static const uint8_t byteOrderMark[] = { 0xEF, 0xBB, 0xBF };
+    static const uint8_t byteOrderMark[] = {0xEF, 0xBB, 0xBF};
     if (_length < sizeof byteOrderMark) return;
-    if (memcmp(_bytes, byteOrderMark, sizeof byteOrderMark) == 0) _index = sizeof byteOrderMark;
+    if (memcmp(_bytes, byteOrderMark, sizeof byteOrderMark) == 0)
+        _index = sizeof byteOrderMark;
 }
 
 
 - (void)consumeByte:(uint8_t)byte;
 {
     switch (_state) {
-        case ParseStateFieldStart: [self consumeByteAtFieldStart:byte]; break;
-        case ParseStateUnquoted: [self consumeByteInUnquotedField:byte]; break;
-        case ParseStateQuoted: [self consumeByteInQuotedField:byte]; break;
-        case ParseStateAfterClosingQuote: [self consumeByteAfterClosingQuote:byte]; break;
+    case ParseStateFieldStart: [self consumeByteAtFieldStart:byte]; break;
+    case ParseStateUnquoted: [self consumeByteInUnquotedField:byte]; break;
+    case ParseStateQuoted: [self consumeByteInQuotedField:byte]; break;
+    case ParseStateAfterClosingQuote:
+        [self consumeByteAfterClosingQuote:byte];
+        break;
     }
 }
 
 
 - (void)consumeByteAtFieldStart:(uint8_t)byte;
 {
-    if ( ! _recordStarted) _recordLine = _line;
+    if (!_recordStarted) _recordLine = _line;
     _recordStarted = YES;
     _fieldLine = _line;
     _fieldColumn = _column;
@@ -230,17 +233,17 @@ is_line_break(uint8_t byte)
 - (void)consumeEndOfInput;
 {
     switch (_state) {
-        case ParseStateQuoted:
-            _error = unterminated_quoted_field_error(_fieldLine, _fieldColumn);
-            break;
-        case ParseStateFieldStart:
-            if ( ! _recordStarted) break;
-            // fall through: a record ending in a comma has a final empty field
-        case ParseStateUnquoted:
-        case ParseStateAfterClosingQuote:
-            [self endField];
-            [self endRecord];
-            break;
+    case ParseStateQuoted:
+        _error = unterminated_quoted_field_error(_fieldLine, _fieldColumn);
+        break;
+    case ParseStateFieldStart:
+        if (!_recordStarted) break;
+        // fall through: a record ending in a comma has a final empty field
+    case ParseStateUnquoted:
+    case ParseStateAfterClosingQuote:
+        [self endField];
+        [self endRecord];
+        break;
     }
 }
 
@@ -254,7 +257,8 @@ is_line_break(uint8_t byte)
 
 - (BOOL)isCRLFAtIndex;
 {
-    return _bytes[_index] == '\r' && _index + 1 < _length && _bytes[_index + 1] == '\n';
+    return _bytes[_index] == '\r' && _index + 1 < _length
+        && _bytes[_index + 1] == '\n';
 }
 
 
@@ -269,12 +273,12 @@ is_line_break(uint8_t byte)
 - (void)advance;
 {
     uint8_t byte = _bytes[_index];
-    BOOL endsLine = byte == '\n' || (byte == '\r' && ! [self isCRLFAtIndex]);
+    BOOL endsLine = byte == '\n' || (byte == '\r' && ![self isCRLFAtIndex]);
     _index++;
     if (endsLine) {
         _line++;
         _column = 1;
-    } else if ( ! is_utf8_continuation_byte(byte)) {
+    } else if (!is_utf8_continuation_byte(byte)) {
         _column++;
     }
 }
@@ -283,7 +287,7 @@ is_line_break(uint8_t byte)
 - (void)endField;
 {
     NSString *field = [self fieldString];
-    if ( ! field) {
+    if (!field) {
         _error = invalid_utf8_error(_fieldLine, _fieldColumn);
         return;
     }
@@ -295,9 +299,8 @@ is_line_break(uint8_t byte)
 
 - (nullable NSString *)fieldString;
 {
-    if ( ! _field.length) return @"";
-    return [[NSString alloc] initWithBytes:_field.bytes
-                                    length:_field.length
+    if (!_field.length) return @"";
+    return [[NSString alloc] initWithBytes:_field.bytes length:_field.length
                                   encoding:NSUTF8StringEncoding];
 }
 
@@ -307,7 +310,8 @@ is_line_break(uint8_t byte)
     if (_error) return;
     NSUInteger expectedCount = _records.firstObject.count;
     if (_records.count && _fields.count != expectedCount) {
-        _error = inconsistent_field_count_error(_fields.count, expectedCount, _recordLine);
+        _error = inconsistent_field_count_error(
+            _fields.count, expectedCount, _recordLine);
         return;
     }
     [_records addObject:[_fields copy]];
@@ -318,42 +322,43 @@ is_line_break(uint8_t byte)
 @end
 
 
-NSArray<NSArray<NSString *> *> *
-parseCSV(NSData *data, NSError **error)
+NSArray<NSArray<NSString *> *> *parseCSV(NSData *data, NSError **error)
 {
     Parser *parser = [[Parser alloc] initWithData:data];
     NSArray<NSArray<NSString *> *> *records = [parser parse];
-    if ( ! records && error) *error = parser.error;
+    if (!records && error) *error = parser.error;
     return records;
 }
 
 
-static NSCharacterSet *
-characters_requiring_quotes(void)
+static NSCharacterSet *characters_requiring_quotes(void)
 {
     static NSCharacterSet *characters;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        characters = [NSCharacterSet characterSetWithCharactersInString:@",\"\r\n"];
+        characters =
+            [NSCharacterSet characterSetWithCharactersInString:@",\"\r\n"];
     });
     return characters;
 }
 
 
-static NSString *
-format_field(NSString *field)
+static NSString *format_field(NSString *field)
 {
-    BOOL needsQuotes = [field rangeOfCharacterFromSet:characters_requiring_quotes()].location != NSNotFound;
-    if ( ! needsQuotes) return field;
-    NSString *escaped = [field stringByReplacingOccurrencesOfString:@"\"" withString:@"\"\""];
+    BOOL needsQuotes =
+        [field rangeOfCharacterFromSet:characters_requiring_quotes()].location
+        != NSNotFound;
+    if (!needsQuotes) return field;
+    NSString *escaped = [field stringByReplacingOccurrencesOfString:@"\""
+                                                         withString:@"\"\""];
     return [NSString stringWithFormat:@"\"%@\"", escaped];
 }
 
 
-static NSString *
-format_record(NSArray<NSString *> *record)
+static NSString *format_record(NSArray<NSString *> *record)
 {
-    NSMutableArray<NSString *> *fields = [NSMutableArray arrayWithCapacity:record.count];
+    NSMutableArray<NSString *> *fields =
+        [NSMutableArray arrayWithCapacity:record.count];
     for (NSString *field in record) {
         [fields addObject:format_field(field)];
     }
@@ -361,8 +366,7 @@ format_record(NSArray<NSString *> *record)
 }
 
 
-NSData *
-generateCSV(NSArray<NSArray<NSString *> *> *records)
+NSData *generateCSV(NSArray<NSArray<NSString *> *> *records)
 {
     NSMutableString *csv = [NSMutableString new];
     for (NSArray<NSString *> *record in records) {
@@ -373,5 +377,6 @@ generateCSV(NSArray<NSArray<NSString *> *> *records)
     }
     // Lossy conversion only affects unpaired surrogates, which have no UTF-8
     // encoding; it keeps the result non-nil.
-    return [csv dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    return [csv dataUsingEncoding:NSUTF8StringEncoding
+             allowLossyConversion:YES];
 }

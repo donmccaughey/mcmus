@@ -3,7 +3,8 @@
 #if TARGET_OS_OSX
 @implementation NSView (FillingSubview)
 
-- (void)addFillingSubview:(NSView *)view {
+- (void)addFillingSubview:(NSView *)view
+{
     view.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:view];
     [NSLayoutConstraint activateConstraints:@[

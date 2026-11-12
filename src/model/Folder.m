@@ -3,19 +3,22 @@
 #import "Track.h"
 
 // [nil isEqual:nil] is NO, so nullable properties need their own comparison.
-static BOOL equalOrBothNil(id _Nullable a, id _Nullable b) {
+static BOOL equalOrBothNil(id _Nullable a, id _Nullable b)
+{
     return a == b || [a isEqual:b];
 }
 
 @implementation Folder
 
-+ (NSString *)rootName {
++ (NSString *)rootName
+{
     return @"Files";
 }
 
 - (instancetype)initWithPath:(nullable NSString *)path
                         name:(NSString *)name
-                    children:(NSArray<id<FolderChild>> *)children {
+                    children:(NSArray<id<FolderChild>> *)children
+{
     self = [super init];
     if (self) {
         _path = [path copy];
@@ -25,11 +28,13 @@ static BOOL equalOrBothNil(id _Nullable a, id _Nullable b) {
     return self;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
     return [self initWithPath:nil name:Folder.rootName children:@[]];
 }
 
-- (NSArray<Track *> *)trackDescendants {
+- (NSArray<Track *> *)trackDescendants
+{
     NSMutableArray<Track *> *tracks = [NSMutableArray array];
     for (id<FolderChild> child in _children) {
         [tracks addObjectsFromArray:child.trackDescendants];
@@ -37,7 +42,8 @@ static BOOL equalOrBothNil(id _Nullable a, id _Nullable b) {
     return tracks;
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if (object == self) {
         return YES;
     }
@@ -59,16 +65,18 @@ static BOOL equalOrBothNil(id _Nullable a, id _Nullable b) {
 }
 
 // Shallow, so hashing a tree does not walk it; isEqual still does.
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
     NSUInteger hash = _path.hash;
     hash = hash * 31 + _name.hash;
     hash = hash * 31 + _children.count;
     return hash;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
     return [NSString stringWithFormat:@"Folder(%@, %@, %lu children)",
-            _path ?: @"nil", _name, (unsigned long)_children.count];
+        _path ?: @"nil", _name, (unsigned long)_children.count];
 }
 
 @end

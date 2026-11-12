@@ -13,8 +13,7 @@
 @end
 
 
-@implementation SnapshotTests
-{
+@implementation SnapshotTests {
     NSURL *_musicDir;
     NSURL *_snapshotDir;
 }
@@ -23,11 +22,9 @@
 - (void)setUp;
 {
     [super setUp];
-    _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music"
-                           isDirectory:YES];
+    _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
     _snapshotDir = [NSURL fileURLWithPath:@"/container/AppSupport"
                               isDirectory:YES];
-
 }
 
 
@@ -37,13 +34,14 @@
 - (void)testGetSnapshotDirURL;
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.applicationSupportDirectoryURL = [NSURL fileURLWithPath:@"/tmp/snapshot/appsupport"
-                                                           isDirectory:YES];
+    fileSystem.applicationSupportDirectoryURL =
+        [NSURL fileURLWithPath:@"/tmp/snapshot/appsupport" isDirectory:YES];
 
     NSError *error = nil;
     NSURL *snapshotDir = getSnapshotDirURL(fileSystem, &error);
-    
-    XCTAssertEqualObjects(@"/tmp/snapshot/appsupport/snapshot", snapshotDir.path);
+
+    XCTAssertEqualObjects(
+        @"/tmp/snapshot/appsupport/snapshot", snapshotDir.path);
 }
 
 
@@ -51,7 +49,7 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.applicationSupportDirectoryURL = nil;
-    
+
     NSError *error = nil;
     NSURL *snapshotDir = getSnapshotDirURL(fileSystem, &error);
 
@@ -66,13 +64,14 @@
 - (void)testTakeSnapshotWhenRemoveItemFails;
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                          code:NSFileReadUnknownError
-                                                      userInfo:nil];
-    
+    fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileReadUnknownError
+                        userInfo:nil];
+
     NSError *error = nil;
-    BOOL tookSnapshot = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
-    
+    BOOL tookSnapshot =
+        takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+
     XCTAssertFalse(tookSnapshot);
     XCTAssertNotNil(error);
     XCTAssertEqual(error.domain, NSCocoaErrorDomain);
@@ -83,16 +82,16 @@
 - (void)testTakeSnapshotWhenCloneFileFails;
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                          code:NSFileNoSuchFileError
-                                                      userInfo:nil];
-    fileSystem.cloneFileToFileError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                          code:ENOTSUP
-                                                      userInfo:nil];
-    
+    fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError
+                        userInfo:nil];
+    fileSystem.cloneFileToFileError =
+        [NSError errorWithDomain:NSPOSIXErrorDomain code:ENOTSUP userInfo:nil];
+
     NSError *error = nil;
-    BOOL tookSnapshot = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
-    
+    BOOL tookSnapshot =
+        takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+
     XCTAssertFalse(tookSnapshot);
     XCTAssertNotNil(error);
     XCTAssertEqual(error.domain, NSPOSIXErrorDomain);
@@ -103,14 +102,15 @@
 - (void)testTakeSnapshotWhenOldSnapshotDoesNotExist;
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                          code:NSFileNoSuchFileError
-                                                      userInfo:nil];
+    fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError
+                        userInfo:nil];
     fileSystem.cloneFileToFileError = nil;
-    
+
     NSError *error = nil;
-    BOOL tookSnapshot = takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
-    
+    BOOL tookSnapshot =
+        takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+
     XCTAssertTrue(tookSnapshot);
     XCTAssertNil(error);
 }
@@ -122,10 +122,10 @@
 - (void)testRemoveSnapshotWhenRemoveItemFails;
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                          code:NSFileReadUnknownError
-                                                      userInfo:nil];
-    
+    fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileReadUnknownError
+                        userInfo:nil];
+
     NSError *error = nil;
     BOOL removed = removeSnapshot(_snapshotDir, fileSystem, &error);
 
@@ -139,10 +139,10 @@
 - (void)testRemoveSnapshotWhenSnapshotDirDoesNotExist;
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                          code:NSFileNoSuchFileError
-                                                      userInfo:nil];
-    
+    fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError
+                        userInfo:nil];
+
     NSError *error = nil;
     BOOL removed = removeSnapshot(_snapshotDir, fileSystem, &error);
 
@@ -155,7 +155,7 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.removeItemAtURLError = nil;
-    
+
     NSError *error = nil;
     BOOL removed = removeSnapshot(_snapshotDir, fileSystem, &error);
 

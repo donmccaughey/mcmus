@@ -8,7 +8,8 @@
     NSView *_Nullable _contentView;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super initWithFrame:NSZeroRect];
     if (self) {
         [self registerForDraggedTypes:@[FolderChildPasteboardType]];
@@ -16,7 +17,8 @@
     return self;
 }
 
-- (void)setContent:(NSView *)view {
+- (void)setContent:(NSView *)view
+{
     if (view == _contentView) {
         return;
     }
@@ -25,12 +27,15 @@
     [self addFillingSubview:view];
 }
 
-- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
     return NSDragOperationCopy;
 }
 
-- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
-    NSArray<id<FolderChild>> *children = [FolderChildPasteboard childrenInPasteboard:sender.draggingPasteboard];
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    NSArray<id<FolderChild>> *children =
+        [FolderChildPasteboard childrenInPasteboard:sender.draggingPasteboard];
     if (children.count == 0) {
         return NO;
     }

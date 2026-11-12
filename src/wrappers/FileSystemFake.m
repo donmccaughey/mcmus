@@ -2,13 +2,15 @@
 
 NSErrorDomain const FileSystemFakeErrorDomain = @"FileSystemFakeErrorDomain";
 
-static NSError *operationFailed(NSString *path) {
+static NSError *operationFailed(NSString *path)
+{
     return [NSError errorWithDomain:FileSystemFakeErrorDomain
                                code:FileSystemFakeErrorCodeOperationFailed
                            userInfo:@{NSFilePathErrorKey: path}];
 }
 
-static void fail(NSString *path, NSError **error) {
+static void fail(NSString *path, NSError **error)
+{
     if (error) {
         *error = operationFailed(path);
     }
@@ -23,7 +25,7 @@ static void fail(NSString *path, NSError **error) {
                     contents:(nullable NSData *)contents;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _path = [path copy];
     _kind = kind;
@@ -39,14 +41,17 @@ static void fail(NSString *path, NSError **error) {
                localizedName:(nullable NSString *)localizedName
                         size:(unsigned long long)size;
 {
-    return [self initWithPath:path kind:kind localizedName:localizedName size:size contents:nil];
+    return [self initWithPath:path kind:kind localizedName:localizedName
+                         size:size
+                     contents:nil];
 }
 
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName;
 {
-    return [self initWithPath:path kind:kind localizedName:localizedName size:0];
+    return [self initWithPath:path kind:kind localizedName:localizedName
+                         size:0];
 }
 
 @end
@@ -60,7 +65,8 @@ static void fail(NSString *path, NSError **error) {
     NSMutableArray<NSString *> *_clonedDestinations;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super init];
     if (self) {
         _entries = [NSMutableArray array];
@@ -82,82 +88,103 @@ static void fail(NSString *path, NSError **error) {
     return self;
 }
 
-- (NSArray<FileSystemFakeEntry *> *)entries {
+- (NSArray<FileSystemFakeEntry *> *)entries
+{
     return [_entries copy];
 }
 
-- (void)setEntries:(NSArray<FileSystemFakeEntry *> *)entries {
+- (void)setEntries:(NSArray<FileSystemFakeEntry *> *)entries
+{
     _entries = [entries mutableCopy];
 }
 
-- (NSArray<NSString *> *)bookmarked {
+- (NSArray<NSString *> *)bookmarked
+{
     return [_bookmarked copy];
 }
 
-- (NSArray<NSString *> *)started {
+- (NSArray<NSString *> *)started
+{
     return [_started copy];
 }
 
-- (NSArray<NSString *> *)stopped {
+- (NSArray<NSString *> *)stopped
+{
     return [_stopped copy];
 }
 
-- (NSArray<NSString *> *)clonedSources {
+- (NSArray<NSString *> *)clonedSources
+{
     return [_clonedSources copy];
 }
 
-- (NSArray<NSString *> *)clonedDestinations {
+- (NSArray<NSString *> *)clonedDestinations
+{
     return [_clonedDestinations copy];
 }
 
-- (void)addPath:(NSString *)path {
+- (void)addPath:(NSString *)path
+{
     [self addPath:path kind:FileSystemFakeKindFile localizedName:nil];
 }
 
-- (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind {
+- (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind
+{
     [self addPath:path kind:kind localizedName:nil];
 }
 
-- (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind localizedName:(nullable NSString *)localizedName {
-    [_entries addObject:[[FileSystemFakeEntry alloc] initWithPath:path kind:kind localizedName:localizedName]];
+- (void)addPath:(NSString *)path
+             kind:(FileSystemFakeKind)kind
+    localizedName:(nullable NSString *)localizedName
+{
+    [_entries
+        addObject:[[FileSystemFakeEntry alloc] initWithPath:path kind:kind
+                                              localizedName:localizedName]];
 }
 
 - (void)addPath:(NSString *)path size:(unsigned long long)size;
 {
-    [_entries addObject:[[FileSystemFakeEntry alloc] initWithPath:path
-                                                             kind:FileSystemFakeKindFile
-                                                    localizedName:nil
-                                                             size:size]];
+    [_entries addObject:[[FileSystemFakeEntry alloc]
+                             initWithPath:path
+                                     kind:FileSystemFakeKindFile
+                            localizedName:nil
+                                     size:size]];
 }
 
 - (void)addPath:(NSString *)path contents:(NSData *)contents;
 {
-    [_entries addObject:[[FileSystemFakeEntry alloc] initWithPath:path
-                                                             kind:FileSystemFakeKindFile
-                                                    localizedName:nil
-                                                             size:contents.length
-                                                         contents:contents]];
+    [_entries addObject:[[FileSystemFakeEntry alloc]
+                             initWithPath:path
+                                     kind:FileSystemFakeKindFile
+                            localizedName:nil
+                                     size:contents.length
+                                 contents:contents]];
 }
 
-+ (NSData *)bookmarkForPath:(NSString *)path {
++ (NSData *)bookmarkForPath:(NSString *)path
+{
     return [path dataUsingEncoding:NSUTF8StringEncoding];
 }
 
-- (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error {
+- (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error
+{
     if (!_musicDirectoryURL) {
         fail(@"getMusicDirectoryURL", error);
     }
     return _musicDirectoryURL;
 }
 
-- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:(NSError **)error {
+- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:
+    (NSError **)error
+{
     if (!_applicationSupportDirectoryURL) {
         fail(@"getApplicationSupportDirectoryURL", error);
     }
     return _applicationSupportDirectoryURL;
 }
 
-- (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error {
+- (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error
+{
     if ([_uncreatableDirectories containsObject:url.path]) {
         fail(url.path, error);
         return NO;
@@ -165,36 +192,45 @@ static void fail(NSString *path, NSError **error) {
     return YES;
 }
 
-- (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error {
+- (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error
+{
     fail(url.path, error);
     return NO;
 }
 
 // Entries come back in insertion order so tests can see the loader sort.
-- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory error:(NSError **)error {
+- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory
+                                       error:(NSError **)error
+{
     if ([_unlistableDirectories containsObject:directory.path]) {
         fail(directory.path, error);
         return nil;
     }
     NSMutableArray<NSURL *> *urls = [NSMutableArray array];
     for (FileSystemFakeEntry *entry in _entries) {
-        if (![entry.path.stringByDeletingLastPathComponent isEqualToString:directory.path]) {
+        if (![entry.path.stringByDeletingLastPathComponent
+                isEqualToString:directory.path]) {
             continue;
         }
-        BOOL isDirectory = entry.kind == FileSystemFakeKindDirectory || entry.kind == FileSystemFakeKindPackage;
-        [urls addObject:[NSURL fileURLWithPath:entry.path isDirectory:isDirectory]];
+        BOOL isDirectory = entry.kind == FileSystemFakeKindDirectory
+            || entry.kind == FileSystemFakeKindPackage;
+        [urls addObject:[NSURL fileURLWithPath:entry.path
+                                   isDirectory:isDirectory]];
     }
     return urls;
 }
 
-- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url error:(NSError **)error {
+- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url
+                                       error:(NSError **)error
+{
     FileSystemFakeEntry *entry = [self entryForPath:url.path];
     if ([_unreadableEntries containsObject:url.path] || !entry) {
         fail(url.path, error);
         return nil;
     }
     return [[FileSystemItemInfo alloc]
-        initWithIsDirectory:entry.kind == FileSystemFakeKindDirectory || entry.kind == FileSystemFakeKindPackage
+        initWithIsDirectory:entry.kind == FileSystemFakeKindDirectory
+        || entry.kind == FileSystemFakeKindPackage
               isRegularFile:entry.kind == FileSystemFakeKindFile
                   isPackage:entry.kind == FileSystemFakeKindPackage
               localizedName:entry.localizedName];
@@ -205,7 +241,7 @@ static void fail(NSString *path, NSError **error) {
           error:(NSError **)error;
 {
     FileSystemFakeEntry *entry = [self entryForPath:url.path];
-    if ([_unsizeableFiles containsObject:url.path] || ! entry) {
+    if ([_unsizeableFiles containsObject:url.path] || !entry) {
         fail(url.path, error);
         return NO;
     }
@@ -216,24 +252,26 @@ static void fail(NSString *path, NSError **error) {
 // Contents arrive a few bytes at a time so tests see callers handle a file
 // that spans several chunks.
 - (BOOL)readFile:(NSURL *)url
-          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+          chunks:(void(NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
            error:(NSError **)error;
 {
     static const NSUInteger chunkLength = 4;
     FileSystemFakeEntry *entry = [self entryForPath:url.path];
-    if ([_unreadableFiles containsObject:url.path] || ! entry) {
+    if ([_unreadableFiles containsObject:url.path] || !entry) {
         fail(url.path, error);
         return NO;
     }
     NSData *contents = entry.contents ?: [NSData data];
     const uint8_t *bytes = contents.bytes;
-    for (NSUInteger offset = 0; offset < contents.length; offset += chunkLength) {
+    for (NSUInteger offset = 0; offset < contents.length;
+        offset += chunkLength) {
         chunk(bytes + offset, MIN(chunkLength, contents.length - offset));
     }
     return YES;
 }
 
-- (nullable FileSystemFakeEntry *)entryForPath:(NSString *)path {
+- (nullable FileSystemFakeEntry *)entryForPath:(NSString *)path
+{
     for (FileSystemFakeEntry *entry in _entries) {
         if ([entry.path isEqualToString:path]) {
             return entry;
@@ -242,8 +280,7 @@ static void fail(NSString *path, NSError **error) {
     return nil;
 }
 
-- (BOOL)removeItemAtURL:(NSURL *)URL
-                  error:(NSError **)error;
+- (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 {
     if (_removeItemAtURLError) {
         if (error) *error = _removeItemAtURLError;
@@ -266,7 +303,9 @@ static void fail(NSString *path, NSError **error) {
 }
 
 #if TARGET_OS_OSX
-- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url error:(NSError **)error {
+- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url
+                                             error:(NSError **)error
+{
     if ([_unbookmarkablePaths containsObject:url.path]) {
         fail(url.path, error);
         return nil;
@@ -275,17 +314,23 @@ static void fail(NSString *path, NSError **error) {
     return [FileSystemFake bookmarkForPath:url.path];
 }
 
-- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark error:(NSError **)error {
-    NSString *path = [[NSString alloc] initWithData:bookmark encoding:NSUTF8StringEncoding] ?: @"";
+- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark
+                                                       error:(NSError **)error
+{
+    NSString *path = [[NSString alloc] initWithData:bookmark
+                                           encoding:NSUTF8StringEncoding]
+        ?: @"";
     if ([_unresolvableBookmarks containsObject:path]) {
         fail(path, error);
         return nil;
     }
-    return [[ResolvedBookmark alloc] initWithURL:[NSURL fileURLWithPath:path isDirectory:YES]
-                                         isStale:[_staleBookmarks containsObject:path]];
+    return [[ResolvedBookmark alloc]
+        initWithURL:[NSURL fileURLWithPath:path isDirectory:YES]
+            isStale:[_staleBookmarks containsObject:path]];
 }
 
-- (BOOL)startAccessing:(NSURL *)url {
+- (BOOL)startAccessing:(NSURL *)url
+{
     if ([_inaccessiblePaths containsObject:url.path]) {
         return NO;
     }
@@ -293,7 +338,8 @@ static void fail(NSString *path, NSError **error) {
     return YES;
 }
 
-- (void)stopAccessing:(NSURL *)url {
+- (void)stopAccessing:(NSURL *)url
+{
     [_stopped addObject:url.path];
 }
 #endif

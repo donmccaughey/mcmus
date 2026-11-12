@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FileSharingThread : NSThread <FileSharingService>
 
-- (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithTarget:(id)target
                       selector:(SEL)selector

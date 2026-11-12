@@ -1,26 +1,34 @@
 #import "MainMenu.h"
 
 #if TARGET_OS_OSX
-static NSMenuItem *menuItem(NSString *title, NSArray<NSMenuItem *> *items) {
+static NSMenuItem *menuItem(NSString *title, NSArray<NSMenuItem *> *items)
+{
     NSMenu *menu = [[NSMenu alloc] initWithTitle:title];
     for (NSMenuItem *item in items) {
         [menu addItem:item];
     }
-    NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""];
+    NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:title action:nil
+                                               keyEquivalent:@""];
     menuItem.submenu = menu;
     return menuItem;
 }
 
-static NSMenuItem *item(NSString *title, SEL _Nullable action, NSString *keyEquivalent) {
-    return [[NSMenuItem alloc] initWithTitle:title action:action keyEquivalent:keyEquivalent];
+static NSMenuItem *item(
+    NSString *title, SEL _Nullable action, NSString *keyEquivalent)
+{
+    return [[NSMenuItem alloc] initWithTitle:title action:action
+                               keyEquivalent:keyEquivalent];
 }
 
-static NSMenuItem *appMenuItem(id settingsTarget, SEL settingsAction) {
+static NSMenuItem *appMenuItem(id settingsTarget, SEL settingsAction)
+{
     NSMenuItem *settings = item(@"Settings…", settingsAction, @",");
     settings.target = settingsTarget;
 
-    NSMenuItem *hideOthers = item(@"Hide Others", @selector(hideOtherApplications:), @"h");
-    hideOthers.keyEquivalentModifierMask = NSEventModifierFlagCommand | NSEventModifierFlagOption;
+    NSMenuItem *hideOthers =
+        item(@"Hide Others", @selector(hideOtherApplications:), @"h");
+    hideOthers.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand | NSEventModifierFlagOption;
 
     NSMenu *servicesMenu = [[NSMenu alloc] initWithTitle:@"Services"];
     NSApp.servicesMenu = servicesMenu;
@@ -42,13 +50,15 @@ static NSMenuItem *appMenuItem(id settingsTarget, SEL settingsAction) {
     ]);
 }
 
-static NSMenuItem *fileMenuItem(void) {
+static NSMenuItem *fileMenuItem(void)
+{
     return menuItem(@"File", @[
         item(@"Close", @selector(performClose:), @"w"),
     ]);
 }
 
-static NSMenuItem *editMenuItem(void) {
+static NSMenuItem *editMenuItem(void)
+{
     return menuItem(@"Edit", @[
         item(@"Undo", NSSelectorFromString(@"undo:"), @"z"),
         item(@"Redo", NSSelectorFromString(@"redo:"), @"Z"),
@@ -61,7 +71,8 @@ static NSMenuItem *editMenuItem(void) {
     ]);
 }
 
-static NSMenuItem *windowMenuItem(void) {
+static NSMenuItem *windowMenuItem(void)
+{
     NSMenuItem *windowItem = menuItem(@"Window", @[
         item(@"Minimize", @selector(performMiniaturize:), @"m"),
         item(@"Zoom", @selector(performZoom:), @""),
@@ -72,7 +83,8 @@ static NSMenuItem *windowMenuItem(void) {
     return windowItem;
 }
 
-NSMenu *makeMainMenu(id settingsTarget, SEL settingsAction) {
+NSMenu *makeMainMenu(id settingsTarget, SEL settingsAction)
+{
     NSMenu *mainMenu = [[NSMenu alloc] init];
     [mainMenu addItem:appMenuItem(settingsTarget, settingsAction)];
     [mainMenu addItem:fileMenuItem()];

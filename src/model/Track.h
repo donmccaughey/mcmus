@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
                                pathExtension:(NSString *)pathExtension
                                         path:(NSString *)path
                                   folderName:(nullable NSString *)folderName
-                            parentFolderName:(nullable NSString *)parentFolderName;
+                            parentFolderName:
+                                (nullable NSString *)parentFolderName;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

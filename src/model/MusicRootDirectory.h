@@ -10,11 +10,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSURL *url;
 @property (nonatomic, readonly) BOOL isSecurityScoped;
 
-- (instancetype)initWithURL:(NSURL *)url isSecurityScoped:(BOOL)isSecurityScoped NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL:(NSURL *)url
+           isSecurityScoped:(BOOL)isSecurityScoped NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (nullable MusicRootDirectory *)locateWithFileSystem:(id<FileSystem>)fileSystem
-                                          preferences:(id<Preferences>)preferences
+                                          preferences:
+                                              (id<Preferences>)preferences
                                                 error:(NSError **)error;
 
 #if TARGET_OS_OSX

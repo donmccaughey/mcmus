@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTitle:(NSString *)title
                   systemImage:(NSString *)systemImage
                   description:(NSString *)description NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithConfiguration:(UIContentUnavailableConfiguration *)configuration NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:
+    (UIContentUnavailableConfiguration *)configuration NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 

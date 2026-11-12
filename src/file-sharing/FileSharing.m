@@ -14,19 +14,18 @@ typedef NS_ENUM(NSInteger, FileSharingErrorCode) {
 };
 
 
-static NSError *
-no_music_root_directory_error(void)
+static NSError *no_music_root_directory_error(void)
 {
-    return [NSError errorWithDomain:FileSharingErrorDomain
-                               code:FileSharingErrorCodeNoMusicRootDirectory
-                           userInfo:@{
-        NSLocalizedDescriptionKey: @"No music root directory.",
-    }];
+    return [NSError
+        errorWithDomain:FileSharingErrorDomain
+                   code:FileSharingErrorCodeNoMusicRootDirectory
+               userInfo:@{
+                   NSLocalizedDescriptionKey: @"No music root directory.",
+               }];
 }
 
 
-@implementation FileSharing
-{
+@implementation FileSharing {
     NSURL *_Nullable _musicRootDirectoryURL;
     id<FileSystem> _fileSystem;
     id<FileSharingService> _Nullable _service;
@@ -39,11 +38,12 @@ no_music_root_directory_error(void)
 }
 
 
-- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+- (instancetype)initWithMusicRootDirectoryURL:
+                    (nullable NSURL *)musicRootDirectoryURL
                                    fileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _musicRootDirectoryURL = musicRootDirectoryURL;
     _fileSystem = fileSystem;
@@ -52,7 +52,8 @@ no_music_root_directory_error(void)
 }
 
 
-- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL;
+- (instancetype)initWithMusicRootDirectoryURL:
+    (nullable NSURL *)musicRootDirectoryURL;
 {
     return [self initWithMusicRootDirectoryURL:musicRootDirectoryURL
                                     fileSystem:[[FileSystemReal alloc] init]];
@@ -67,7 +68,8 @@ no_music_root_directory_error(void)
 
 - (BOOL)isChanging;
 {
-    return FileSharingStateStarting == _state || FileSharingStateStopping == _state;
+    return FileSharingStateStarting == _state
+        || FileSharingStateStopping == _state;
 }
 
 
@@ -88,13 +90,14 @@ no_music_root_directory_error(void)
     void (^reply)(NSError *_Nullable) = ^(NSError *_Nullable error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error) self->_service = nil;
-            [self didChangeState:(error ? FileSharingStateOff : FileSharingStateSharing)
+            [self didChangeState:(error ? FileSharingStateOff
+                                        : FileSharingStateSharing)
                            error:error];
             if (completion) completion();
         });
     };
 
-    if ( ! _musicRootDirectoryURL) {
+    if (!_musicRootDirectoryURL) {
         reply(no_music_root_directory_error());
         return;
     }
@@ -131,8 +134,9 @@ no_music_root_directory_error(void)
 {
     _state = state;
     _error = error;
-    [NSNotificationCenter.defaultCenter postNotificationName:FileSharing.didChangeNotification
-                                                      object:self];
+    [NSNotificationCenter.defaultCenter
+        postNotificationName:FileSharing.didChangeNotification
+                      object:self];
 }
 
 

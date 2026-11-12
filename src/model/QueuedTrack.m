@@ -2,7 +2,8 @@
 
 @implementation QueuedTrack
 
-- (instancetype)initWithTrack:(Track *)track {
+- (instancetype)initWithTrack:(Track *)track
+{
     self = [super init];
     if (self) {
         _identifier = [NSUUID UUID];
@@ -11,15 +12,18 @@
     return self;
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if (![object isKindOfClass:[QueuedTrack class]]) {
         return NO;
     }
     QueuedTrack *other = object;
-    return [_identifier isEqual:other.identifier] && [_track isEqual:other.track];
+    return
+        [_identifier isEqual:other.identifier] && [_track isEqual:other.track];
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
     return _identifier.hash * 31 + _track.hash;
 }
 

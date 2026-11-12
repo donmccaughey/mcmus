@@ -8,7 +8,8 @@
 
 - (void)scene:(UIScene *)scene
     willConnectToSession:(UISceneSession *)session
-                 options:(UISceneConnectionOptions *)connectionOptions {
+                 options:(UISceneConnectionOptions *)connectionOptions
+{
     if (![scene isKindOfClass:[UIWindowScene class]]) {
         return;
     }
@@ -17,7 +18,9 @@
     windowScene.title = @"MC Mus";
     AppDelegate *appDelegate = AppDelegate.shared;
     UIWindow *window = [[UIWindow alloc] initWithWindowScene:windowScene];
-    window.rootViewController = [[MainViewController alloc] initWithStore:appDelegate.store player:appDelegate.player];
+    window.rootViewController =
+        [[MainViewController alloc] initWithStore:appDelegate.store
+                                           player:appDelegate.player];
     [window makeKeyAndVisible];
     self.window = window;
 }

@@ -20,7 +20,8 @@ typedef NS_ENUM(NSInteger, FileSystemDemoErrorCode) {
 @property (nonatomic, readonly, copy, nullable) NSURL *rootURL;
 
 - (instancetype)initWithDemoData:(NSData *)demoData
-                      fileSystem:(id<FileSystem>)fileSystem NS_DESIGNATED_INITIALIZER;
+                      fileSystem:(id<FileSystem>)fileSystem
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

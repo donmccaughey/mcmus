@@ -18,10 +18,12 @@
     NSLayoutConstraint *_equalHeights;
 }
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store player:(Player *)player {
+- (instancetype)initWithStore:(MusicLibraryStore *)store player:(Player *)player
+{
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        _filesPanel = [[FilesPanelViewController alloc] initWithStore:store player:player];
+        _filesPanel = [[FilesPanelViewController alloc] initWithStore:store
+                                                               player:player];
         _queuePanel = [[QueuePanelViewController alloc] initWithPlayer:player];
         _stack = [[UIStackView alloc] init];
         _separator = [[HairlineView alloc] init];
@@ -29,7 +31,8 @@
     return self;
 }
 
-- (void)loadView {
+- (void)loadView
+{
     UIView *view = [[UIView alloc] init];
     view.backgroundColor = UIColor.systemBackgroundColor;
     self.view = view;
@@ -41,17 +44,21 @@
     [view addFillingSubview:_stack];
     [_filesPanel didMoveToParentViewController:self];
     [_queuePanel didMoveToParentViewController:self];
-    _equalWidths = [_filesPanel.view.widthAnchor constraintEqualToAnchor:_queuePanel.view.widthAnchor];
-    _equalHeights = [_filesPanel.view.heightAnchor constraintEqualToAnchor:_queuePanel.view.heightAnchor];
+    _equalWidths = [_filesPanel.view.widthAnchor
+        constraintEqualToAnchor:_queuePanel.view.widthAnchor];
+    _equalHeights = [_filesPanel.view.heightAnchor
+        constraintEqualToAnchor:_queuePanel.view.heightAnchor];
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)viewWillLayoutSubviews
+{
     [super viewWillLayoutSubviews];
     [self arrange:PanelArrangementFitting(self.view.bounds.size)];
     [self equalizeUsableAreas];
 }
 
-- (void)arrange:(PanelArrangement)newArrangement {
+- (void)arrange:(PanelArrangement)newArrangement
+{
     if (_isArranged && newArrangement == _arrangement) {
         return;
     }
@@ -59,23 +66,24 @@
     _arrangement = newArrangement;
     [NSLayoutConstraint deactivateConstraints:@[_equalWidths, _equalHeights]];
     switch (newArrangement) {
-        case PanelArrangementSideBySide:
-            _stack.axis = UILayoutConstraintAxisHorizontal;
-            _separator.axis = UILayoutConstraintAxisVertical;
-            _equalWidths.active = YES;
-            break;
-        case PanelArrangementStacked:
-            _stack.axis = UILayoutConstraintAxisVertical;
-            _separator.axis = UILayoutConstraintAxisHorizontal;
-            _equalHeights.active = YES;
-            break;
+    case PanelArrangementSideBySide:
+        _stack.axis = UILayoutConstraintAxisHorizontal;
+        _separator.axis = UILayoutConstraintAxisVertical;
+        _equalWidths.active = YES;
+        break;
+    case PanelArrangementStacked:
+        _stack.axis = UILayoutConstraintAxisVertical;
+        _separator.axis = UILayoutConstraintAxisHorizontal;
+        _equalHeights.active = YES;
+        break;
     }
 }
 
 // The panels run under the safe area insets, so the files panel gets
 // the difference between the insets on its side and the queue panel's
 // to leave both the same room inside the safe area.
-- (void)equalizeUsableAreas {
+- (void)equalizeUsableAreas
+{
     UIEdgeInsets insets = self.view.safeAreaInsets;
     _equalWidths.constant = insets.left - insets.right;
     _equalHeights.constant = insets.top - insets.bottom;

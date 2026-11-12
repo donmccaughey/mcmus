@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DropTargetView : NSView
 
-@property (nonatomic, copy, nullable) void (^onDrop)(NSArray<id<FolderChild>> *children);
+@property (nonatomic, copy, nullable) void (^onDrop)
+    (NSArray<id<FolderChild>> *children);
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(NSRect)frame NS_UNAVAILABLE;

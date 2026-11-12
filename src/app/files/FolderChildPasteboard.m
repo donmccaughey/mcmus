@@ -4,7 +4,8 @@
 #import "Folder.h"
 #import "Track.h"
 
-NSPasteboardType const FolderChildPasteboardType = @"cc.donm.mcmus.folder-child";
+NSPasteboardType const FolderChildPasteboardType =
+    @"cc.donm.mcmus.folder-child";
 
 static NSString *const kindKey = @"kind";
 static NSString *const pathKey = @"path";
@@ -28,16 +29,22 @@ static NSString *const trackKind = @"track";
 
 @end
 
-static NSArray<FolderChildPayload *> *payloadsForChildren(NSArray<id<FolderChild>> *children) {
-    NSMutableArray<FolderChildPayload *> *payloads = [NSMutableArray arrayWithCapacity:children.count];
+static NSArray<FolderChildPayload *> *payloadsForChildren(
+    NSArray<id<FolderChild>> *children)
+{
+    NSMutableArray<FolderChildPayload *> *payloads =
+        [NSMutableArray arrayWithCapacity:children.count];
     for (id<FolderChild> child in children) {
         [payloads addObject:[[FolderChildPayload alloc] initWithChild:child]];
     }
     return payloads;
 }
 
-static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *> *payloads) {
-    NSMutableArray<id<FolderChild>> *children = [NSMutableArray arrayWithCapacity:payloads.count];
+static NSArray<id<FolderChild>> *childrenOfPayloads(
+    NSArray<FolderChildPayload *> *payloads)
+{
+    NSMutableArray<id<FolderChild>> *children =
+        [NSMutableArray arrayWithCapacity:payloads.count];
     for (FolderChildPayload *payload in payloads) {
         [children addObject:payload.child];
     }
@@ -46,11 +53,13 @@ static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *
 
 @implementation FolderChildPayload
 
-+ (BOOL)supportsSecureCoding {
++ (BOOL)supportsSecureCoding
+{
     return YES;
 }
 
-- (instancetype)initWithChild:(id<FolderChild>)child {
+- (instancetype)initWithChild:(id<FolderChild>)child
+{
     self = [super init];
     if (self) {
         _child = child;
@@ -58,13 +67,15 @@ static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder {
+- (void)encodeWithCoder:(NSCoder *)coder
+{
     if ([_child isKindOfClass:[Folder class]]) {
         Folder *folder = (Folder *)_child;
         [coder encodeObject:folderKind forKey:kindKey];
         [coder encodeObject:folder.path forKey:pathKey];
         [coder encodeObject:folder.name forKey:nameKey];
-        [coder encodeObject:payloadsForChildren(folder.children) forKey:childrenKey];
+        [coder encodeObject:payloadsForChildren(folder.children)
+                     forKey:childrenKey];
     } else if ([_child isKindOfClass:[Track class]]) {
         Track *track = (Track *)_child;
         [coder encodeObject:trackKind forKey:kindKey];
@@ -75,22 +86,35 @@ static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *
     }
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder {
-    NSString *kind = [coder decodeObjectOfClass:[NSString class] forKey:kindKey];
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    NSString *kind = [coder decodeObjectOfClass:[NSString class]
+                                         forKey:kindKey];
     if ([kind isEqualToString:folderKind]) {
-        NSString *name = [coder decodeObjectOfClass:[NSString class] forKey:nameKey];
-        NSArray<FolderChildPayload *> *children = [coder decodeArrayOfObjectsOfClass:[FolderChildPayload class]
-                                                                              forKey:childrenKey];
+        NSString *name = [coder decodeObjectOfClass:[NSString class]
+                                             forKey:nameKey];
+        NSArray<FolderChildPayload *> *children =
+            [coder decodeArrayOfObjectsOfClass:[FolderChildPayload class]
+                                        forKey:childrenKey];
         if (!name || !children) {
             return nil;
         }
-        NSString *path = [coder decodeObjectOfClass:[NSString class] forKey:pathKey];
-        return [self initWithChild:[[Folder alloc] initWithPath:path name:name children:childrenOfPayloads(children)]];
+        NSString *path = [coder decodeObjectOfClass:[NSString class]
+                                             forKey:pathKey];
+        return
+            [self initWithChild:[[Folder alloc]
+                                    initWithPath:path
+                                            name:name
+                                        children:childrenOfPayloads(children)]];
     } else if ([kind isEqualToString:trackKind]) {
-        NSString *trackName = [coder decodeObjectOfClass:[NSString class] forKey:trackNameKey];
-        NSString *albumName = [coder decodeObjectOfClass:[NSString class] forKey:albumNameKey];
-        NSString *artistName = [coder decodeObjectOfClass:[NSString class] forKey:artistNameKey];
-        NSString *path = [coder decodeObjectOfClass:[NSString class] forKey:pathKey];
+        NSString *trackName = [coder decodeObjectOfClass:[NSString class]
+                                                  forKey:trackNameKey];
+        NSString *albumName = [coder decodeObjectOfClass:[NSString class]
+                                                  forKey:albumNameKey];
+        NSString *artistName = [coder decodeObjectOfClass:[NSString class]
+                                                   forKey:artistNameKey];
+        NSString *path = [coder decodeObjectOfClass:[NSString class]
+                                             forKey:pathKey];
         if (!trackName || !albumName || !artistName || !path) {
             return nil;
         }
@@ -107,28 +131,35 @@ static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *
 
 @implementation FolderChildPasteboard
 
-+ (NSPasteboardItem *)pasteboardItemForChild:(id<FolderChild>)child {
++ (NSPasteboardItem *)pasteboardItemForChild:(id<FolderChild>)child
+{
     NSPasteboardItem *item = [[NSPasteboardItem alloc] init];
-    FolderChildPayload *payload = [[FolderChildPayload alloc] initWithChild:child];
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:payload requiringSecureCoding:YES error:NULL];
+    FolderChildPayload *payload =
+        [[FolderChildPayload alloc] initWithChild:child];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:payload
+                                         requiringSecureCoding:YES
+                                                         error:NULL];
     if (data) {
         [item setData:data forType:FolderChildPasteboardType];
     }
     return item;
 }
 
-+ (nullable id<FolderChild>)childInItem:(NSPasteboardItem *)item {
++ (nullable id<FolderChild>)childInItem:(NSPasteboardItem *)item
+{
     NSData *data = [item dataForType:FolderChildPasteboardType];
     if (!data) {
         return nil;
     }
-    FolderChildPayload *payload = [NSKeyedUnarchiver unarchivedObjectOfClass:[FolderChildPayload class]
-                                                                    fromData:data
-                                                                       error:NULL];
+    FolderChildPayload *payload =
+        [NSKeyedUnarchiver unarchivedObjectOfClass:[FolderChildPayload class]
+                                          fromData:data
+                                             error:NULL];
     return payload.child;
 }
 
-+ (NSArray<id<FolderChild>> *)childrenInPasteboard:(NSPasteboard *)pasteboard {
++ (NSArray<id<FolderChild>> *)childrenInPasteboard:(NSPasteboard *)pasteboard
+{
     NSMutableArray<id<FolderChild>> *children = [NSMutableArray array];
     for (NSPasteboardItem *item in pasteboard.pasteboardItems) {
         id<FolderChild> child = [self childInItem:item];

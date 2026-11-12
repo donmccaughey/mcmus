@@ -28,9 +28,12 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 @property (nonatomic, readonly) BOOL isChanging;
 @property (nonatomic, readonly, nullable) NSError *error;
 
-- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
-                                   fileSystem:(id<FileSystem>)fileSystem NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL;
+- (instancetype)initWithMusicRootDirectoryURL:
+                    (nullable NSURL *)musicRootDirectoryURL
+                                   fileSystem:(id<FileSystem>)fileSystem
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMusicRootDirectoryURL:
+    (nullable NSURL *)musicRootDirectoryURL;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)start;

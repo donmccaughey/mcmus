@@ -5,7 +5,8 @@
 - (instancetype)initWithIsDirectory:(BOOL)isDirectory
                       isRegularFile:(BOOL)isRegularFile
                           isPackage:(BOOL)isPackage
-                      localizedName:(nullable NSString *)localizedName {
+                      localizedName:(nullable NSString *)localizedName
+{
     self = [super init];
     if (self) {
         _isDirectory = isDirectory;
@@ -20,7 +21,8 @@
 
 @implementation ResolvedBookmark
 
-- (instancetype)initWithURL:(NSURL *)url isStale:(BOOL)isStale {
+- (instancetype)initWithURL:(NSURL *)url isStale:(BOOL)isStale
+{
     self = [super init];
     if (self) {
         _url = [url copy];

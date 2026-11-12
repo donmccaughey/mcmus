@@ -9,7 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL showsTitle;
 
-- (instancetype)initWithTitle:(NSString *)title accessory:(nullable UIView *)accessory NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTitle:(NSString *)title
+                    accessory:(nullable UIView *)accessory
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 

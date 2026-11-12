@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIsDirectory:(BOOL)isDirectory
                       isRegularFile:(BOOL)isRegularFile
                           isPackage:(BOOL)isPackage
-                      localizedName:(nullable NSString *)localizedName NS_DESIGNATED_INITIALIZER;
+                      localizedName:(nullable NSString *)localizedName
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -22,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSURL *url;
 @property (nonatomic, readonly) BOOL isStale;
 
-- (instancetype)initWithURL:(NSURL *)url isStale:(BOOL)isStale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL:(NSURL *)url
+                    isStale:(BOOL)isStale NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -30,19 +32,21 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol FileSystem <NSObject>
 
 - (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error;
-- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:(NSError **)error;
+- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:
+    (NSError **)error;
 - (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error;
 - (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error;
-- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory error:(NSError **)error;
-- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url error:(NSError **)error;
+- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory
+                                       error:(NSError **)error;
+- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url
+                                       error:(NSError **)error;
 - (BOOL)getSize:(unsigned long long *)size
          ofFile:(NSURL *)url
           error:(NSError **)error;
 - (BOOL)readFile:(NSURL *)url
-          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+          chunks:(void(NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
            error:(NSError **)error;
-- (BOOL)removeItemAtURL:(NSURL *)URL
-                  error:(NSError **)error;
+- (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 - (BOOL)cloneFile:(NSURL *)source
            toFile:(NSURL *)destination
             error:(NSError **)error;
@@ -50,8 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Security-scoped bookmarks are a macOS App Sandbox feature; iOS
 // keeps its music inside the app container and needs none of this.
 #if TARGET_OS_OSX
-- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url error:(NSError **)error;
-- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark error:(NSError **)error;
+- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url
+                                             error:(NSError **)error;
+- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark
+                                                       error:(NSError **)error;
 - (BOOL)startAccessing:(NSURL *)url;
 - (void)stopAccessing:(NSURL *)url;
 #endif

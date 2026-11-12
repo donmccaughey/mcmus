@@ -7,7 +7,7 @@
                      fileHash:(NSUInteger)fileHash;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _track = track;
     _size = size;

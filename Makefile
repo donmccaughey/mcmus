@@ -28,13 +28,13 @@ ver = 1.0
 
 .PHONY : check
 check : \
+		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp
 
 
 .PHONY : check-format
-check-format : $(objc_files)
-	scripts/check-format --style=file:.clang-format --Werror --srcdir src
+check-format : $(TMP)/checked-format.stamp
 
 
 .PHONY : format
@@ -73,6 +73,7 @@ $(TMP)/Release :
 # `st_mtime` usable for change detection; also, the app bundle name contains a
 # space and thus can't be a target name
 $(TMP)/built-release.stamp : \
+		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp \
 		| $(release_dir)
@@ -84,6 +85,11 @@ $(TMP)/built-release.stamp : \
 		-destination 'generic/platform=macOS' \
 		CONFIGURATION_BUILD_DIR=$(release_dir) \
 		$(BUILD_FLAGS)
+	touch $@
+
+
+$(TMP)/checked-format.stamp : $(objc_files) | $$(dir $$@)
+	scripts/check-format --style=file:.clang-format --Werror --srcdir src
 	touch $@
 
 

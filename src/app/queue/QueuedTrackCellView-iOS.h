@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, readonly) NSString *reuseIdentifier;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
-              reuseIdentifier:(nullable NSString *)reuseIdentifier NS_DESIGNATED_INITIALIZER;
+              reuseIdentifier:(nullable NSString *)reuseIdentifier
+    NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 // The cell places its labels by hand in layoutSubviews, so the table

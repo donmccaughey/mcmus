@@ -12,8 +12,7 @@
 @end
 
 
-@implementation FileSharingThreadTests
-{
+@implementation FileSharingThreadTests {
     FileSystemFake *_fileSystem;
     NSURL *_musicDir;
     FileSharingThread *_thread;
@@ -26,13 +25,14 @@
     [super setUp];
     self.continueAfterFailure = NO;
     _fileSystem = [FileSystemFake new];
-    _fileSystem.applicationSupportDirectoryURL = [NSURL fileURLWithPath:@"/container/AppSupport"
-                                                            isDirectory:YES];
+    _fileSystem.applicationSupportDirectoryURL =
+        [NSURL fileURLWithPath:@"/container/AppSupport" isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
     _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
     _thread = [[FileSharingThread alloc] initWithFileSystem:_fileSystem];
-    _threadExited = [[XCTNSNotificationExpectation alloc] initWithName:NSThreadWillExitNotification
-                                                                object:_thread];
+    _threadExited = [[XCTNSNotificationExpectation alloc]
+        initWithName:NSThreadWillExitNotification
+              object:_thread];
 }
 
 
@@ -40,10 +40,11 @@
 {
     __block NSError *startError = nil;
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
-    [_thread startSharingMusicDirectory:_musicDir reply:^(NSError *_Nullable error) {
-        startError = error;
-        [started fulfill];
-    }];
+    [_thread startSharingMusicDirectory:_musicDir
+                                  reply:^(NSError *_Nullable error) {
+                                      startError = error;
+                                      [started fulfill];
+                                  }];
     [self waitForExpectations:@[started] timeout:5];
     return startError;
 }
@@ -69,7 +70,8 @@
     XCTAssertNil(startError);
     XCTAssertTrue(_thread.isExecuting);
     XCTAssertEqualObjects(_fileSystem.clonedSources, @[@"/Users/user/Music"]);
-    XCTAssertEqualObjects(_fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
+    XCTAssertEqualObjects(
+        _fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
 
     NSError *stopError = [self stopAndWait];
 
@@ -80,9 +82,8 @@
 
 - (void)testFailedStartRepliesWithErrorAndExitsThread;
 {
-    _fileSystem.cloneFileToFileError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                           code:EXDEV
-                                                       userInfo:nil];
+    _fileSystem.cloneFileToFileError =
+        [NSError errorWithDomain:NSPOSIXErrorDomain code:EXDEV userInfo:nil];
 
     NSError *startError = [self startAndWait];
 
@@ -95,9 +96,10 @@
 - (void)testRemoveFailureIsReportedInStopReply;
 {
     [self startAndWait];
-    _fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                           code:NSFileWriteNoPermissionError
-                                                       userInfo:nil];
+    _fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileWriteNoPermissionError
+                        userInfo:nil];
 
     NSError *stopError = [self stopAndWait];
 

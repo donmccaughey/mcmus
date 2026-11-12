@@ -9,7 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) MusicLibrary *library;
 @property (nonatomic, readonly, copy) NSArray<NSError *> *errors;
 
-- (instancetype)initWithLibrary:(MusicLibrary *)library errors:(NSArray<NSError *> *)errors NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLibrary:(MusicLibrary *)library
+                         errors:(NSArray<NSError *> *)errors
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

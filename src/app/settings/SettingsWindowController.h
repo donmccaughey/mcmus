@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SettingsWindowController : NSWindowController
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStore:(MusicLibraryStore *)store
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 

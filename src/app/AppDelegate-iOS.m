@@ -7,22 +7,22 @@
 #include "PreferencesReal.h"
 
 
-@implementation AppDelegate
-{
+@implementation AppDelegate {
     id<Audio> _audio;
     id<FileSystem> _fileSystem;
     id<Preferences> _preferences;
 }
 
-+ (AppDelegate *)shared {
++ (AppDelegate *)shared
+{
     return (AppDelegate *)UIApplication.sharedApplication.delegate;
 }
 
 - (instancetype)init;
 {
     self = [super init];
-    if ( ! self) return nil;
-    
+    if (!self) return nil;
+
     _audio = [AudioReal new];
     _fileSystem = [FileSystemReal new];
     if (isDemoMode()) {
@@ -30,16 +30,19 @@
         _fileSystem = demoFileSystemWrapping(_fileSystem);
     }
     _preferences = [PreferencesReal new];
-    
+
     _store = [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                                preferences:_preferences];
     _player = [[Player alloc] initWithAudio:_audio];
-    
+
     return self;
 }
 
 - (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
+    didFinishLaunchingWithOptions:
+        (nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)
+            launchOptions
+{
     [_store loadInBackground];
     return YES;
 }

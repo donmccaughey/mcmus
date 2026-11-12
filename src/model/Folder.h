@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPath:(nullable NSString *)path
                         name:(NSString *)name
-                    children:(NSArray<id<FolderChild>> *)children NS_DESIGNATED_INITIALIZER;
+                    children:(NSArray<id<FolderChild>> *)children
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init;
 
 @end

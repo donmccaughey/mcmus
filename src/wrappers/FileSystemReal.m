@@ -5,61 +5,78 @@
 
 // Prefetched by listDirectory so getFileInfo reads from the URL's cache
 // instead of going back to disk for each entry.
-static NSArray<NSURLResourceKey> *fileInfoKeys(void) {
+static NSArray<NSURLResourceKey> *fileInfoKeys(void)
+{
     return @[
-        NSURLIsDirectoryKey, NSURLIsRegularFileKey, NSURLIsPackageKey, NSURLLocalizedNameKey
+        NSURLIsDirectoryKey, NSURLIsRegularFileKey, NSURLIsPackageKey,
+        NSURLLocalizedNameKey
     ];
 }
 
 @implementation FileSystemReal
 
-- (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error {
-    NSURL *url = [[NSFileManager defaultManager] URLForDirectory:NSMusicDirectory
-                                                        inDomain:NSUserDomainMask
-                                               appropriateForURL:nil
-                                                          create:YES
-                                                           error:error];
+- (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error
+{
+    NSURL *url =
+        [[NSFileManager defaultManager] URLForDirectory:NSMusicDirectory
+                                               inDomain:NSUserDomainMask
+                                      appropriateForURL:nil
+                                                 create:YES
+                                                  error:error];
     // Inside the App Sandbox the home directory is the app container, whose
     // Music entry is a symlink to the real ~/Music; resolve it so the user
     // sees the real path.
     return url.URLByResolvingSymlinksInPath;
 }
 
-- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:(NSError **)error {
-    return [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
-                                                  inDomain:NSUserDomainMask
-                                         appropriateForURL:nil
-                                                    create:YES
-                                                     error:error];
+- (nullable NSURL *)getApplicationSupportDirectoryURLAndReturnError:
+    (NSError **)error
+{
+    return [[NSFileManager defaultManager]
+          URLForDirectory:NSApplicationSupportDirectory
+                 inDomain:NSUserDomainMask
+        appropriateForURL:nil
+                   create:YES
+                    error:error];
 }
 
-- (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error {
+- (BOOL)createDirectoryAt:(NSURL *)url error:(NSError **)error
+{
     return [[NSFileManager defaultManager] createDirectoryAtURL:url
                                     withIntermediateDirectories:YES
                                                      attributes:nil
                                                           error:error];
 }
 
-- (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error {
-    return [url setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:error];
+- (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error
+{
+    return [url setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey
+                           error:error];
 }
 
-- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory error:(NSError **)error {
-    return [[NSFileManager defaultManager] contentsOfDirectoryAtURL:directory
-                                         includingPropertiesForKeys:fileInfoKeys()
-                                                            options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                              error:error];
+- (nullable NSArray<NSURL *> *)listDirectory:(NSURL *)directory
+                                       error:(NSError **)error
+{
+    return [[NSFileManager defaultManager]
+          contentsOfDirectoryAtURL:directory
+        includingPropertiesForKeys:fileInfoKeys()
+                           options:NSDirectoryEnumerationSkipsHiddenFiles
+                             error:error];
 }
 
-- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url error:(NSError **)error {
-    NSDictionary<NSURLResourceKey, id> *values = [url resourceValuesForKeys:fileInfoKeys() error:error];
+- (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url
+                                       error:(NSError **)error
+{
+    NSDictionary<NSURLResourceKey, id> *values =
+        [url resourceValuesForKeys:fileInfoKeys() error:error];
     if (!values) {
         return nil;
     }
-    return [[FileSystemItemInfo alloc] initWithIsDirectory:[values[NSURLIsDirectoryKey] boolValue]
-                                             isRegularFile:[values[NSURLIsRegularFileKey] boolValue]
-                                                 isPackage:[values[NSURLIsPackageKey] boolValue]
-                                             localizedName:values[NSURLLocalizedNameKey]];
+    return [[FileSystemItemInfo alloc]
+        initWithIsDirectory:[values[NSURLIsDirectoryKey] boolValue]
+              isRegularFile:[values[NSURLIsRegularFileKey] boolValue]
+                  isPackage:[values[NSURLIsPackageKey] boolValue]
+              localizedName:values[NSURLLocalizedNameKey]];
 }
 
 - (BOOL)getSize:(unsigned long long *)size
@@ -73,24 +90,23 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void) {
         return YES;
     }
     if (error) {
-        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                     code:errno
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
                                  userInfo:@{NSURLErrorKey: url}];
     }
     return NO;
 }
 
-static BOOL posixFailure(NSURL *url, NSError **error) {
+static BOOL posixFailure(NSURL *url, NSError **error)
+{
     if (error) {
-        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                     code:errno
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
                                  userInfo:@{NSURLErrorKey: url}];
     }
     return NO;
 }
 
 - (BOOL)readFile:(NSURL *)url
-          chunks:(void (NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
+          chunks:(void(NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
            error:(NSError **)error;
 {
     static const size_t bufferSize = 256 * 1024;
@@ -99,7 +115,7 @@ static BOOL posixFailure(NSURL *url, NSError **error) {
 
     void *buffer = malloc(bufferSize);
     BOOL ok = buffer != NULL;
-    if ( ! ok) posixFailure(url, error);
+    if (!ok) posixFailure(url, error);
     while (ok) {
         ssize_t count = read(file, buffer, bufferSize);
         if (count == 0) break;
@@ -115,8 +131,7 @@ static BOOL posixFailure(NSURL *url, NSError **error) {
     return ok;
 }
 
-- (BOOL)removeItemAtURL:(NSURL *)URL
-                  error:(NSError **)error;
+- (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 {
     return [[NSFileManager defaultManager] removeItemAtURL:URL error:error];
 }
@@ -128,43 +143,49 @@ static BOOL posixFailure(NSURL *url, NSError **error) {
     int flags = 0;
     char const *sourcePath = source.fileSystemRepresentation;
     char const *destinationPath = destination.fileSystemRepresentation;
-    
+
     errno = 0;
     int result = clonefile(sourcePath, destinationPath, flags);
     if (0 == result) return YES;
-    
-    *error = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                 code:errno
+
+    *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
                              userInfo:nil];
     return NO;
 }
 
 #if TARGET_OS_OSX
-- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url error:(NSError **)error {
+- (nullable NSData *)makeSecurityScopedBookmarkFor:(NSURL *)url
+                                             error:(NSError **)error
+{
     return [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
          includingResourceValuesForKeys:nil
                           relativeToURL:nil
                                   error:error];
 }
 
-- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark error:(NSError **)error {
+- (nullable ResolvedBookmark *)resolveSecurityScopedBookmark:(NSData *)bookmark
+                                                       error:(NSError **)error
+{
     BOOL isStale = NO;
-    NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                           options:NSURLBookmarkResolutionWithSecurityScope
-                                     relativeToURL:nil
-                               bookmarkDataIsStale:&isStale
-                                             error:error];
+    NSURL *url = [NSURL
+        URLByResolvingBookmarkData:bookmark
+                           options:NSURLBookmarkResolutionWithSecurityScope
+                     relativeToURL:nil
+               bookmarkDataIsStale:&isStale
+                             error:error];
     if (!url) {
         return nil;
     }
     return [[ResolvedBookmark alloc] initWithURL:url isStale:isStale];
 }
 
-- (BOOL)startAccessing:(NSURL *)url {
+- (BOOL)startAccessing:(NSURL *)url
+{
     return [url startAccessingSecurityScopedResource];
 }
 
-- (void)stopAccessing:(NSURL *)url {
+- (void)stopAccessing:(NSURL *)url
+{
     [url stopAccessingSecurityScopedResource];
 }
 #endif

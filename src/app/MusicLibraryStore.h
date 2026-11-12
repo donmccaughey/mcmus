@@ -10,18 +10,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MusicLibraryStore : NSObject
 
-@property (class, nonatomic, readonly) NSNotificationName libraryDidChangeNotification;
+@property (class, nonatomic, readonly)
+    NSNotificationName libraryDidChangeNotification;
 // Separate from the library, so a root change alone leaves the files
 // panel, and the macOS outline's expansion, untouched.
-@property (class, nonatomic, readonly) NSNotificationName musicRootDirectoryDidChangeNotification;
+@property (class, nonatomic, readonly)
+    NSNotificationName musicRootDirectoryDidChangeNotification;
 
 @property (nonatomic, readonly) MusicLibrary *library;
 @property (nonatomic, readonly, copy) NSArray<NSError *> *loadErrors;
 @property (nonatomic, readonly) BOOL loadDidFail;
-@property (nonatomic, readonly, nullable) MusicRootDirectory *musicRootDirectory;
+@property (nonatomic, readonly, nullable)
+    MusicRootDirectory *musicRootDirectory;
 
 - (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
-                       preferences:(id<Preferences>)preferences NS_DESIGNATED_INITIALIZER;
+                       preferences:(id<Preferences>)preferences
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)apply:(LoadResult *)result;

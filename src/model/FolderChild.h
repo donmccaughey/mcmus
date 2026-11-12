@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-NSArray<id<FolderChild>> *FolderChildrenSortedByName(NSArray<id<FolderChild>> *children);
+NSArray<id<FolderChild>> *FolderChildrenSortedByName(
+    NSArray<id<FolderChild>> *children);
 
 NS_ASSUME_NONNULL_END

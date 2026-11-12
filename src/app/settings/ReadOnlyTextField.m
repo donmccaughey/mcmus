@@ -3,7 +3,8 @@
 #if TARGET_OS_OSX
 @implementation ReadOnlyTextField
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super initWithFrame:NSZeroRect];
     if (self) {
         self.editable = NO;
@@ -11,9 +12,13 @@
         self.bezeled = YES;
         self.maximumNumberOfLines = 1;
         self.lineBreakMode = NSLineBreakByTruncatingMiddle;
-        [self setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow
-                                       forOrientation:NSLayoutConstraintOrientationHorizontal];
-        [self setContentHuggingPriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+        [self
+            setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow
+                                     forOrientation:
+                                         NSLayoutConstraintOrientationHorizontal];
+        [self
+            setContentHuggingPriority:NSLayoutPriorityDefaultLow
+                       forOrientation:NSLayoutConstraintOrientationHorizontal];
         // While text is selected the field editor lays out the full,
         // untruncated string, which would spill over neighboring controls.
         self.clipsToBounds = YES;
@@ -23,11 +28,13 @@
 
 // refusesFirstResponder would also stop a mouse click from selecting the
 // text, so only the key view loop (Tab order and initial focus) is opted out.
-- (BOOL)canBecomeKeyView {
+- (BOOL)canBecomeKeyView
+{
     return NO;
 }
 
-- (void)setText:(NSString *)text {
+- (void)setText:(NSString *)text
+{
     if ([self.stringValue isEqualToString:text]) {
         return;
     }

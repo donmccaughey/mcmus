@@ -8,7 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) NSData *musicRootDirectoryBookmark;
 
-- (instancetype)initWithMusicRootDirectoryBookmark:(nullable NSData *)musicRootDirectoryBookmark NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMusicRootDirectoryBookmark:
+    (nullable NSData *)musicRootDirectoryBookmark NS_DESIGNATED_INITIALIZER;
 - (instancetype)init;
 
 @end

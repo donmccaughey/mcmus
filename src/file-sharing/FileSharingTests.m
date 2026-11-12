@@ -13,8 +13,7 @@
 @end
 
 
-@implementation FileSharingTests
-{
+@implementation FileSharingTests {
     FileSystemFake *_fileSystem;
     FileSharing *_fileSharing;
     NotificationCounter *_changes;
@@ -26,14 +25,17 @@
     [super setUp];
     self.continueAfterFailure = NO;
     _fileSystem = [FileSystemFake new];
-    _fileSystem.applicationSupportDirectoryURL = [NSURL fileURLWithPath:@"/container/AppSupport"
-                                                            isDirectory:YES];
+    _fileSystem.applicationSupportDirectoryURL =
+        [NSURL fileURLWithPath:@"/container/AppSupport" isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
-    NSURL *musicRootDirectoryURL = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
-    _fileSharing = [[FileSharing alloc] initWithMusicRootDirectoryURL:musicRootDirectoryURL
-                                                           fileSystem:_fileSystem];
-    _changes = [[NotificationCounter alloc] initWithName:FileSharing.didChangeNotification
-                                                  object:_fileSharing];
+    NSURL *musicRootDirectoryURL = [NSURL fileURLWithPath:@"/Users/user/Music"
+                                              isDirectory:YES];
+    _fileSharing =
+        [[FileSharing alloc] initWithMusicRootDirectoryURL:musicRootDirectoryURL
+                                                fileSystem:_fileSystem];
+    _changes = [[NotificationCounter alloc]
+        initWithName:FileSharing.didChangeNotification
+              object:_fileSharing];
 }
 
 
@@ -47,9 +49,7 @@
 - (void)startAndWait:(FileSharing *)fileSharing;
 {
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
-    [fileSharing startWithCompletion:^{
-        [started fulfill];
-    }];
+    [fileSharing startWithCompletion:^{ [started fulfill]; }];
     [self waitForExpectations:@[started] timeout:5];
 }
 
@@ -57,9 +57,7 @@
 - (void)stopAndWait:(FileSharing *)fileSharing;
 {
     XCTestExpectation *stopped = [self expectationWithDescription:@"stopped"];
-    [fileSharing stopWithCompletion:^{
-        [stopped fulfill];
-    }];
+    [fileSharing stopWithCompletion:^{ [stopped fulfill]; }];
     [self waitForExpectations:@[stopped] timeout:5];
 }
 
@@ -77,16 +75,15 @@
     XCTAssertNil(_fileSharing.error);
     XCTAssertEqual(_changes.count, 2UL);
     XCTAssertEqualObjects(_fileSystem.clonedSources, @[@"/Users/user/Music"]);
-    XCTAssertEqualObjects(_fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
+    XCTAssertEqualObjects(
+        _fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
 }
 
 
 - (void)testStartIsStartingUntilSnapshotCompletes;
 {
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
-    [_fileSharing startWithCompletion:^{
-        [started fulfill];
-    }];
+    [_fileSharing startWithCompletion:^{ [started fulfill]; }];
 
     XCTAssertEqual(_fileSharing.state, FileSharingStateStarting);
     XCTAssertFalse(_fileSharing.isSharing);
@@ -101,9 +98,7 @@
 - (void)testStartWhileStartingIsIgnored;
 {
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
-    [_fileSharing startWithCompletion:^{
-        [started fulfill];
-    }];
+    [_fileSharing startWithCompletion:^{ [started fulfill]; }];
 
     [self startAndWait:_fileSharing];
 
@@ -128,9 +123,8 @@
 
 - (void)testStartReportsCloneFailure;
 {
-    _fileSystem.cloneFileToFileError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                           code:EXDEV
-                                                       userInfo:nil];
+    _fileSystem.cloneFileToFileError =
+        [NSError errorWithDomain:NSPOSIXErrorDomain code:EXDEV userInfo:nil];
 
     [self startAndWait:_fileSharing];
 
@@ -158,8 +152,9 @@
 
 - (void)testStartReportsMissingMusicRootDirectory;
 {
-    FileSharing *fileSharing = [[FileSharing alloc] initWithMusicRootDirectoryURL:nil
-                                                                       fileSystem:_fileSystem];
+    FileSharing *fileSharing =
+        [[FileSharing alloc] initWithMusicRootDirectoryURL:nil
+                                                fileSystem:_fileSystem];
 
     [self startAndWait:fileSharing];
 
@@ -191,9 +186,7 @@
     [self startAndWait:_fileSharing];
 
     XCTestExpectation *stopped = [self expectationWithDescription:@"stopped"];
-    [_fileSharing stopWithCompletion:^{
-        [stopped fulfill];
-    }];
+    [_fileSharing stopWithCompletion:^{ [stopped fulfill]; }];
 
     XCTAssertEqual(_fileSharing.state, FileSharingStateStopping);
     XCTAssertFalse(_fileSharing.isSharing);
@@ -218,9 +211,7 @@
 - (void)testStopWhileStartingIsIgnored;
 {
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
-    [_fileSharing startWithCompletion:^{
-        [started fulfill];
-    }];
+    [_fileSharing startWithCompletion:^{ [started fulfill]; }];
 
     [self stopAndWait:_fileSharing];
 
@@ -234,9 +225,10 @@
 - (void)testStopReportsRemoveFailure;
 {
     [self startAndWait:_fileSharing];
-    _fileSystem.removeItemAtURLError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                           code:NSFileWriteNoPermissionError
-                                                       userInfo:nil];
+    _fileSystem.removeItemAtURLError =
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileWriteNoPermissionError
+                        userInfo:nil];
 
     [self stopAndWait:_fileSharing];
 

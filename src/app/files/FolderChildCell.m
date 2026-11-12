@@ -5,17 +5,23 @@
 
 // The leading inset spaces the symbols and widens their touch targets;
 // no trailing inset keeps the last symbol on the cell's trailing margin.
-static UIButton *makeRowButton(NSString *accessibilityLabel) {
-    UIButtonConfiguration *configuration = [UIButtonConfiguration plainButtonConfiguration];
+static UIButton *makeRowButton(NSString *accessibilityLabel)
+{
+    UIButtonConfiguration *configuration =
+        [UIButtonConfiguration plainButtonConfiguration];
     configuration.preferredSymbolConfigurationForImage =
-        [UIImageSymbolConfiguration configurationWithTextStyle:UIFontTextStyleBody scale:UIImageSymbolScaleMedium];
+        [UIImageSymbolConfiguration
+            configurationWithTextStyle:UIFontTextStyleBody
+                                 scale:UIImageSymbolScaleMedium];
     configuration.contentInsets = NSDirectionalEdgeInsetsMake(8, 8, 8, 0);
-    UIButton *button = [UIButton buttonWithConfiguration:configuration primaryAction:nil];
+    UIButton *button = [UIButton buttonWithConfiguration:configuration
+                                           primaryAction:nil];
     button.accessibilityLabel = accessibilityLabel;
     return button;
 }
 
-static void setButtonImage(UIButton *button, NSString *systemImage) {
+static void setButtonImage(UIButton *button, NSString *systemImage)
+{
     UIButtonConfiguration *configuration = [button.configuration copy];
     configuration.image = [UIImage systemImageNamed:systemImage];
     button.configuration = configuration;
@@ -29,11 +35,14 @@ static void setButtonImage(UIButton *button, NSString *systemImage) {
     void (^_Nullable _onOpen)(void);
 }
 
-+ (NSString *)reuseIdentifier {
++ (NSString *)reuseIdentifier
+{
     return @"FolderChildCell";
 }
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(nullable NSString *)reuseIdentifier
+{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         _addButton = makeRowButton(@"Add");
@@ -43,7 +52,8 @@ static void setButtonImage(UIButton *button, NSString *systemImage) {
         [_addButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
             [weakSelf add];
         }] forControlEvents:UIControlEventPrimaryActionTriggered];
-        UIButtonConfiguration *openConfiguration = [_openButton.configuration copy];
+        UIButtonConfiguration *openConfiguration =
+            [_openButton.configuration copy];
         openConfiguration.image = [UIImage systemImageNamed:@"chevron.right"];
         openConfiguration.baseForegroundColor = UIColor.tertiaryLabelColor;
         _openButton.configuration = openConfiguration;
@@ -57,7 +67,10 @@ static void setButtonImage(UIButton *button, NSString *systemImage) {
     return self;
 }
 
-- (void)show:(id<FolderChild>)child onAdd:(void (^)(void))onAdd onOpen:(void (^)(void))onOpen {
+- (void)show:(id<FolderChild>)child
+       onAdd:(void (^)(void))onAdd
+      onOpen:(void (^)(void))onOpen
+{
     _onAdd = [onAdd copy];
     _onOpen = [onOpen copy];
     UIListContentConfiguration *content = [self defaultContentConfiguration];
@@ -75,13 +88,15 @@ static void setButtonImage(UIButton *button, NSString *systemImage) {
     [self sizeAccessoryToFit];
 }
 
-- (void)add {
+- (void)add
+{
     if (_onAdd) {
         _onAdd();
     }
 }
 
-- (void)open {
+- (void)open
+{
     if (_onOpen) {
         _onOpen();
     }
@@ -89,9 +104,11 @@ static void setButtonImage(UIButton *button, NSString *systemImage) {
 
 // A cell places its accessory view by the view's frame and ignores its
 // constraints.
-- (void)sizeAccessoryToFit {
+- (void)sizeAccessoryToFit
+{
     CGRect frame = _accessoryStack.frame;
-    frame.size = [_accessoryStack systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    frame.size = [_accessoryStack
+        systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     _accessoryStack.frame = frame;
 }
 

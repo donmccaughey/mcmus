@@ -6,7 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSUInteger count;
 
-- (instancetype)initWithName:(NSNotificationName)name object:(nullable id)object NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(NSNotificationName)name
+                      object:(nullable id)object NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

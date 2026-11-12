@@ -9,24 +9,31 @@
 
 @implementation MusicLibraryTests
 
-- (Track *)track:(NSString *)name {
-    return [[Track alloc] initWithTrackName:name
-                                  albumName:Track.noAlbum
-                                 artistName:Track.noArtist
-                                       path:[NSString stringWithFormat:@"/Music/%@.mp3", name]];
+- (Track *)track:(NSString *)name
+{
+    return [[Track alloc]
+        initWithTrackName:name
+                albumName:Track.noAlbum
+               artistName:Track.noArtist
+                     path:[NSString stringWithFormat:@"/Music/%@.mp3", name]];
 }
 
-- (Folder *)folder:(NSString *)name children:(NSArray<id<FolderChild>> *)children {
-    return [[Folder alloc] initWithPath:[NSString stringWithFormat:@"/Music/%@", name]
-                                   name:name
-                               children:children];
+- (Folder *)folder:(NSString *)name
+          children:(NSArray<id<FolderChild>> *)children
+{
+    return [[Folder alloc]
+        initWithPath:[NSString stringWithFormat:@"/Music/%@", name]
+                name:name
+            children:children];
 }
 
-- (void)testEmptyLibraryHasNoTracks {
+- (void)testEmptyLibraryHasNoTracks
+{
     XCTAssertEqualObjects([[MusicLibrary new] getTracks], @[]);
 }
 
-- (void)testLibraryWithOnlyEmptyFoldersHasNoTracks {
+- (void)testLibraryWithOnlyEmptyFoldersHasNoTracks
+{
     Folder *root = [self folder:@"Music" children:@[
         [self folder:@"Empty" children:@[]],
         [self folder:@"Parent" children:@[
@@ -38,7 +45,8 @@
     XCTAssertEqualObjects([library getTracks], @[]);
 }
 
-- (void)testDirectTracksAreReturnedInOrder {
+- (void)testDirectTracksAreReturnedInOrder
+{
     Track *first = [self track:@"A"];
     Track *second = [self track:@"B"];
     Track *third = [self track:@"C"];
@@ -48,7 +56,8 @@
     XCTAssertEqualObjects([library getTracks], (@[first, second, third]));
 }
 
-- (void)testSiblingFoldersAreReturnedInOrder {
+- (void)testSiblingFoldersAreReturnedInOrder
+{
     Track *first = [self track:@"A"];
     Track *second = [self track:@"B"];
     Track *third = [self track:@"C"];
@@ -62,7 +71,8 @@
     XCTAssertEqualObjects([library getTracks], (@[first, second, third]));
 }
 
-- (void)testFolderTracksComeBeforeFollowingSiblingTracks {
+- (void)testFolderTracksComeBeforeFollowingSiblingTracks
+{
     Track *nested = [self track:@"Nested"];
     Track *loose = [self track:@"Loose"];
     Folder *root = [self folder:@"Music" children:@[
@@ -74,7 +84,8 @@
     XCTAssertEqualObjects([library getTracks], (@[nested, loose]));
 }
 
-- (void)testTracksBeforeFolderComeBeforeFolderTracks {
+- (void)testTracksBeforeFolderComeBeforeFolderTracks
+{
     Track *loose = [self track:@"Loose"];
     Track *nested = [self track:@"Nested"];
     Folder *root = [self folder:@"Music" children:@[
@@ -86,7 +97,8 @@
     XCTAssertEqualObjects([library getTracks], (@[loose, nested]));
 }
 
-- (void)testNestedTracksAreReturnedInPreorder {
+- (void)testNestedTracksAreReturnedInPreorder
+{
     Track *deep = [self track:@"Deep"];
     Track *middle = [self track:@"Middle"];
     Track *shallow = [self track:@"Shallow"];
@@ -103,10 +115,12 @@
     ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
-    XCTAssertEqualObjects([library getTracks], (@[deep, middle, shallow, loose]));
+    XCTAssertEqualObjects(
+        [library getTracks], (@[deep, middle, shallow, loose]));
 }
 
-- (void)testEmptyFoldersBetweenTracksAreSkipped {
+- (void)testEmptyFoldersBetweenTracksAreSkipped
+{
     Track *first = [self track:@"A"];
     Track *second = [self track:@"B"];
     Folder *root = [self folder:@"Music" children:@[
@@ -120,10 +134,12 @@
     XCTAssertEqualObjects([library getTracks], (@[first, second]));
 }
 
-- (void)testTracksMatchRootFolderTrackDescendants {
+- (void)testTracksMatchRootFolderTrackDescendants
+{
     Folder *root = [self folder:@"Music" children:@[
         [self folder:@"Artist" children:@[
-            [self folder:@"One" children:@[[self track:@"A1"], [self track:@"A2"]]],
+            [self folder:@"One"
+                children:@[[self track:@"A1"], [self track:@"A2"]]],
             [self track:@"Single"],
             [self folder:@"Two" children:@[[self track:@"B1"]]],
         ]],

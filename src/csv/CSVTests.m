@@ -3,15 +3,13 @@
 #import "CSV.h"
 
 
-static NSData *
-utf8(NSString *string)
+static NSData *utf8(NSString *string)
 {
     return [string dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 
-static NSString *
-string(NSData *data)
+static NSString *string(NSData *data)
 {
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
@@ -169,9 +167,11 @@ string(NSData *data)
 
 - (void)testParseNonASCII;
 {
-    NSArray *records = parseCSV(utf8(@"Björk,Sigur Rós\n東京,\"日本,語\"\n"), NULL);
+    NSArray *records =
+        parseCSV(utf8(@"Björk,Sigur Rós\n東京,\"日本,語\"\n"), NULL);
 
-    XCTAssertEqualObjects((@[@[@"Björk", @"Sigur Rós"], @[@"東京", @"日本,語"]]), records);
+    XCTAssertEqualObjects(
+        (@[@[@"Björk", @"Sigur Rós"], @[@"東京", @"日本,語"]]), records);
 }
 
 
@@ -374,19 +374,22 @@ string(NSData *data)
 
 - (void)testParseThenGenerateNormalizesEndingsAndQuotes;
 {
-    NSData *source = utf8(@"\"path\",\"size\"\n\"a b\",\"1\"\r\"c,d\",2\r\n\"e\"\"f\",\" \"");
+    NSData *source = utf8(
+        @"\"path\",\"size\"\n\"a b\",\"1\"\r\"c,d\",2\r\n\"e\"\"f\",\" \"");
 
     NSError *error = nil;
     NSData *data = generateCSV(parseCSV(source, &error));
 
     XCTAssertNil(error);
-    XCTAssertEqualObjects(@"path,size\r\na b,1\r\n\"c,d\",2\r\n\"e\"\"f\", \r\n", string(data));
+    XCTAssertEqualObjects(
+        @"path,size\r\na b,1\r\n\"c,d\",2\r\n\"e\"\"f\", \r\n", string(data));
 }
 
 
 - (void)testParseThenGeneratePreservesCanonicalData;
 {
-    NSData *source = utf8(@"path,size\r\n\"a,b\",1\r\n\"say \"\"hi\"\"\",\"x\r\ny\"\r\n,\r\n");
+    NSData *source = utf8(
+        @"path,size\r\n\"a,b\",1\r\n\"say \"\"hi\"\"\",\"x\r\ny\"\r\n,\r\n");
 
     NSData *data = generateCSV(parseCSV(source, NULL));
 

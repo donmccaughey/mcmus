@@ -13,7 +13,6 @@ typedef NS_ENUM(NSInteger, LoadTrackMetadataErrorCode) {
 };
 
 NSArray<TrackMetadata *> *loadTrackMetadata(NSArray<Track *> *tracks,
-    id<FileSystem> fileSystem,
-    NSArray<NSError *> *_Nullable *_Nullable errors);
+    id<FileSystem> fileSystem, NSArray<NSError *> *_Nullable *_Nullable errors);
 
 NS_ASSUME_NONNULL_END

@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILayoutConstraintAxis axis;
 
-- (instancetype)initWithAxis:(UILayoutConstraintAxis)axis NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAxis:(UILayoutConstraintAxis)axis
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;

@@ -9,8 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FilesPanelViewController : NSViewController
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithNibName:(nullable NSNibName)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithStore:(MusicLibraryStore *)store
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(nullable NSNibName)nibNameOrNil
+                         bundle:(nullable NSBundle *)nibBundleOrNil
+    NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 @end

@@ -8,7 +8,8 @@
 
 // The panel title only shows while the library is empty and there is
 // nothing to find; the active find button is the folder table's.
-static UIButton *makePlaceholderFindButton(void) {
+static UIButton *makePlaceholderFindButton(void)
+{
     UIButton *findButton = [UIButton borderedWithTitle:@"Find"];
     findButton.enabled = NO;
     return findButton;
@@ -21,33 +22,43 @@ static UIButton *makePlaceholderFindButton(void) {
     PanelView *_panelView;
 }
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store player:(Player *)player {
+- (instancetype)initWithStore:(MusicLibraryStore *)store player:(Player *)player
+{
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _store = store;
-        _emptyFilesView = [[EmptyStateView alloc] initWithTitle:@"No music" systemImage:@"folder" description:@""];
-        _filesTableStack = [[FilesTableStackController alloc] initWithPlayer:player];
-        _panelView = [[PanelView alloc] initWithTitle:@"Files" accessory:makePlaceholderFindButton()];
+        _emptyFilesView = [[EmptyStateView alloc] initWithTitle:@"No music"
+                                                    systemImage:@"folder"
+                                                    description:@""];
+        _filesTableStack =
+            [[FilesTableStackController alloc] initWithPlayer:player];
+        _panelView =
+            [[PanelView alloc] initWithTitle:@"Files"
+                                   accessory:makePlaceholderFindButton()];
     }
     return self;
 }
 
-- (void)loadView {
+- (void)loadView
+{
     self.view = _panelView;
     [self addChildViewController:_filesTableStack];
     [_filesTableStack didMoveToParentViewController:self];
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(update)
-                                               name:MusicLibraryStore.libraryDidChangeNotification
-                                             object:_store];
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(update)
+               name:MusicLibraryStore.libraryDidChangeNotification
+             object:_store];
     [self update];
 }
 
-- (void)update {
+- (void)update
+{
     MusicLibrary *library = _store.library;
     if (library.isEmpty) {
         _emptyFilesView.descriptionText = _store.loadDidFail

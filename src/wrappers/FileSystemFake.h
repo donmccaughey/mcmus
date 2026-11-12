@@ -30,7 +30,8 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName
                         size:(unsigned long long)size
-                    contents:(nullable NSData *)contents NS_DESIGNATED_INITIALIZER;
+                    contents:(nullable NSData *)contents
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName
@@ -66,7 +67,9 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 
 - (void)addPath:(NSString *)path;
 - (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind;
-- (void)addPath:(NSString *)path kind:(FileSystemFakeKind)kind localizedName:(nullable NSString *)localizedName;
+- (void)addPath:(NSString *)path
+             kind:(FileSystemFakeKind)kind
+    localizedName:(nullable NSString *)localizedName;
 - (void)addPath:(NSString *)path size:(unsigned long long)size;
 - (void)addPath:(NSString *)path contents:(NSData *)contents;
 

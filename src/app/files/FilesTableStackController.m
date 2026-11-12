@@ -8,7 +8,8 @@
     Folder *_Nullable _rootFolder;
 }
 
-- (instancetype)initWithPlayer:(Player *)player {
+- (instancetype)initWithPlayer:(Player *)player
+{
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _player = player;
@@ -17,18 +18,23 @@
     return self;
 }
 
-- (void)setRootFolder:(Folder *)folder {
+- (void)setRootFolder:(Folder *)folder
+{
     // Reloading the same library must not pop the user back to the root.
     if ([folder isEqual:_rootFolder]) {
         return;
     }
     _rootFolder = folder;
-    FolderTableViewController *rootTable = [[FolderTableViewController alloc] initWithFolder:folder player:_player];
+    FolderTableViewController *rootTable =
+        [[FolderTableViewController alloc] initWithFolder:folder
+                                                   player:_player];
     [self setViewControllers:@[rootTable] animated:NO];
 }
 
-- (void)drawOpaqueNavigationBar {
-    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] init];
+- (void)drawOpaqueNavigationBar
+{
+    UINavigationBarAppearance *appearance =
+        [[UINavigationBarAppearance alloc] init];
     [appearance configureWithOpaqueBackground];
     appearance.backgroundColor = UIColor.secondarySystemBackgroundColor;
     self.navigationBar.standardAppearance = appearance;

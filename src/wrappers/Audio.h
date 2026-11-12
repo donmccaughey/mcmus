@@ -6,9 +6,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSTimeInterval playbackPosition;
 @property (nonatomic, copy, nullable) void (^onTrackFinished)(void);
-@property (nonatomic, copy, nullable) void (^onPlaybackPositionChanged)(NSTimeInterval position);
+@property (nonatomic, copy, nullable) void (^onPlaybackPositionChanged)
+    (NSTimeInterval position);
 
-- (void)play:(NSURL *)trackURL from:(NSTimeInterval)timeIndex thenPlay:(nullable NSURL *)nextTrackURL;
+- (void)play:(NSURL *)trackURL
+        from:(NSTimeInterval)timeIndex
+    thenPlay:(nullable NSURL *)nextTrackURL;
 - (void)replaceNextTrackWith:(nullable NSURL *)nextTrackURL;
 - (void)stop;
 
