@@ -46,7 +46,8 @@ BOOL takeSnapshot(NSURL *musicDir, NSURL *snapshotDir,
     BOOL removed = remove_dir_if_exists(snapshotDir, fileSystem, error);
     if (!removed) return NO;
 
-    BOOL cloned = [fileSystem cloneFile:musicDir toFile:snapshotDir
+    BOOL cloned = [fileSystem cloneFile:musicDir
+                                 toFile:snapshotDir
                                   error:error];
     if (cloned) {
         if (error) *error = nil;

@@ -43,7 +43,8 @@ static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
                 loadChildren(url, name, folderName, fileSystem, errors);
             if (hasTrackDescendants(grandchildren)) {
                 [children
-                    addObject:[[Folder alloc] initWithPath:url.path name:name
+                    addObject:[[Folder alloc] initWithPath:url.path
+                                                      name:name
                                                   children:grandchildren]];
             }
         } else if (info.isRegularFile &&

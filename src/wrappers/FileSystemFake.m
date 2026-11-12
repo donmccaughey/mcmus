@@ -41,7 +41,9 @@ static void fail(NSString *path, NSError **error)
                localizedName:(nullable NSString *)localizedName
                         size:(unsigned long long)size;
 {
-    return [self initWithPath:path kind:kind localizedName:localizedName
+    return [self initWithPath:path
+                         kind:kind
+                localizedName:localizedName
                          size:size
                      contents:nil];
 }
@@ -50,7 +52,9 @@ static void fail(NSString *path, NSError **error)
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName;
 {
-    return [self initWithPath:path kind:kind localizedName:localizedName
+    return [self initWithPath:path
+                         kind:kind
+                localizedName:localizedName
                          size:0];
 }
 
@@ -138,7 +142,8 @@ static void fail(NSString *path, NSError **error)
     localizedName:(nullable NSString *)localizedName
 {
     [_entries
-        addObject:[[FileSystemFakeEntry alloc] initWithPath:path kind:kind
+        addObject:[[FileSystemFakeEntry alloc] initWithPath:path
+                                                       kind:kind
                                               localizedName:localizedName]];
 }
 

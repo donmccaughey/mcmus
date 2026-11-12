@@ -102,7 +102,8 @@ static dispatch_queue_t loadQueue(void)
         LoadResult *result =
             loadLibrary(musicRootDirectory, locateError, fileSystem);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self finishLoad:result generation:generation
+            [self finishLoad:result
+                  generation:generation
                   completion:completion];
         });
     });
@@ -125,7 +126,8 @@ static dispatch_queue_t loadQueue(void)
     }
     [_musicRootDirectory stopAccessingWithFileSystem:_fileSystem];
     MusicRootDirectory *musicRootDirectory =
-        [MusicRootDirectory choose:url fileSystem:_fileSystem
+        [MusicRootDirectory choose:url
+                        fileSystem:_fileSystem
                        preferences:_preferences];
     self.musicRootDirectory = musicRootDirectory;
     NSInteger generation = [self nextLoadGeneration];
@@ -134,7 +136,8 @@ static dispatch_queue_t loadQueue(void)
         LoadResult *result =
             loadMusicLibrary(musicRootDirectory.url, fileSystem);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self finishLoad:result generation:generation
+            [self finishLoad:result
+                  generation:generation
                   completion:completion];
         });
     });

@@ -47,9 +47,9 @@ static UIButton *makeButton(NSString *systemImage, NSString *accessibilityLabel)
         _backButton = makeButton(@"backward.fill", @"Back");
         _playStopButton = makeButton(@"play.fill", @"Play");
         _nextButton = makeButton(@"forward.fill", @"Next");
-        [_backButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
-            [player back];
-        }] forControlEvents:UIControlEventPrimaryActionTriggered];
+        [_backButton addAction:[UIAction actionWithHandler:^(
+                                   UIAction *action) { [player back]; }]
+              forControlEvents:UIControlEventPrimaryActionTriggered];
         [_playStopButton
                    addAction:[UIAction actionWithHandler:^(UIAction *action) {
                        if (player.isPlaying) {
@@ -59,9 +59,9 @@ static UIButton *makeButton(NSString *systemImage, NSString *accessibilityLabel)
                        }
                    }]
             forControlEvents:UIControlEventPrimaryActionTriggered];
-        [_nextButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
-            [player next];
-        }] forControlEvents:UIControlEventPrimaryActionTriggered];
+        [_nextButton addAction:[UIAction actionWithHandler:^(
+                                   UIAction *action) { [player next]; }]
+              forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[
             _backButton, _playStopButton, _nextButton
@@ -88,10 +88,12 @@ static UIButton *makeButton(NSString *systemImage, NSString *accessibilityLabel)
             UIContentSizeCategoryAccessibilityLarge;
 
         NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
-        [center addObserver:self selector:@selector(update)
+        [center addObserver:self
+                   selector:@selector(update)
                        name:Queue.didChangeNotification
                      object:player.queue];
-        [center addObserver:self selector:@selector(update)
+        [center addObserver:self
+                   selector:@selector(update)
                        name:Player.didChangeNotification
                      object:player];
         [self update];

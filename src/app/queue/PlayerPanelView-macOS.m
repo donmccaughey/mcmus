@@ -67,10 +67,12 @@ static NSButton *makeButton(NSString *systemImage, NSString *title)
                          forOrientation:NSLayoutConstraintOrientationVertical];
 
         NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
-        [center addObserver:self selector:@selector(update)
+        [center addObserver:self
+                   selector:@selector(update)
                        name:Queue.didChangeNotification
                      object:player.queue];
-        [center addObserver:self selector:@selector(update)
+        [center addObserver:self
+                   selector:@selector(update)
                        name:Player.didChangeNotification
                      object:player];
         [self update];

@@ -16,10 +16,12 @@
 - (void)setUp
 {
     [super setUp];
-    _song = [[Track alloc] initWithTrackName:@"Song" albumName:@"Album"
+    _song = [[Track alloc] initWithTrackName:@"Song"
+                                   albumName:@"Album"
                                   artistName:@"Artist"
                                         path:@"/Music/Artist/Album/Song.mp3"];
-    _single = [[Track alloc] initWithTrackName:@"Single" albumName:@"Artist"
+    _single = [[Track alloc] initWithTrackName:@"Single"
+                                     albumName:@"Artist"
                                     artistName:Track.noArtist
                                           path:@"/Music/Artist/Single.m4a"];
 }
@@ -52,12 +54,15 @@
 
 - (void)testAddingFolderAppendsTrackDescendantsInPreorder
 {
-    Folder *folder =
-        [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
-            [[Folder alloc] initWithPath:@"/Music/Artist/Album" name:@"Album"
-                                children:@[_song]],
-            _single,
-        ]];
+    Folder *folder = [[Folder alloc]
+        initWithPath:@"/Music/Artist"
+                name:@"Artist"
+            children:@[
+                [[Folder alloc] initWithPath:@"/Music/Artist/Album"
+                                        name:@"Album"
+                                    children:@[_song]],
+                _single,
+            ]];
     Queue *queue = [[Queue alloc] init];
     [queue add:folder];
     XCTAssertEqualObjects(queue.tracks, (@[_song, _single]));
@@ -113,7 +118,8 @@
         [[NotificationCounter alloc] initWithName:Queue.didChangeNotification
                                            object:queue];
     [queue add:_song];
-    [queue add:[[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist"
+    [queue add:[[Folder alloc] initWithPath:@"/Music/Artist"
+                                       name:@"Artist"
                                    children:@[_single]]];
     [queue removeFirst];
     [queue clear];

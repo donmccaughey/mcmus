@@ -101,17 +101,20 @@ static NSArray<NSString *> *trackDescriptions(
     MusicLibrary *library = [self load:fileSystem];
 
     AssertEqualChildren(library.rootFolder.children, (@[
-        [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
-            [[Folder alloc]
-                initWithPath:@"/Music/Artist/Album"
-                        name:@"Album"
-                    children:@[
-                        [self track:@"01 Song"
-                               path:@"/Music/Artist/Album/01 Song.mp3"
-                              album:@"Album"
-                             artist:@"Artist"],
-                    ]],
-        ]],
+        [[Folder alloc]
+            initWithPath:@"/Music/Artist"
+                    name:@"Artist"
+                children:@[
+                    [[Folder alloc]
+                        initWithPath:@"/Music/Artist/Album"
+                                name:@"Album"
+                            children:@[
+                                [self track:@"01 Song"
+                                       path:@"/Music/Artist/Album/01 Song.mp3"
+                                      album:@"Album"
+                                     artist:@"Artist"],
+                            ]],
+                ]],
     ]));
 }
 
@@ -124,9 +127,13 @@ static NSArray<NSString *> *trackDescriptions(
     MusicLibrary *library = [self load:fileSystem];
 
     AssertEqualChildren(library.rootFolder.children, (@[
-        [[Folder alloc] initWithPath:@"/Music/Album" name:@"Album" children:@[
-            [self track:@"Song" path:@"/Music/Album/Song.m4a" album:@"Album"],
-        ]],
+        [[Folder alloc] initWithPath:@"/Music/Album"
+                                name:@"Album"
+                            children:@[
+                                [self track:@"Song"
+                                       path:@"/Music/Album/Song.m4a"
+                                      album:@"Album"],
+                            ]],
     ]));
 }
 
@@ -150,7 +157,8 @@ static NSArray<NSString *> *trackDescriptions(
     NSArray<id<FolderChild>> *album = artist.firstObject.children;
     XCTAssertNotNil(album);
     AssertEqualChildren(album, (@[
-        [self track:@"Song" path:@"/Music/Genre/Artist/Album/Song.mp3"
+        [self track:@"Song"
+               path:@"/Music/Genre/Artist/Album/Song.mp3"
               album:@"Album"
              artist:@"Artist"],
     ]));
@@ -204,22 +212,29 @@ static NSArray<NSString *> *trackDescriptions(
 - (void)testLocalizedNamesAreUsedForDisplay
 {
     FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Musica" kind:FileSystemFakeKindDirectory
+    [fileSystem addPath:@"/Music/Musica"
+                   kind:FileSystemFakeKindDirectory
           localizedName:@"Música"];
-    [fileSystem addPath:@"/Music/Musica/Hidden.mp3" kind:FileSystemFakeKindFile
+    [fileSystem addPath:@"/Music/Musica/Hidden.mp3"
+                   kind:FileSystemFakeKindFile
           localizedName:@"Hidden"];
-    [fileSystem addPath:@"/Music/Musica/Shown.mp3" kind:FileSystemFakeKindFile
+    [fileSystem addPath:@"/Music/Musica/Shown.mp3"
+                   kind:FileSystemFakeKindFile
           localizedName:@"Shown.mp3"];
 
     MusicLibrary *library = [self load:fileSystem];
 
     AssertEqualChildren(library.rootFolder.children, (@[
-        [[Folder alloc] initWithPath:@"/Music/Musica" name:@"Música" children:@[
-            [self track:@"Hidden" path:@"/Music/Musica/Hidden.mp3"
-                  album:@"Música"],
-            [self track:@"Shown" path:@"/Music/Musica/Shown.mp3"
-                  album:@"Música"],
-        ]],
+        [[Folder alloc] initWithPath:@"/Music/Musica"
+                                name:@"Música"
+                            children:@[
+                                [self track:@"Hidden"
+                                       path:@"/Music/Musica/Hidden.mp3"
+                                      album:@"Música"],
+                                [self track:@"Shown"
+                                       path:@"/Music/Musica/Shown.mp3"
+                                      album:@"Música"],
+                            ]],
     ]));
 }
 
@@ -273,17 +288,20 @@ static NSArray<NSString *> *trackDescriptions(
     MusicLibrary *library = [self load:fileSystem];
 
     AssertEqualChildren(library.rootFolder.children, (@[
-        [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
-            [[Folder alloc]
-                initWithPath:@"/Music/Artist/Album"
-                        name:@"Album"
-                    children:@[
-                        [self track:@"01 Song"
-                               path:@"/Music/Artist/Album/01 Song.mp3"
-                              album:@"Album"
-                             artist:@"Artist"],
-                    ]],
-        ]],
+        [[Folder alloc]
+            initWithPath:@"/Music/Artist"
+                    name:@"Artist"
+                children:@[
+                    [[Folder alloc]
+                        initWithPath:@"/Music/Artist/Album"
+                                name:@"Album"
+                            children:@[
+                                [self track:@"01 Song"
+                                       path:@"/Music/Artist/Album/01 Song.mp3"
+                                      album:@"Album"
+                                     artist:@"Artist"],
+                            ]],
+                ]],
     ]));
 }
 

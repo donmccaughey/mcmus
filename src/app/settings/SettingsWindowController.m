@@ -29,7 +29,8 @@ static const CGFloat padding = 16;
         _store = store;
         _pathField = [[ReadOnlyTextField alloc] init];
         _chooseButton =
-            [NSButton buttonWithTitle:@"Choose…" target:self
+            [NSButton buttonWithTitle:@"Choose…"
+                               target:self
                                action:@selector(chooseMusicRootDirectory)];
         _chooseButton.bezelStyle = NSBezelStylePush;
         NSView *contentView = [self makeContentView];

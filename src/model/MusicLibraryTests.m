@@ -34,12 +34,14 @@
 
 - (void)testLibraryWithOnlyEmptyFoldersHasNoTracks
 {
-    Folder *root = [self folder:@"Music" children:@[
-        [self folder:@"Empty" children:@[]],
-        [self folder:@"Parent" children:@[
-            [self folder:@"Child" children:@[]],
-        ]],
-    ]];
+    Folder *root = [self folder:@"Music"
+                       children:@[
+                           [self folder:@"Empty" children:@[]],
+                           [self folder:@"Parent"
+                               children:@[
+                                   [self folder:@"Child" children:@[]],
+                               ]],
+                       ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects([library getTracks], @[]);
@@ -61,11 +63,12 @@
     Track *first = [self track:@"A"];
     Track *second = [self track:@"B"];
     Track *third = [self track:@"C"];
-    Folder *root = [self folder:@"Music" children:@[
-        [self folder:@"One" children:@[first]],
-        [self folder:@"Two" children:@[second]],
-        [self folder:@"Three" children:@[third]],
-    ]];
+    Folder *root = [self folder:@"Music"
+                       children:@[
+                           [self folder:@"One" children:@[first]],
+                           [self folder:@"Two" children:@[second]],
+                           [self folder:@"Three" children:@[third]],
+                       ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects([library getTracks], (@[first, second, third]));
@@ -75,10 +78,11 @@
 {
     Track *nested = [self track:@"Nested"];
     Track *loose = [self track:@"Loose"];
-    Folder *root = [self folder:@"Music" children:@[
-        [self folder:@"Album" children:@[nested]],
-        loose,
-    ]];
+    Folder *root = [self folder:@"Music"
+                       children:@[
+                           [self folder:@"Album" children:@[nested]],
+                           loose,
+                       ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects([library getTracks], (@[nested, loose]));
@@ -88,10 +92,11 @@
 {
     Track *loose = [self track:@"Loose"];
     Track *nested = [self track:@"Nested"];
-    Folder *root = [self folder:@"Music" children:@[
-        loose,
-        [self folder:@"Album" children:@[nested]],
-    ]];
+    Folder *root = [self folder:@"Music"
+                       children:@[
+                           loose,
+                           [self folder:@"Album" children:@[nested]],
+                       ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects([library getTracks], (@[loose, nested]));
@@ -103,16 +108,20 @@
     Track *middle = [self track:@"Middle"];
     Track *shallow = [self track:@"Shallow"];
     Track *loose = [self track:@"Loose"];
-    Folder *root = [self folder:@"Music" children:@[
-        [self folder:@"Artist" children:@[
-            [self folder:@"One" children:@[
-                [self folder:@"Disc" children:@[deep]],
-            ]],
-            middle,
-            [self folder:@"Two" children:@[shallow]],
-        ]],
-        loose,
-    ]];
+    Folder *root =
+        [self folder:@"Music"
+            children:@[
+                [self folder:@"Artist"
+                    children:@[
+                        [self folder:@"One"
+                            children:@[
+                                [self folder:@"Disc" children:@[deep]],
+                            ]],
+                        middle,
+                        [self folder:@"Two" children:@[shallow]],
+                    ]],
+                loose,
+            ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects(
@@ -123,12 +132,13 @@
 {
     Track *first = [self track:@"A"];
     Track *second = [self track:@"B"];
-    Folder *root = [self folder:@"Music" children:@[
-        [self folder:@"Empty" children:@[]],
-        first,
-        [self folder:@"AlsoEmpty" children:@[]],
-        [self folder:@"Album" children:@[second]],
-    ]];
+    Folder *root = [self folder:@"Music"
+                       children:@[
+                           [self folder:@"Empty" children:@[]],
+                           first,
+                           [self folder:@"AlsoEmpty" children:@[]],
+                           [self folder:@"Album" children:@[second]],
+                       ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects([library getTracks], (@[first, second]));
@@ -136,15 +146,18 @@
 
 - (void)testTracksMatchRootFolderTrackDescendants
 {
-    Folder *root = [self folder:@"Music" children:@[
-        [self folder:@"Artist" children:@[
-            [self folder:@"One"
-                children:@[[self track:@"A1"], [self track:@"A2"]]],
-            [self track:@"Single"],
-            [self folder:@"Two" children:@[[self track:@"B1"]]],
-        ]],
-        [self track:@"Loose"],
-    ]];
+    Folder *root =
+        [self folder:@"Music"
+            children:@[
+                [self folder:@"Artist"
+                    children:@[
+                        [self folder:@"One"
+                            children:@[[self track:@"A1"], [self track:@"A2"]]],
+                        [self track:@"Single"],
+                        [self folder:@"Two" children:@[[self track:@"B1"]]],
+                    ]],
+                [self track:@"Loose"],
+            ]];
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects([library getTracks], root.trackDescendants);

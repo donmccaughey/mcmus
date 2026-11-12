@@ -28,7 +28,8 @@
         from:(NSTimeInterval)timeIndex
     thenPlay:(nullable NSURL *)nextTrackURL
 {
-    [_calls addObject:[AudioFakeCall play:trackURL from:timeIndex
+    [_calls addObject:[AudioFakeCall play:trackURL
+                                     from:timeIndex
                                  thenPlay:nextTrackURL]];
     _currentTrackURL = trackURL;
     _nextTrackURL = nextTrackURL;

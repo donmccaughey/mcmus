@@ -59,11 +59,12 @@
         __block id observer = [NSNotificationCenter.defaultCenter
             addObserverForName:FileSharing.didChangeNotification
                         object:fileSharing
-                         queue:nil usingBlock:^(NSNotification *notification) {
-                             [NSNotificationCenter.defaultCenter
-                                 removeObserver:observer];
-                             [self retireFileSharing:fileSharing];
-                         }];
+                         queue:nil
+                    usingBlock:^(NSNotification *notification) {
+                        [NSNotificationCenter.defaultCenter
+                            removeObserver:observer];
+                        [self retireFileSharing:fileSharing];
+                    }];
         return;
     }
     [fileSharing stop];

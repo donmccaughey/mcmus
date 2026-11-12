@@ -150,7 +150,8 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 // block to the heap, so the block must be copied before it is handed over.
 - (void)stopSharingWithReply:(Reply)reply;
 {
-    [self performSelector:@selector(handleStop:) onThread:self
+    [self performSelector:@selector(handleStop:)
+                 onThread:self
                withObject:[reply copy]
             waitUntilDone:NO];
 }

@@ -7,7 +7,8 @@ static NSMenuItem *menuItem(NSString *title, NSArray<NSMenuItem *> *items)
     for (NSMenuItem *item in items) {
         [menu addItem:item];
     }
-    NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:title action:nil
+    NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:title
+                                                      action:nil
                                                keyEquivalent:@""];
     menuItem.submenu = menu;
     return menuItem;
@@ -16,7 +17,8 @@ static NSMenuItem *menuItem(NSString *title, NSArray<NSMenuItem *> *items)
 static NSMenuItem *item(
     NSString *title, SEL _Nullable action, NSString *keyEquivalent)
 {
-    return [[NSMenuItem alloc] initWithTitle:title action:action
+    return [[NSMenuItem alloc] initWithTitle:title
+                                      action:action
                                keyEquivalent:keyEquivalent];
 }
 

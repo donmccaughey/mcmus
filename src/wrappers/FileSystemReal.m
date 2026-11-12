@@ -50,7 +50,8 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
 
 - (BOOL)excludeFromBackup:(NSURL *)url error:(NSError **)error
 {
-    return [url setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey
+    return [url setResourceValue:@YES
+                          forKey:NSURLIsExcludedFromBackupKey
                            error:error];
 }
 
@@ -90,7 +91,8 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
         return YES;
     }
     if (error) {
-        *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                     code:errno
                                  userInfo:@{NSURLErrorKey: url}];
     }
     return NO;
@@ -99,7 +101,8 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
 static BOOL posixFailure(NSURL *url, NSError **error)
 {
     if (error) {
-        *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                     code:errno
                                  userInfo:@{NSURLErrorKey: url}];
     }
     return NO;
@@ -149,7 +152,8 @@ static BOOL posixFailure(NSURL *url, NSError **error)
     if (0 == result) return YES;
 
     if (error) {
-        *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                     code:errno
                                  userInfo:nil];
     }
     return NO;

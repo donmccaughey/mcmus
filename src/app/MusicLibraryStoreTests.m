@@ -29,12 +29,15 @@ static NSError *someError(void)
 {
     [super setUp];
     self.continueAfterFailure = NO;
-    Folder *rootFolder =
-        [[Folder alloc] initWithPath:@"/Music" name:Folder.rootName children:@[
-            [[Track alloc] initWithTrackName:@"Song" albumName:Track.noAlbum
-                                  artistName:Track.noArtist
-                                        path:@"/Music/Song.mp3"],
-        ]];
+    Folder *rootFolder = [[Folder alloc]
+        initWithPath:@"/Music"
+                name:Folder.rootName
+            children:@[
+                [[Track alloc] initWithTrackName:@"Song"
+                                       albumName:Track.noAlbum
+                                      artistName:Track.noArtist
+                                            path:@"/Music/Song.mp3"],
+            ]];
     _library = [[MusicLibrary alloc] initWithRootFolder:rootFolder];
     _fileSystem = [FileSystemFake new];
     _preferences = [PreferencesFake new];

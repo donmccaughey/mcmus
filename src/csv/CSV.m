@@ -20,11 +20,13 @@ static NSError *error_at(CSVErrorCode code, NSString *description,
     NSString *located =
         [NSString stringWithFormat:@"%@ at line %lu, column %lu.", description,
             (unsigned long)line, (unsigned long)column];
-    return [NSError errorWithDomain:CSVErrorDomain code:code userInfo:@{
-        NSLocalizedDescriptionKey: located,
-        CSVErrorLineKey: @(line),
-        CSVErrorColumnKey: @(column),
-    }];
+    return [NSError errorWithDomain:CSVErrorDomain
+                               code:code
+                           userInfo:@{
+                               NSLocalizedDescriptionKey: located,
+                               CSVErrorLineKey: @(line),
+                               CSVErrorColumnKey: @(column),
+                           }];
 }
 
 
@@ -300,7 +302,8 @@ static BOOL is_line_break(uint8_t byte)
 - (nullable NSString *)fieldString;
 {
     if (!_field.length) return @"";
-    return [[NSString alloc] initWithBytes:_field.bytes length:_field.length
+    return [[NSString alloc] initWithBytes:_field.bytes
+                                    length:_field.length
                                   encoding:NSUTF8StringEncoding];
 }
 

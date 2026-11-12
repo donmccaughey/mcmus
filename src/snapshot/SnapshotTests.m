@@ -65,7 +65,8 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.removeItemAtURLError =
-        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileReadUnknownError
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileReadUnknownError
                         userInfo:nil];
 
     NSError *error = nil;
@@ -83,7 +84,8 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.removeItemAtURLError =
-        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileNoSuchFileError
                         userInfo:nil];
     fileSystem.cloneFileToFileError =
         [NSError errorWithDomain:NSPOSIXErrorDomain code:ENOTSUP userInfo:nil];
@@ -103,7 +105,8 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.removeItemAtURLError =
-        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileNoSuchFileError
                         userInfo:nil];
     fileSystem.cloneFileToFileError = nil;
 
@@ -123,7 +126,8 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.removeItemAtURLError =
-        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileReadUnknownError
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileReadUnknownError
                         userInfo:nil];
 
     NSError *error = nil;
@@ -140,7 +144,8 @@
 {
     FileSystemFake *fileSystem = [FileSystemFake new];
     fileSystem.removeItemAtURLError =
-        [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileNoSuchFileError
                         userInfo:nil];
 
     NSError *error = nil;

@@ -241,6 +241,7 @@
 		D3A5000000000000000000F1 /* app-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "app-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D41DFEB0308C305900FEA684 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D41DFEB1308C305900FEA684 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D43B75F430A58FE900B14D7B /* .clang-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
 		D4566B11309F9ECF0013DCF4 /* libwrappers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwrappers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45D240330998DFB00F84DF9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		D48B391330A0016F00B21A13 /* snapshot-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "snapshot-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -756,6 +757,7 @@
 				D4D0929830A4E318009FBA83 /* lib */,
 				D45D240630998E1900F84DF9 /* scripts */,
 				D4DEF110309FAEC800B3F3CB /* src */,
+				D43B75F430A58FE900B14D7B /* .clang-format */,
 				D4A78314308D0B4000325F1E /* .gitignore */,
 				D41DFEB0308C305900FEA684 /* CLAUDE.md */,
 				D45D240330998DFB00F84DF9 /* Makefile */,

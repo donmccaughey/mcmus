@@ -97,7 +97,8 @@ static void index_directory(NSDictionary *entry, NSString *path,
 - (void)indexDemoData:(NSData *)demoData;
 {
     NSError *error;
-    id json = [NSJSONSerialization JSONObjectWithData:demoData options:0
+    id json = [NSJSONSerialization JSONObjectWithData:demoData
+                                              options:0
                                                 error:&error];
     if (!json) {
         _error = error;

@@ -28,10 +28,11 @@ static BOOL hashFile(NSURL *trackURL, id<FileSystem> fileSystem,
     }
     __block XXH_errorcode updated = XXH_OK;
     BOOL read = [fileSystem
-        readFile:trackURL chunks:^(const void *bytes, size_t length) {
-            if (XXH_OK == updated)
-                updated = XXH3_64bits_update(state, bytes, length);
-        }
+        readFile:trackURL
+          chunks:^(const void *bytes, size_t length) {
+              if (XXH_OK == updated)
+                  updated = XXH3_64bits_update(state, bytes, length);
+          }
            error:error];
     if (!read) return NO;
     if (XXH_OK != updated) {
@@ -73,7 +74,8 @@ static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
         return nil;
     }
     NSUInteger fileHash = readTrackHash(trackURL, fileSystem, state, errors);
-    return [[TrackMetadata alloc] initWithTrack:track size:size
+    return [[TrackMetadata alloc] initWithTrack:track
+                                           size:size
                                        fileHash:fileHash];
 }
 

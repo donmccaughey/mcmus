@@ -49,17 +49,17 @@ static void setButtonImage(UIButton *button, NSString *systemImage)
         _openButton = makeRowButton(@"Open");
         _accessoryStack = [[UIStackView alloc] init];
         __weak typeof(self) weakSelf = self;
-        [_addButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
-            [weakSelf add];
-        }] forControlEvents:UIControlEventPrimaryActionTriggered];
+        [_addButton addAction:[UIAction actionWithHandler:^(
+                                  UIAction *action) { [weakSelf add]; }]
+             forControlEvents:UIControlEventPrimaryActionTriggered];
         UIButtonConfiguration *openConfiguration =
             [_openButton.configuration copy];
         openConfiguration.image = [UIImage systemImageNamed:@"chevron.right"];
         openConfiguration.baseForegroundColor = UIColor.tertiaryLabelColor;
         _openButton.configuration = openConfiguration;
-        [_openButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
-            [weakSelf open];
-        }] forControlEvents:UIControlEventPrimaryActionTriggered];
+        [_openButton addAction:[UIAction actionWithHandler:^(
+                                   UIAction *action) { [weakSelf open]; }]
+              forControlEvents:UIControlEventPrimaryActionTriggered];
         [_accessoryStack addArrangedSubview:_addButton];
         [_accessoryStack addArrangedSubview:_openButton];
         self.accessoryView = _accessoryStack;

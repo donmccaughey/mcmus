@@ -21,7 +21,8 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _player = player;
-        _clearButton = [NSButton buttonWithTitle:@"Clear" target:nil
+        _clearButton = [NSButton buttonWithTitle:@"Clear"
+                                          target:nil
                                           action:nil];
         _emptyQueueView =
             [[EmptyStateView alloc] initWithTitle:@"No tracks"

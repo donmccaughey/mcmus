@@ -28,7 +28,8 @@ static Track *track(NSString *path)
 static NSString *metadata(
     NSString *path, unsigned long long size, NSUInteger fileHash)
 {
-    return [[TrackMetadata alloc] initWithTrack:track(path) size:size
+    return [[TrackMetadata alloc] initWithTrack:track(path)
+                                           size:size
                                        fileHash:fileHash]
         .description;
 }

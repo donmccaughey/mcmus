@@ -132,13 +132,14 @@
     id observer = [NSNotificationCenter.defaultCenter
         addObserverForName:FileSharing.didChangeNotification
                     object:_fileSharing
-                     queue:nil usingBlock:^(NSNotification *notification) {
-                         FileSharing *fileSharing = notification.object;
-                         [progress
-                             addObject:[NSString stringWithFormat:@"%lu of %lu",
-                                           fileSharing.metadataTracksLoaded,
-                                           fileSharing.metadataTotalTracks]];
-                     }];
+                     queue:nil
+                usingBlock:^(NSNotification *notification) {
+                    FileSharing *fileSharing = notification.object;
+                    [progress
+                        addObject:[NSString stringWithFormat:@"%lu of %lu",
+                                      fileSharing.metadataTracksLoaded,
+                                      fileSharing.metadataTotalTracks]];
+                }];
 
     [self startAndWait:_fileSharing];
     [NSNotificationCenter.defaultCenter removeObserver:observer];

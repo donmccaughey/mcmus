@@ -26,7 +26,8 @@
 {
     Track *first = [self track:@"A"];
     Track *second = [self track:@"B"];
-    Folder *folder = [[Folder alloc] initWithPath:@"/Music" name:@"Music"
+    Folder *folder = [[Folder alloc] initWithPath:@"/Music"
+                                             name:@"Music"
                                          children:@[first, second]];
 
     XCTAssertEqualObjects(folder.trackDescendants, (@[first, second]));
@@ -38,22 +39,24 @@
     Track *albumOne = [self track:@"Album One Song"];
     Track *albumTwo = [self track:@"Album Two Song"];
     Track *single = [self track:@"Single"];
-    Folder *folder =
-        [[Folder alloc] initWithPath:@"/Music" name:@"Music" children:@[
-            [[Folder alloc]
-                initWithPath:@"/Music/Artist"
-                        name:@"Artist"
-                    children:@[
-                        [[Folder alloc] initWithPath:@"/Music/Artist/One"
-                                                name:@"One"
-                                            children:@[albumOne]],
-                        single,
-                        [[Folder alloc] initWithPath:@"/Music/Artist/Two"
-                                                name:@"Two"
-                                            children:@[albumTwo]],
-                    ]],
-            loose,
-        ]];
+    Folder *folder = [[Folder alloc]
+        initWithPath:@"/Music"
+                name:@"Music"
+            children:@[
+                [[Folder alloc]
+                    initWithPath:@"/Music/Artist"
+                            name:@"Artist"
+                        children:@[
+                            [[Folder alloc] initWithPath:@"/Music/Artist/One"
+                                                    name:@"One"
+                                                children:@[albumOne]],
+                            single,
+                            [[Folder alloc] initWithPath:@"/Music/Artist/Two"
+                                                    name:@"Two"
+                                                children:@[albumTwo]],
+                        ]],
+                loose,
+            ]];
 
     XCTAssertEqualObjects(
         folder.trackDescendants, (@[albumOne, single, albumTwo, loose]));

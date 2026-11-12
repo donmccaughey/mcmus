@@ -16,25 +16,30 @@
 - (void)setUp
 {
     [super setUp];
-    _folder =
-        [[Folder alloc] initWithPath:@"/Music/Artist" name:@"Artist" children:@[
-            [[Folder alloc]
-                initWithPath:@"/Music/Artist/Album"
-                        name:@"Album"
-                    children:@[
-                        [[Track alloc]
-                            initWithTrackName:@"Song"
-                                    albumName:@"Album"
-                                   artistName:@"Artist"
-                                         path:@"/Music/Artist/Album/Song.mp3"],
-                    ]],
-            [[Track alloc] initWithTrackName:@"Single" albumName:@"Artist"
-                                  artistName:Track.noArtist
-                                        path:@"/Music/Artist/Single.m4a"],
-            [[Folder alloc] initWithPath:@"/Music/Artist/Empty" name:@"Empty"
-                                children:@[]],
-        ]];
-    _track = [[Track alloc] initWithTrackName:@"Loose" albumName:Track.noAlbum
+    _folder = [[Folder alloc]
+        initWithPath:@"/Music/Artist"
+                name:@"Artist"
+            children:@[
+                [[Folder alloc]
+                    initWithPath:@"/Music/Artist/Album"
+                            name:@"Album"
+                        children:@[
+                            [[Track alloc] initWithTrackName:@"Song"
+                                                   albumName:@"Album"
+                                                  artistName:@"Artist"
+                                                        path:@"/Music/Artist/"
+                                                             @"Album/Song.mp3"],
+                        ]],
+                [[Track alloc] initWithTrackName:@"Single"
+                                       albumName:@"Artist"
+                                      artistName:Track.noArtist
+                                            path:@"/Music/Artist/Single.m4a"],
+                [[Folder alloc] initWithPath:@"/Music/Artist/Empty"
+                                        name:@"Empty"
+                                    children:@[]],
+            ]];
+    _track = [[Track alloc] initWithTrackName:@"Loose"
+                                    albumName:Track.noAlbum
                                    artistName:Track.noArtist
                                          path:@"/Music/Loose.m4a"];
 }

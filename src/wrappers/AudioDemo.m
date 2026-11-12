@@ -55,7 +55,8 @@
         from:(NSTimeInterval)timeIndex
     thenPlay:(nullable NSURL *)nextTrackURL;
 {
-    [_audio play:_demoTrackURL from:timeIndex
+    [_audio play:_demoTrackURL
+            from:timeIndex
         thenPlay:[self demoTrackFor:nextTrackURL]];
 }
 

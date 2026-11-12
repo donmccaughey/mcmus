@@ -18,14 +18,17 @@
 - (void)setUp
 {
     [super setUp];
-    _first = [[Track alloc] initWithTrackName:@"First" albumName:@"Album"
+    _first = [[Track alloc] initWithTrackName:@"First"
+                                    albumName:@"Album"
                                    artistName:@"Artist"
                                          path:@"/Music/Artist/Album/First.mp3"];
     _second =
-        [[Track alloc] initWithTrackName:@"Second" albumName:@"Album"
+        [[Track alloc] initWithTrackName:@"Second"
+                               albumName:@"Album"
                               artistName:@"Artist"
                                     path:@"/Music/Artist/Album/Second.mp3"];
-    _third = [[Track alloc] initWithTrackName:@"Third" albumName:@"Album"
+    _third = [[Track alloc] initWithTrackName:@"Third"
+                                    albumName:@"Album"
                                    artistName:@"Artist"
                                          path:@"/Music/Artist/Album/Third.m4a"];
     _audio = [[AudioFake alloc] init];
@@ -85,7 +88,8 @@
 {
     Player *player = [self makePlayer:@[_first, _second, _third]];
     [player play];
-    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_first.url from:0
+    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_first.url
+                                                         from:0
                                                      thenPlay:_second.url]]);
     XCTAssertTrue(player.isPlaying);
 }
@@ -122,7 +126,8 @@
     [player stop];
     [_audio clearCalls];
     [player play];
-    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_first.url from:30
+    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_first.url
+                                                         from:30
                                                      thenPlay:_second.url]]);
 }
 
@@ -144,7 +149,8 @@
     [_audio reportPosition:5];
     [player back];
     XCTAssertEqual(player.timeIndex, 0.0);
-    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_first.url from:0
+    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_first.url
+                                                         from:0
                                                      thenPlay:_second.url]]);
     XCTAssertTrue(player.isPlaying);
 }
@@ -168,7 +174,8 @@
     [player next];
     XCTAssertEqualObjects(player.queue.tracks, (@[_second, _third]));
     XCTAssertEqual(player.timeIndex, 0.0);
-    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_second.url from:0
+    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall play:_second.url
+                                                         from:0
                                                      thenPlay:_third.url]]);
     XCTAssertTrue(player.isPlaying);
 }

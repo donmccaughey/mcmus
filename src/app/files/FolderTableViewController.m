@@ -46,7 +46,8 @@
     id<FolderChild> child = _folder.children[indexPath.row];
     Player *player = _player;
     __weak typeof(self) weakSelf = self;
-    [cell show:child onAdd:^{ [player.queue add:child]; }
+    [cell show:child
+        onAdd:^{ [player.queue add:child]; }
         onOpen:^{ [weakSelf open:child]; }];
     return cell;
 }

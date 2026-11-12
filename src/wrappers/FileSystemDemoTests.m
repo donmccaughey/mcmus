@@ -360,7 +360,8 @@
                             error:NULL]);
     XCTAssertEqualObjects(_fileSystem.clonedSources, @[@"/Users/demo/Music"]);
     XCTAssertEqualObjects(_fileSystem.clonedDestinations, @[@"/Snapshot"]);
-    _fileSystem.removeItemAtURLError = [NSError errorWithDomain:@"Remove" code:1
+    _fileSystem.removeItemAtURLError = [NSError errorWithDomain:@"Remove"
+                                                           code:1
                                                        userInfo:nil];
     NSError *error;
     XCTAssertFalse([demo removeItemAtURL:[self directory:@"/Snapshot"]

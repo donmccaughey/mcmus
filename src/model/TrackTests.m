@@ -9,7 +9,8 @@
 
 - (Track *)trackNamed:(NSString *)trackName
 {
-    return [[Track alloc] initWithTrackName:trackName albumName:@"Album"
+    return [[Track alloc] initWithTrackName:trackName
+                                  albumName:@"Album"
                                  artistName:@"Artist"
                                        path:@"/Music/Artist/Album/Song.mp3"];
 }
@@ -17,7 +18,8 @@
 - (void)testInitWithDisplayNameKeepsEveryProperty
 {
     Track *track =
-        [[Track alloc] initWithDisplayName:@"Song.mp3" pathExtension:@"mp3"
+        [[Track alloc] initWithDisplayName:@"Song.mp3"
+                             pathExtension:@"mp3"
                                       path:@"/Music/Artist/Album/Song.mp3"
                                 folderName:@"Album"
                           parentFolderName:@"Artist"];
@@ -43,7 +45,8 @@
 {
     Track *loaded = [self trackNamed:@"Song"];
     Track *bare =
-        [[Track alloc] initWithTrackName:@"Other" albumName:Track.noAlbum
+        [[Track alloc] initWithTrackName:@"Other"
+                               albumName:Track.noAlbum
                               artistName:Track.noArtist
                                     path:@"/Music/Artist/Album/Song.mp3"];
 
@@ -54,11 +57,13 @@
 - (void)testTracksWithDifferentPathsAreNotEqual
 {
     Track *first =
-        [[Track alloc] initWithTrackName:@"Song" albumName:@"Album"
+        [[Track alloc] initWithTrackName:@"Song"
+                               albumName:@"Album"
                               artistName:@"Artist"
                                     path:@"/Music/Artist/Album/Song.mp3"];
     Track *second =
-        [[Track alloc] initWithTrackName:@"Song" albumName:@"Album"
+        [[Track alloc] initWithTrackName:@"Song"
+                               albumName:@"Album"
                               artistName:@"Artist"
                                     path:@"/Music/Artist/Album/Song.m4a"];
 
