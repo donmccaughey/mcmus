@@ -29,6 +29,9 @@ On iOS, MC Mus shall target iOS 18 (including iPadOS 18) or later.
 
 MC Mus shall set the app category in Xcode to "Music".
 
+MC Mus shall use `clang-format` to apply a consistent format to the project's
+Objective-C code.
+
 MC Mus shall use the Objective-C language and follow the style guidelines in
 [Objective-C Style](objective-c-style.md).
 
@@ -72,7 +75,7 @@ The MC Mus project shall place source files for artwork and other media in the
 
 The MC Mus project shall place documentation files in the `docs/` subdirectory.
 
-The MC Mus project shall place third party source code in the `libs/`
+The MC Mus project shall place third party source code in the `lib/`
 subdirectory.
 
 The MC Mus project shall place script files in the `scripts/` subdirectory.
