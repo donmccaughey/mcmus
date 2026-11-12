@@ -7,6 +7,9 @@
 #import <time.h>
 
 #import "FileSystem.h"
+#import "LoadMusicLibrary.h"
+#import "LoadResult.h"
+#import "MusicLibrary.h"
 #import "Snapshot.h"
 
 
@@ -14,8 +17,7 @@ typedef void (^Reply)(NSError *_Nullable error);
 
 
 static os_log_t
-snapshot_log(void)
-{
+snapshot_log(void) {
     static os_log_t log;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
@@ -26,26 +28,43 @@ snapshot_log(void)
 
 
 static double
-milliseconds_since(uint64_t start)
-{
+milliseconds_since(uint64_t start) {
     uint64_t elapsed = clock_gettime_nsec_np(CLOCK_MONOTONIC) - start;
     return elapsed / 1e6;
 }
 
 
+static NSArray<Track *> *
+load_tracks_and_log_time(NSURL *snapshotDir, id<FileSystem> fileSystem) {
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    LoadResult *result = loadMusicLibrary(
+        snapshotDir,
+        LoadOptionsTrackHash | LoadOptionsTrackSize,
+        fileSystem);
+    NSArray<Track *> *tracks = [result.library getTracks];
+    if (result.errors.count) {
+        os_log(snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms with %lu errors",
+            tracks.count, snapshotDir.path, milliseconds_since(start), result.errors.count);
+    } else {
+        os_log(snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms",
+            tracks.count, snapshotDir.path, milliseconds_since(start));
+    }
+    return tracks;
+}
+
+
 static BOOL
 remove_snapshot_and_log_time(NSURL *snapshotDir,
-                             id<FileSystem> fileSystem,
-                             NSError **error)
-{
+    id<FileSystem> fileSystem,
+    NSError **error) {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     BOOL removedSnapshot = removeSnapshot(snapshotDir, fileSystem, error);
     if (removedSnapshot) {
         os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms",
-               snapshotDir.path, milliseconds_since(start));
+            snapshotDir.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms but failed: %{public}@",
-               snapshotDir.path, milliseconds_since(start), *error);
+            snapshotDir.path, milliseconds_since(start), *error);
     }
     return removedSnapshot;
 }
@@ -53,27 +72,26 @@ remove_snapshot_and_log_time(NSURL *snapshotDir,
 
 static BOOL
 take_snapshot_and_log_time(NSURL *musicDir,
-                           NSURL *snapshotDir,
-                           id<FileSystem> fileSystem,
-                           NSError **error)
-{
+    NSURL *snapshotDir,
+    id<FileSystem> fileSystem,
+    NSError **error) {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     BOOL tookSnapshot = takeSnapshot(musicDir, snapshotDir, fileSystem, error);
     if (tookSnapshot) {
         os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
-               musicDir.path, snapshotDir.path, milliseconds_since(start));
+            musicDir.path, snapshotDir.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms but failed: %{public}@",
-               musicDir.path, snapshotDir.path, milliseconds_since(start), *error);
+            musicDir.path, snapshotDir.path, milliseconds_since(start), *error);
     }
     return tookSnapshot;
 }
 
 
-@implementation FileSharingThread
-{
+@implementation FileSharingThread {
     id<FileSystem> _fileSystem;
     NSURL *_musicDir;
+    MusicLibrary *_musicLibrary;
     Reply _Nullable _startReply;
     Reply _Nullable _stopReply;
     BOOL _stopRequested;
@@ -83,7 +101,7 @@ take_snapshot_and_log_time(NSURL *musicDir,
 - (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
-    if ( ! self) return nil;
+    if (!self) return nil;
 
     _fileSystem = fileSystem;
     self.name = @"cc.donm.mcmus.file-sharing";
@@ -125,8 +143,14 @@ take_snapshot_and_log_time(NSURL *musicDir,
         NSURL *snapshotDir = getSnapshotDirURL(_fileSystem, &error);
         BOOL tookSnapshot = snapshotDir
             && take_snapshot_and_log_time(_musicDir, snapshotDir, _fileSystem, &error);
-        [self replyToStart:error];
-        if ( ! tookSnapshot) return;
+        if (!tookSnapshot) {
+            [self replyToStart:error];
+            return;
+        }
+
+        NSArray<Track *> *tracks = load_tracks_and_log_time(snapshotDir, _fileSystem);
+        [self replyToStart:nil];
+        (void)tracks; // TODO: build manifest CSV
 
         [self runUntilStopRequested];
 
@@ -145,7 +169,7 @@ take_snapshot_and_log_time(NSURL *musicDir,
 {
     NSRunLoop *runLoop = NSRunLoop.currentRunLoop;
     [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-    while ( ! _stopRequested) {
+    while (!_stopRequested) {
         @autoreleasepool {
             [runLoop runMode:NSDefaultRunLoopMode beforeDate:NSDate.distantFuture];
         }

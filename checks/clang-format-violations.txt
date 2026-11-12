@@ -628,66 +628,6 @@ demoFileSystemWrapping(id<FileSystem> fileSystem)
 src/app/DemoMode.m:42:35: warning: code should be clang-formatted [-Wclang-format-violations]
 demoAudioWrapping(id<Audio> audio)
                                   ^
-src/file-sharing/FileSharingThread.m:17:19: warning: code should be clang-formatted [-Wclang-format-violations]
-snapshot_log(void)
-                  ^
-src/file-sharing/FileSharingThread.m:29:35: warning: code should be clang-formatted [-Wclang-format-violations]
-milliseconds_since(uint64_t start)
-                                  ^
-src/file-sharing/FileSharingThread.m:37:49: warning: code should be clang-formatted [-Wclang-format-violations]
-remove_snapshot_and_log_time(NSURL *snapshotDir,
-                                                ^
-src/file-sharing/FileSharingThread.m:38:56: warning: code should be clang-formatted [-Wclang-format-violations]
-                             id<FileSystem> fileSystem,
-                                                       ^
-src/file-sharing/FileSharingThread.m:39:46: warning: code should be clang-formatted [-Wclang-format-violations]
-                             NSError **error)
-                                             ^
-src/file-sharing/FileSharingThread.m:44:76: warning: code should be clang-formatted [-Wclang-format-violations]
-        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms",
-                                                                           ^
-src/file-sharing/FileSharingThread.m:47:99: warning: code should be clang-formatted [-Wclang-format-violations]
-        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms but failed: %{public}@",
-                                                                                                  ^
-src/file-sharing/FileSharingThread.m:55:44: warning: code should be clang-formatted [-Wclang-format-violations]
-take_snapshot_and_log_time(NSURL *musicDir,
-                                           ^
-src/file-sharing/FileSharingThread.m:56:47: warning: code should be clang-formatted [-Wclang-format-violations]
-                           NSURL *snapshotDir,
-                                              ^
-src/file-sharing/FileSharingThread.m:57:54: warning: code should be clang-formatted [-Wclang-format-violations]
-                           id<FileSystem> fileSystem,
-                                                     ^
-src/file-sharing/FileSharingThread.m:58:44: warning: code should be clang-formatted [-Wclang-format-violations]
-                           NSError **error)
-                                           ^
-src/file-sharing/FileSharingThread.m:63:84: warning: code should be clang-formatted [-Wclang-format-violations]
-        os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
-                                                                                   ^
-src/file-sharing/FileSharingThread.m:66:107: warning: code should be clang-formatted [-Wclang-format-violations]
-        os_log(snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms but failed: %{public}@",
-                                                                                                          ^
-src/file-sharing/FileSharingThread.m:73:34: warning: code should be clang-formatted [-Wclang-format-violations]
-@implementation FileSharingThread
-                                 ^
-src/file-sharing/FileSharingThread.m:86:9: warning: code should be clang-formatted [-Wclang-format-violations]
-    if ( ! self) return nil;
-        ^
-src/file-sharing/FileSharingThread.m:86:11: warning: code should be clang-formatted [-Wclang-format-violations]
-    if ( ! self) return nil;
-          ^
-src/file-sharing/FileSharingThread.m:129:13: warning: code should be clang-formatted [-Wclang-format-violations]
-        if ( ! tookSnapshot) return;
-            ^
-src/file-sharing/FileSharingThread.m:129:15: warning: code should be clang-formatted [-Wclang-format-violations]
-        if ( ! tookSnapshot) return;
-              ^
-src/file-sharing/FileSharingThread.m:148:12: warning: code should be clang-formatted [-Wclang-format-violations]
-    while ( ! _stopRequested) {
-           ^
-src/file-sharing/FileSharingThread.m:148:14: warning: code should be clang-formatted [-Wclang-format-violations]
-    while ( ! _stopRequested) {
-             ^
 src/file-sharing/FileSharing.m:18:36: warning: code should be clang-formatted [-Wclang-format-violations]
 no_music_root_directory_error(void)
                                    ^
@@ -1084,4 +1024,4 @@ src/model/Player.m:28:7: warning: code should be clang-formatted [-Wclang-format
 src/model/Player.m:122:26: warning: code should be clang-formatted [-Wclang-format-violations]
 - (void)mutateQueue:(void (NS_NOESCAPE ^)(void))mutate {
                          ^
-362 format violations in 36 files
+342 format violations in 35 files
