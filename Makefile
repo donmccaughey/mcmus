@@ -7,7 +7,7 @@ TEST_FLAGS ?= -quiet
 
 app = $(release_dir)/$(product).app
 arch = $(shell uname -m)
-format_files = $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
+objc_files = $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
 product = MC Mus
 project_files = \
 		mcmus.xcodeproj/project.pbxproj \
@@ -27,17 +27,20 @@ ver = 1.0
 
 
 .PHONY : check
-check : $(TMP)/checked-iOS.stamp $(TMP)/checked-macOS.stamp
+check : \
+		$(TMP)/clang-format-violations.txt \
+		$(TMP)/checked-iOS.stamp \
+		$(TMP)/checked-macOS.stamp
 
 
 .PHONY : check-format
 check-format :
-	@scripts/check-format --no-echo --style=file:.clang-format --Werror $(format_files)
+	@scripts/check-format --no-echo --style=file:.clang-format --Werror $(objc_files)
 
 
 .PHONY : format
 format :
-	xcrun clang-format -i --style=file:.clang-format $(format_files)
+	xcrun clang-format -i --style=file:.clang-format $(objc_files)
 
 
 .PHONY : release
@@ -47,6 +50,14 @@ release: $(TMP)/made-disk-image.stamp
 .PHONY : list-simulators
 list-simulators :
 	xcodebuild -project mcmus.xcodeproj -scheme app -showdestinations
+
+
+.PHONY : update-clang-format-violations
+update-clang-format-violations :
+	@scripts/check-format \
+		--style=file:.clang-format \
+		$(objc_files) \
+		&> checks/clang-format-violations.txt
 
 
 .PHONY : clean
@@ -101,6 +112,16 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 		-destination 'platform=macOS,arch=$(arch)' \
 		$(TEST_FLAGS)
 	touch $@
+
+
+$(TMP)/clang-format-violations.txt : \
+		checks/clang-format-violations.txt \
+		$(objc_files)
+	@scripts/check-format \
+		--style=file:.clang-format \
+		$(objc_files) \
+		&> $@
+	diff checks/clang-format-violations.txt $@
 
 
 # use a stamp file since the disk image name contains a space and thus can't be
