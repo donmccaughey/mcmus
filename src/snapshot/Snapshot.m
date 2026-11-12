@@ -49,7 +49,7 @@ BOOL takeSnapshot(NSURL *musicDir, NSURL *snapshotDir,
     BOOL cloned = [fileSystem cloneFile:musicDir toFile:snapshotDir
                                   error:error];
     if (cloned) {
-        *error = nil;
+        if (error) *error = nil;
         return YES;
     } else {
         return NO;

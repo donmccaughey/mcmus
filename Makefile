@@ -1,5 +1,6 @@
 TMP ?= $(abspath tmp)
 
+ANALYZE_FLAGS ?= -quiet
 BUILD_FLAGS ?= -quiet
 IOS_TEST_DEVICE ?= iPhone 16e
 TEST_FLAGS ?= -quiet
@@ -28,9 +29,17 @@ ver = 1.0
 
 .PHONY : check
 check : \
+		$(TMP)/analyzed-iOS.stamp \
+		$(TMP)/analyzed-macOS.stamp \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp
+
+
+.PHONY : analyze
+analyze : \
+		$(TMP)/analyzed-iOS.stamp \
+		$(TMP)/analyzed-macOS.stamp
 
 
 .PHONY : check-format
@@ -67,6 +76,26 @@ clean :
 $(TMP)/ \
 $(TMP)/Release :
 	mkdir -p $@
+
+
+$(TMP)/analyzed-iOS.stamp : $(src_files) | $$(dir $$@)
+	xcodebuild analyze \
+		-project mcmus.xcodeproj \
+		-scheme app \
+		-configuration Debug \
+		-destination 'platform=iOS Simulator,name=$(IOS_TEST_DEVICE)' \
+		$(ANALYZE_FLAGS)
+	touch $@
+
+
+$(TMP)/analyzed-macOS.stamp : $(src_files) | $$(dir $$@)
+	xcodebuild analyze \
+		-project mcmus.xcodeproj \
+		-scheme app \
+		-configuration Debug \
+		-destination 'platform=macOS,arch=$(arch)' \
+		$(ANALYZE_FLAGS)
+	touch $@
 
 
 # use a stamp file since the app bundle is a directory and thus doesn't have an

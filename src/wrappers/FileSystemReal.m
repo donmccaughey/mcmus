@@ -148,8 +148,10 @@ static BOOL posixFailure(NSURL *url, NSError **error)
     int result = clonefile(sourcePath, destinationPath, flags);
     if (0 == result) return YES;
 
-    *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
-                             userInfo:nil];
+    if (error) {
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
+                                 userInfo:nil];
+    }
     return NO;
 }
 
