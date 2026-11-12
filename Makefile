@@ -6,19 +6,17 @@ IOS_TEST_DEVICE ?= iPhone 16e
 TEST_FLAGS ?= -quiet
 
 
-app = $(release_dir)/$(product).app
-arch = $(shell uname -m)
-objc_files = $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
-product = MC Mus
-project_files = \
+arch := $(shell uname -m)
+derived_data_dir = $(TMP)/DerivedData
+objc_files := $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
+project_files := \
 		mcmus.xcodeproj/project.pbxproj \
 		$(wildcard mcmus.xcodeproj/xcshareddata/xcschemes/*.xcscheme)
-release_dir = $(TMP)/Release
-src_files = \
+src_files := \
 		 .git/hooks/pre-commit \
 		$(shell find src -type f -not -name '.*') \
 		$(project_files)
-ver = 1.0
+ver := 1.0
 
 
 .SECONDEXPANSION :
@@ -84,6 +82,7 @@ $(TMP)/analyzed-iOS.stamp : $(src_files) | $$(dir $$@)
 		-scheme app \
 		-configuration Debug \
 		-destination 'platform=iOS Simulator,name=$(IOS_TEST_DEVICE)' \
+		-derivedDataPath $(derived_data_dir)/analyze-iOS \
 		$(ANALYZE_FLAGS)
 	touch $@
 
@@ -94,6 +93,7 @@ $(TMP)/analyzed-macOS.stamp : $(src_files) | $$(dir $$@)
 		-scheme app \
 		-configuration Debug \
 		-destination 'platform=macOS,arch=$(arch)' \
+		-derivedDataPath $(derived_data_dir)/analyze-macOS \
 		$(ANALYZE_FLAGS)
 	touch $@
 
@@ -105,14 +105,15 @@ $(TMP)/built-release.stamp : \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp \
-		| $(release_dir)
-	rm -rf $(release_dir)
+		| $(TMP)/Release
+	rm -rf $(TMP)/Release
 	xcodebuild build \
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-configuration Release \
 		-destination 'generic/platform=macOS' \
-		CONFIGURATION_BUILD_DIR=$(release_dir) \
+		-derivedDataPath $(derived_data_dir)/build-release \
+		CONFIGURATION_BUILD_DIR=$(TMP)/Release \
 		$(BUILD_FLAGS)
 	touch $@
 
@@ -127,6 +128,7 @@ $(TMP)/checked-iOS.stamp : $(src_files) | $$(dir $$@)
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-destination 'platform=iOS Simulator,name=$(IOS_TEST_DEVICE)' \
+		-derivedDataPath $(derived_data_dir)/test-iOS \
 		$(TEST_FLAGS)
 	touch $@
 
@@ -136,6 +138,7 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-destination 'platform=macOS,arch=$(arch)' \
+		-derivedDataPath $(derived_data_dir)/test-macOS \
 		$(TEST_FLAGS)
 	touch $@
 
@@ -143,5 +146,5 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 # use a stamp file since the disk image name contains a space and thus can't be
 # a target name
 $(TMP)/made-disk-image.stamp : $(TMP)/built-release.stamp scripts/make-dmg.sh
-	scripts/make-dmg.sh "$(app)" $(TMP)
+	scripts/make-dmg.sh "$(TMP)/Release/MC Mus.app" $(TMP)
 	touch $@
