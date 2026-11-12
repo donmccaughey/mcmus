@@ -28,6 +28,11 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 @property (nonatomic, readonly) BOOL isChanging;
 @property (nonatomic, readonly, nullable) NSError *error;
 
+// Both are zero except while starting, once the snapshot has been taken and
+// track metadata is being loaded from it.
+@property (nonatomic, readonly) NSUInteger metadataTracksLoaded;
+@property (nonatomic, readonly) NSUInteger metadataTotalTracks;
+
 - (instancetype)initWithMusicRootDirectoryURL:
                     (nullable NSURL *)musicRootDirectoryURL
                                    fileSystem:(id<FileSystem>)fileSystem

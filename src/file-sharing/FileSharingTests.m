@@ -121,6 +121,34 @@
 }
 
 
+- (void)testStartReportsMetadataProgressWhileStarting;
+{
+    for (int i = 0; i < 250; ++i) {
+        [_fileSystem
+            addPath:[NSString stringWithFormat:
+                            @"/container/AppSupport/snapshot/Song %d.mp3", i]];
+    }
+    NSMutableArray<NSString *> *progress = [NSMutableArray array];
+    id observer = [NSNotificationCenter.defaultCenter
+        addObserverForName:FileSharing.didChangeNotification
+                    object:_fileSharing
+                     queue:nil usingBlock:^(NSNotification *notification) {
+                         FileSharing *fileSharing = notification.object;
+                         [progress
+                             addObject:[NSString stringWithFormat:@"%lu of %lu",
+                                           fileSharing.metadataTracksLoaded,
+                                           fileSharing.metadataTotalTracks]];
+                     }];
+
+    [self startAndWait:_fileSharing];
+    [NSNotificationCenter.defaultCenter removeObserver:observer];
+
+    XCTAssertEqual(_fileSharing.state, FileSharingStateSharing);
+    XCTAssertEqualObjects(
+        progress, (@[@"0 of 0", @"100 of 250", @"200 of 250", @"0 of 0"]));
+}
+
+
 - (void)testStartReportsCloneFailure;
 {
     _fileSystem.cloneFileToFileError =

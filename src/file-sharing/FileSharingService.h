@@ -20,6 +20,17 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+// The messages the file sharing side sends back to the app outside of a
+// reply, the counterpart of an XPC connection's exported object. They may
+// arrive on any thread.
+@protocol FileSharingClient <NSObject>
+
+- (void)didLoadMetadataForTracks:(NSUInteger)tracksLoaded
+                         ofTotal:(NSUInteger)totalTracks;
+
+@end
+
+
 NS_ASSUME_NONNULL_END
 
 

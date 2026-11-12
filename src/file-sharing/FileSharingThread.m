@@ -54,12 +54,13 @@ static NSArray<Track *> *load_tracks_and_log_time(
 
 
 static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
-    NSArray<Track *> *tracks, id<FileSystem> fileSystem)
+    NSArray<Track *> *tracks, id<FileSystem> fileSystem,
+    LoadTrackMetadataProgress progress)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSArray<NSError *> *errors = nil;
     NSArray<TrackMetadata *> *metadata =
-        loadTrackMetadata(tracks, fileSystem, &errors);
+        loadTrackMetadata(tracks, fileSystem, progress, &errors);
     if (errors.count) {
         os_log(snapshot_log(),
             "Loaded metadata for %lu tracks in %.1f ms with %lu errors",
@@ -110,6 +111,7 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 
 @implementation FileSharingThread {
     id<FileSystem> _fileSystem;
+    __weak id<FileSharingClient> _client;
     NSURL *_musicDir;
     MusicLibrary *_musicLibrary;
     Reply _Nullable _startReply;
@@ -118,12 +120,14 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 }
 
 
-- (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem;
+- (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
+                            client:(nullable id<FileSharingClient>)client;
 {
     self = [super init];
     if (!self) return nil;
 
     _fileSystem = fileSystem;
+    _client = client;
     self.name = @"cc.donm.mcmus.file-sharing";
     self.qualityOfService = NSQualityOfServiceUserInitiated;
 
@@ -171,7 +175,11 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
         NSArray<Track *> *tracks =
             load_tracks_and_log_time(snapshotDir, _fileSystem);
         NSArray<TrackMetadata *> *metadata =
-            load_track_metadata_and_log_time(tracks, _fileSystem);
+            load_track_metadata_and_log_time(tracks, _fileSystem,
+                ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
+                    [self->_client didLoadMetadataForTracks:tracksLoaded
+                                                    ofTotal:totalTracks];
+                });
         [self replyToStart:nil];
         (void)metadata; // TODO: build manifest CSV
 

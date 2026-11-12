@@ -126,8 +126,16 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 - (NSString *)progressText
 {
     return FileSharingStateStarting == _fileSharing.state
-        ? @"Creating snapshot…"
+        ? self.creatingSnapshotText
         : @"Removing snapshot…";
+}
+
+- (NSString *)creatingSnapshotText
+{
+    NSUInteger totalTracks = _fileSharing.metadataTotalTracks;
+    if (!totalTracks) return @"Creating snapshot…";
+    NSUInteger percent = _fileSharing.metadataTracksLoaded * 100 / totalTracks;
+    return [NSString stringWithFormat:@"Creating snapshot… (%lu%%)", percent];
 }
 
 - (NSControlStateValue)switchState

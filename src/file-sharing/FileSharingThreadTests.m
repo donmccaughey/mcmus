@@ -8,12 +8,40 @@
 #import "FileSystemFake.h"
 
 
+@interface FileSharingClientFake : NSObject <FileSharingClient>
+@property (nonatomic, readonly) NSMutableArray<NSString *> *progress;
+@end
+
+
+@implementation FileSharingClientFake
+
+- (instancetype)init;
+{
+    self = [super init];
+    if (!self) return nil;
+
+    _progress = [NSMutableArray array];
+
+    return self;
+}
+
+- (void)didLoadMetadataForTracks:(NSUInteger)tracksLoaded
+                         ofTotal:(NSUInteger)totalTracks;
+{
+    [_progress addObject:[NSString stringWithFormat:@"%lu of %lu", tracksLoaded,
+                             totalTracks]];
+}
+
+@end
+
+
 @interface FileSharingThreadTests : XCTestCase
 @end
 
 
 @implementation FileSharingThreadTests {
     FileSystemFake *_fileSystem;
+    FileSharingClientFake *_client;
     NSURL *_musicDir;
     FileSharingThread *_thread;
     XCTestExpectation *_threadExited;
@@ -29,7 +57,9 @@
         [NSURL fileURLWithPath:@"/container/AppSupport" isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
     _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
-    _thread = [[FileSharingThread alloc] initWithFileSystem:_fileSystem];
+    _client = [FileSharingClientFake new];
+    _thread = [[FileSharingThread alloc] initWithFileSystem:_fileSystem
+                                                     client:_client];
     _threadExited = [[XCTNSNotificationExpectation alloc]
         initWithName:NSThreadWillExitNotification
               object:_thread];
@@ -76,6 +106,34 @@
     NSError *stopError = [self stopAndWait];
 
     XCTAssertNil(stopError);
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testStartReportsMetadataProgressToClientBeforeReplying;
+{
+    for (int i = 0; i < 250; ++i) {
+        [_fileSystem
+            addPath:[NSString stringWithFormat:
+                            @"/container/AppSupport/snapshot/Song %d.mp3", i]];
+    }
+
+    [self startAndWait];
+
+    XCTAssertEqualObjects(_client.progress, (@[@"100 of 250", @"200 of 250"]));
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testStartWithFewTracksReportsNoMetadataProgress;
+{
+    [self startAndWait];
+
+    XCTAssertEqualObjects(_client.progress, @[]);
+
+    [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
 }
 

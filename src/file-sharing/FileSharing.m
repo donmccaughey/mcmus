@@ -25,6 +25,10 @@ static NSError *no_music_root_directory_error(void)
 }
 
 
+@interface FileSharing () <FileSharingClient>
+@end
+
+
 @implementation FileSharing {
     NSURL *_Nullable _musicRootDirectoryURL;
     id<FileSystem> _fileSystem;
@@ -101,7 +105,8 @@ static NSError *no_music_root_directory_error(void)
         reply(no_music_root_directory_error());
         return;
     }
-    _service = [[FileSharingThread alloc] initWithFileSystem:_fileSystem];
+    _service = [[FileSharingThread alloc] initWithFileSystem:_fileSystem
+                                                      client:self];
     [_service startSharingMusicDirectory:_musicRootDirectoryURL reply:reply];
 }
 
@@ -134,9 +139,32 @@ static NSError *no_music_root_directory_error(void)
 {
     _state = state;
     _error = error;
+    _metadataTracksLoaded = 0;
+    _metadataTotalTracks = 0;
+    [self postDidChange];
+}
+
+
+- (void)postDidChange;
+{
     [NSNotificationCenter.defaultCenter
         postNotificationName:FileSharing.didChangeNotification
                       object:self];
+}
+
+
+#pragma mark - FileSharingClient, called on any thread
+
+
+- (void)didLoadMetadataForTracks:(NSUInteger)tracksLoaded
+                         ofTotal:(NSUInteger)totalTracks;
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (FileSharingStateStarting != self->_state) return;
+        self->_metadataTracksLoaded = tracksLoaded;
+        self->_metadataTotalTracks = totalTracks;
+        [self postDidChange];
+    });
 }
 
 
