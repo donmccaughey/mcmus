@@ -4,16 +4,9 @@ This document describes where my preferred Objective-C style differs from the
 commonly used Apple style.
 
 
-# Not operator spacing
+# Line width
 
-Ensure that the not `!` operator always has one space before and after. This
-makes it easier to spot negations when rapidly scanning code.
-
-    // ¡¡ incorrect !! - harder to scan rapidly
-    if (!is_enabled) return;
-
-    // correct - the `!` stands out
-    if ( ! is_enabled) return;
+Wrap code to 80 columns.
 
 
 # Single-line `if` statements
@@ -134,7 +127,7 @@ Follow the pattern below for init method definitions when practical.
     - (instancetype)init;
     {
         self = [super init];
-        if ( ! self) return nil;
+        if (!self) return nil;
         
         // initialize instance variables
         

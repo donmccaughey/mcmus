@@ -1,50 +1,66 @@
 #!/bin/bash
-# Report clang-format violations without changing any files, then print a
-# summary line.
+# Report clang-format violations in the .h and .m files under a source
+# directory without changing any files, then print a summary line. Prints
+# nothing when there are no violations.
 #
-# usage: check-format [--no-echo] [clang-format-option ...] file ...
-#
-# --no-echo prints only the summary line, not the clang-format output.
+# usage: check-format --srcdir dir [clang-format-option ...]
 
 set -uo pipefail
 
-echo_output=true
+usage_error() {
+    echo "check-format: $1" >&2
+    echo "usage: check-format --srcdir dir [clang-format-option ...]" >&2
+    exit 2
+}
+
+srcdir=
 clang_format_args=()
-for arg in "$@"; do
-    if [ "$arg" = --no-echo ]; then
-        echo_output=false
-    else
-        clang_format_args+=("$arg")
-    fi
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --srcdir)
+            [ $# -ge 2 ] || usage_error "--srcdir requires a directory"
+            srcdir=$2
+            shift
+            ;;
+        --srcdir=*)
+            srcdir=${1#--srcdir=}
+            ;;
+        *)
+            clang_format_args+=("$1")
+            ;;
+    esac
+    shift
 done
+
+[ -n "$srcdir" ] || usage_error "--srcdir is required"
+[ -d "$srcdir" ] || usage_error "$srcdir is not a directory"
+
+sources=()
+while IFS= read -r -d '' source; do
+    sources+=("$source")
+done < <(find "$srcdir" -type f \( -name '*.h' -o -name '*.m' \) -print0)
+
+# Without file arguments clang-format would wait on stdin.
+if [ ${#sources[@]} -eq 0 ]; then
+    echo "check-format: no .h or .m files in $srcdir" >&2
+    exit 1
+fi
 
 # clang-format reports violations on stderr; fd 3 keeps its stdout out of the
 # capture.
 exec 3>&1
-output=$(xcrun clang-format --dry-run ${clang_format_args[@]+"${clang_format_args[@]}"} 2>&1 >&3)
+output=$(xcrun clang-format --dry-run ${clang_format_args[@]+"${clang_format_args[@]}"} "${sources[@]}" 2>&1 >&3)
 status=$?
 exec 3>&-
+
+if [ -n "$output" ]; then
+    printf '%s\n' "$output" >&2
+fi
 
 violations=$(printf '%s\n' "$output" \
     | grep -E ':[0-9]+:[0-9]+: (warning|error): .*\[-Wclang-format-violations\]$')
 
-# Without violations there is no summary line to explain a failure, so the
-# clang-format output is shown even with --no-echo.
-if [ -z "$violations" ] && [ $status -ne 0 ]; then
-    echo_output=true
-fi
-
-if $echo_output && [ -n "$output" ]; then
-    printf '%s\n' "$output" >&2
-fi
-
-if [ -z "$violations" ]; then
-    # A failure without violations is a clang-format error, such as a bad
-    # option or a missing file, so nothing was actually checked.
-    if [ $status -eq 0 ]; then
-        echo "no format violations"
-    fi
-else
+if [ -n "$violations" ]; then
     violation_count=$(printf '%s\n' "$violations" | wc -l | tr -d ' ')
     file_count=$(printf '%s\n' "$violations" \
         | sed -E 's/:[0-9]+:[0-9]+: (warning|error): .*//' \
