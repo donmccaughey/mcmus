@@ -295,6 +295,8 @@
 				model/LoadMusicLibrary.m,
 				model/LoadResult.h,
 				model/LoadResult.m,
+				model/LoadTrackMetadata.h,
+				model/LoadTrackMetadata.m,
 				model/MusicLibrary.h,
 				model/MusicLibrary.m,
 				model/MusicRootDirectory.h,
@@ -307,18 +309,22 @@
 				model/QueuedTrack.m,
 				model/Track.h,
 				model/Track.m,
+				model/TrackMetadata.h,
+				model/TrackMetadata.m,
 			);
 			publicHeaders = (
 				model/Folder.h,
 				model/FolderChild.h,
 				model/LoadMusicLibrary.h,
 				model/LoadResult.h,
+				model/LoadTrackMetadata.h,
 				model/MusicLibrary.h,
 				model/MusicRootDirectory.h,
 				model/Player.h,
 				model/Queue.h,
 				model/QueuedTrack.h,
 				model/Track.h,
+				model/TrackMetadata.h,
 			);
 			target = D4DEF141309FB00900B3F3CB /* model */;
 		};
@@ -327,6 +333,7 @@
 			membershipExceptions = (
 				model/FolderTests.m,
 				model/LoadMusicLibraryTests.m,
+				model/LoadTrackMetadataTests.m,
 				model/MusicLibraryTests.m,
 				model/MusicRootDirectoryTests.m,
 				model/PlayerTests.m,

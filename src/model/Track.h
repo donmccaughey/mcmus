@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSString *artistName;
 @property (nonatomic, readonly, copy) NSString *path;
 @property (nonatomic, readonly) NSURL *url;
-@property (nonatomic, readonly) unsigned long long size;
-@property (nonatomic, readonly) NSUInteger fileHash;
 
 @property (class, nonatomic, readonly) NSString *noAlbum;
 @property (class, nonatomic, readonly) NSString *noArtist;
@@ -22,25 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTrackName:(NSString *)trackName
                         albumName:(NSString *)albumName
                        artistName:(NSString *)artistName
-                             path:(NSString *)path
-                             size:(unsigned long long)size
-                         fileHash:(NSUInteger)fileHash NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTrackName:(NSString *)trackName
-                        albumName:(NSString *)albumName
-                       artistName:(NSString *)artistName
-                             path:(NSString *)path
-                             size:(unsigned long long)size;
-- (instancetype)initWithTrackName:(NSString *)trackName
-                        albumName:(NSString *)albumName
-                       artistName:(NSString *)artistName
-                             path:(NSString *)path;
+                             path:(NSString *)path NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithDisplayName:(NSString *)displayName
                                pathExtension:(NSString *)pathExtension
                                         path:(NSString *)path
                                   folderName:(nullable NSString *)folderName
-                            parentFolderName:(nullable NSString *)parentFolderName
-                                        size:(unsigned long long)size
-                                    fileHash:(NSUInteger)fileHash;
+                            parentFolderName:(nullable NSString *)parentFolderName;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

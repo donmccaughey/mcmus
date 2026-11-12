@@ -9,6 +9,7 @@
 #import "FileSystem.h"
 #import "LoadMusicLibrary.h"
 #import "LoadResult.h"
+#import "LoadTrackMetadata.h"
 #import "MusicLibrary.h"
 #import "Snapshot.h"
 
@@ -37,10 +38,7 @@ milliseconds_since(uint64_t start) {
 static NSArray<Track *> *
 load_tracks_and_log_time(NSURL *snapshotDir, id<FileSystem> fileSystem) {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    LoadResult *result = loadMusicLibrary(
-        snapshotDir,
-        LoadOptionsTrackHash | LoadOptionsTrackSize,
-        fileSystem);
+    LoadResult *result = loadMusicLibrary(snapshotDir, fileSystem);
     NSArray<Track *> *tracks = [result.library getTracks];
     if (result.errors.count) {
         os_log(snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms with %lu errors",
@@ -50,6 +48,22 @@ load_tracks_and_log_time(NSURL *snapshotDir, id<FileSystem> fileSystem) {
             tracks.count, snapshotDir.path, milliseconds_since(start));
     }
     return tracks;
+}
+
+
+static NSArray<TrackMetadata *> *
+load_track_metadata_and_log_time(NSArray<Track *> *tracks, id<FileSystem> fileSystem) {
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    NSArray<NSError *> *errors = nil;
+    NSArray<TrackMetadata *> *metadata = loadTrackMetadata(tracks, fileSystem, &errors);
+    if (errors.count) {
+        os_log(snapshot_log(), "Loaded metadata for %lu tracks in %.1f ms with %lu errors",
+            metadata.count, milliseconds_since(start), errors.count);
+    } else {
+        os_log(snapshot_log(), "Loaded metadata for %lu tracks in %.1f ms",
+            metadata.count, milliseconds_since(start));
+    }
+    return metadata;
 }
 
 
@@ -149,8 +163,9 @@ take_snapshot_and_log_time(NSURL *musicDir,
         }
 
         NSArray<Track *> *tracks = load_tracks_and_log_time(snapshotDir, _fileSystem);
+        NSArray<TrackMetadata *> *metadata = load_track_metadata_and_log_time(tracks, _fileSystem);
         [self replyToStart:nil];
-        (void)tracks; // TODO: build manifest CSV
+        (void)metadata; // TODO: build manifest CSV
 
         [self runUntilStopRequested];
 

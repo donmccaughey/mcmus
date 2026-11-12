@@ -13,7 +13,6 @@ static NSString *const childrenKey = @"children";
 static NSString *const trackNameKey = @"trackName";
 static NSString *const albumNameKey = @"albumName";
 static NSString *const artistNameKey = @"artistName";
-static NSString *const sizeKey = @"size";
 
 static NSString *const folderKind = @"folder";
 static NSString *const trackKind = @"track";
@@ -73,7 +72,6 @@ static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *
         [coder encodeObject:track.albumName forKey:albumNameKey];
         [coder encodeObject:track.artistName forKey:artistNameKey];
         [coder encodeObject:track.path forKey:pathKey];
-        [coder encodeInt64:(int64_t)track.size forKey:sizeKey];
     }
 }
 
@@ -96,12 +94,10 @@ static NSArray<id<FolderChild>> *childrenOfPayloads(NSArray<FolderChildPayload *
         if (!trackName || !albumName || !artistName || !path) {
             return nil;
         }
-        unsigned long long size = (unsigned long long)[coder decodeInt64ForKey:sizeKey];
         return [self initWithChild:[[Track alloc] initWithTrackName:trackName
                                                           albumName:albumName
                                                          artistName:artistName
-                                                               path:path
-                                                               size:size]];
+                                                               path:path]];
     } else {
         return nil;
     }

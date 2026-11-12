@@ -294,16 +294,24 @@ result containing a new music library initialized with the root folder.
 The load music library function shall omit any folder from the tree (other than
 the root folder) which has no tracks that are direct children or descendents.
 
-The load music library function shall accept a bit flag parameter that controls
-what track metadata it gathers or calculates; the "track size" flag causes the
-function to read the file size in bytes from `stat.st_size` or equivalent
-library call.
-
 If it cannot list the music root directory, the load music library function
 shall return a load result containing an empty music library and the error.
 
 If it encounters an error while walking a subdirectory or file, the load music
 library function shall add the error to the load result and continue walking.
+
+MC Mus shall have a **load track metadata** function that is called with a list
+of tracks and returns a list of track metadata, in the order of the given
+tracks, along with the list of errors encountered, which is empty when loading
+succeeded completely.
+
+If it cannot read the size of a track's music file, the load track metadata
+function shall add the error to the list of errors, omit that track from the
+returned track metadata and continue with the next track.
+
+If it cannot calculate the hash of a track's music file, the load track metadata
+function shall add the error to the list of errors and return track metadata for
+that track with a file hash of zero.
 
 
 ## Folder
@@ -329,8 +337,17 @@ file. A track exposes these properties:
     - **artist name** is the localized display name of the grandparent folder or
       "(no artist)" if the track is a child or grandchild of the root folder
     - **path** is the absolute path to the music file
-    - **size** is the music file size in bytes, as given by `stat.st_size`, or
-      zero if size was not gathered when loading the music library
+
+
+## Track metadata
+
+A **track metadata** holds the facts about a track's music file that are
+gathered by reading the file. A track metadata has these properties:
+    - **track** is the track the metadata describes
+    - **size** is the music file size in bytes, as given by `stat.st_size` or
+      equivalent library call
+    - **file hash** is the XXH3 64-bit hash of the contents of the music file,
+      or zero if the hash could not be calculated
 
 
 ## Queue

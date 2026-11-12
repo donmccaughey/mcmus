@@ -9,13 +9,6 @@
 @interface LoadMusicLibraryTests : XCTestCase
 @end
 
-static const NSUInteger emptyFileHash = 0x2D06800538D394C2;
-static const NSUInteger foxFileHash = 0xCE7D19A5418FB365;
-
-static NSData *foxContents(void) {
-    return [@"The quick brown fox jumps over the lazy dog" dataUsingEncoding:NSUTF8StringEncoding];
-}
-
 static NSArray<NSString *> *trackDescriptions(NSArray<id<FolderChild>> *children) {
     return [[children valueForKeyPath:@"@unionOfArrays.trackDescendants"] valueForKey:@"description"];
 }
@@ -39,11 +32,7 @@ static NSArray<NSString *> *trackDescriptions(NSArray<id<FolderChild>> *children
 }
 
 - (LoadResult *)loadResult:(FileSystemFake *)fileSystem {
-    return [self loadResult:fileSystem options:LoadOptionsNone];
-}
-
-- (LoadResult *)loadResult:(FileSystemFake *)fileSystem options:(LoadOptions)options {
-    return loadMusicLibrary(_root, options, fileSystem);
+    return loadMusicLibrary(_root, fileSystem);
 }
 
 - (MusicLibrary *)load:(FileSystemFake *)fileSystem {
@@ -63,27 +52,6 @@ static NSArray<NSString *> *trackDescriptions(NSArray<id<FolderChild>> *children
                                   albumName:album ?: Track.noAlbum
                                  artistName:artist ?: Track.noArtist
                                        path:path];
-}
-
-- (Track *)track:(NSString *)name path:(NSString *)path size:(unsigned long long)size {
-    return [[Track alloc] initWithTrackName:name
-                                  albumName:Track.noAlbum
-                                 artistName:Track.noArtist
-                                       path:path
-                                       size:size];
-}
-
-- (Track *)track:(NSString *)name
-            path:(NSString *)path
-            size:(unsigned long long)size
-        fileHash:(NSUInteger)fileHash;
-{
-    return [[Track alloc] initWithTrackName:name
-                                  albumName:Track.noAlbum
-                                 artistName:Track.noArtist
-                                       path:path
-                                       size:size
-                                   fileHash:fileHash];
 }
 
 - (void)testEmptyDirectoryGivesEmptyLibrary {
@@ -302,129 +270,6 @@ static NSArray<NSString *> *trackDescriptions(NSArray<id<FolderChild>> *children
     ]));
     XCTAssertEqual(result.errors.count, 1UL);
     XCTAssertEqualObjects(fileSystemFakeErrorPaths(result.errors), @[@"/Music/Broken"]);
-}
-
-- (void)testTrackSizeIsZeroWhenNotRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Song.mp3" size:4096];
-
-    LoadResult *result = [self loadResult:fileSystem];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Song" path:@"/Music/Song.mp3" size:0],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testTrackSizeIsReadWhenRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Song.mp3" size:4096];
-    [fileSystem addPath:@"/Music/Empty.m4a" size:0];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Empty" path:@"/Music/Empty.m4a" size:0],
-        [self track:@"Song" path:@"/Music/Song.mp3" size:4096],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testNonMusicFilesAreNotSizedWhenRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/cover.jpg"];
-    [fileSystem addPath:@"/Music/Song.mp3" size:4096];
-    fileSystem.unsizeableFiles = [NSSet setWithObject:@"/Music/cover.jpg"];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Song" path:@"/Music/Song.mp3" size:4096],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testUnsizeableTrackIsSkippedAndReportsFailure {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Bad.mp3" size:4096];
-    [fileSystem addPath:@"/Music/Good.mp3" size:8192];
-    fileSystem.unsizeableFiles = [NSSet setWithObject:@"/Music/Bad.mp3"];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Good" path:@"/Music/Good.mp3" size:8192],
-    ]));
-    XCTAssertEqual(result.errors.count, 1UL);
-    XCTAssertEqualObjects(fileSystemFakeErrorPaths(result.errors), @[@"/Music/Bad.mp3"]);
-}
-
-- (void)testTrackHashIsZeroWhenNotRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Song.mp3" contents:foxContents()];
-
-    LoadResult *result = [self loadResult:fileSystem];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Song" path:@"/Music/Song.mp3" size:0 fileHash:0],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testTrackHashIsReadWhenRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Song.mp3" contents:foxContents()];
-    [fileSystem addPath:@"/Music/Empty.m4a" contents:[NSData data]];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackHash];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Empty" path:@"/Music/Empty.m4a" size:0 fileHash:emptyFileHash],
-        [self track:@"Song" path:@"/Music/Song.mp3" size:0 fileHash:foxFileHash],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testTrackSizeAndHashAreBothReadWhenRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Song.mp3" contents:foxContents()];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackSize | LoadOptionsTrackHash];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Song" path:@"/Music/Song.mp3" size:43 fileHash:foxFileHash],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testNonMusicFilesAreNotHashedWhenRequested {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/cover.jpg"];
-    [fileSystem addPath:@"/Music/Song.mp3" contents:foxContents()];
-    fileSystem.unreadableFiles = [NSSet setWithObject:@"/Music/cover.jpg"];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackHash];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Song" path:@"/Music/Song.mp3" size:0 fileHash:foxFileHash],
-    ]));
-    XCTAssertEqual(result.errors.count, 0UL);
-}
-
-- (void)testUnhashableTrackKeepsZeroHashAndReportsFailure {
-    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
-    [fileSystem addPath:@"/Music/Bad.mp3" contents:foxContents()];
-    [fileSystem addPath:@"/Music/Good.mp3" contents:foxContents()];
-    fileSystem.unreadableFiles = [NSSet setWithObject:@"/Music/Bad.mp3"];
-
-    LoadResult *result = [self loadResult:fileSystem options:LoadOptionsTrackHash];
-
-    AssertEqualChildren(result.library.rootFolder.children, (@[
-        [self track:@"Bad" path:@"/Music/Bad.mp3" size:0 fileHash:0],
-        [self track:@"Good" path:@"/Music/Good.mp3" size:0 fileHash:foxFileHash],
-    ]));
-    XCTAssertEqual(result.errors.count, 1UL);
-    XCTAssertEqualObjects(fileSystemFakeErrorPaths(result.errors), @[@"/Music/Bad.mp3"]);
 }
 
 - (void)testUnreadableEntryIsSkippedAndReportsFailure {
