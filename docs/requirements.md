@@ -75,12 +75,22 @@ The MC Mus project shall place source files for artwork and other media in the
 
 The MC Mus project shall place documentation files in the `docs/` subdirectory.
 
-The MC Mus project shall place third party source code in the `lib/`
-subdirectory.
-
 The MC Mus project shall place script files in the `scripts/` subdirectory.
 
 The MC Mus project shall place project source code in the `src/` subdirectory.
+
+
+## Third-party code
+
+The MC Mus project shall place third party source code in the `lib/`
+subdirectory.
+
+The MC Mus project shall "vendor" third party source code in the `lib/`
+subdirectory.
+
+The MC Mus project shall keep a software bill of materials (SBOM) in the file
+`bom.md`, with the source URL and version of each third party source code
+package.
 
 
 ## Code organization
@@ -332,7 +342,8 @@ An **empty folder** is a folder with a path value of `nil`, a name value of
 ## Track
 
 A **track** is a leaf node of the music library that corresponds to a music
-file. A track exposes these properties: 
+file. A track exposes these properties:
+
     - **track name** is the localized display name of the music file with the
       extension removed
     - **album name** is the localized display name of the parent folder or "(no
@@ -346,6 +357,7 @@ file. A track exposes these properties:
 
 A **track metadata** holds the facts about a track's music file that are
 gathered by reading the file. A track metadata has these properties:
+
     - **track** is the track the metadata describes
     - **size** is the music file size in bytes, as given by `stat.st_size` or
       equivalent library call
@@ -406,7 +418,7 @@ not have a separate "paused" state: the current track and time index properties
 control where playback starts or resumes.
 
 
-## Playback
+### Playback
 
 While in playback and while there is a next track, when it finishes playing the
 current track, the audio wrapper shall begin playing the next track without a
@@ -422,7 +434,7 @@ While in playback, the player shall keep the time index in sync with the audio
 wrapper by callback, notification or polling.
 
 
-## Play command
+### Play command
 
 While in playback, if given the **play** command, the player shall ignore the
 command.
@@ -432,7 +444,7 @@ the player shall start playing the current track at the time index and enter the
 playback state.
 
 
-## Stop command
+### Stop command
 
 While stopped, if given the **stop** command, the player shall ignore the
 command.
@@ -442,7 +454,7 @@ index to the current playback position, stop audio playback and enter the
 stopped state.
 
 
-## Back command
+### Back command
 
 While the queue is not empty, when given the back command, the player shall set
 the time index to zero.
@@ -451,7 +463,7 @@ While in playback, when given the back command, the player shall begin playing
 the current track from the start.
 
 
-## Next command
+### Next command
 
 While the queue is not empty, when given the next command, the player shall set
 the time index to zero and discard the current track.
@@ -464,7 +476,7 @@ While in playback and while there is no next track, when given the next command,
 the player shall stop playing the current track and enter the stopped state.
 
 
-## Clear command
+### Clear command
 
 While the queue is not empty, when given the clear command, the player shall set
 the time index to zero and clear the queue.
@@ -473,7 +485,7 @@ While in playback, when given the clear command, the player shall stop playback
 and enter the stopped state.
 
 
-## Command availability
+### Command availability
 
 While the queue is empty, the player shall ignore the play, stop, back, next and
 clear commands.
