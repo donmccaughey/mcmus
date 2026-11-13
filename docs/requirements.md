@@ -517,6 +517,36 @@ If it cannot remove the snapshot, the remove snapshot function shall return an
 error.
 
 
+# CSV
+
+The CSV library shall export two functions: parse CSV and generate CSV.
+
+The CSV library shall implement CSV parsing and generation in accordance with
+[RFC 4180](https://datatracker.ietf.org/doc/html/rfc4180) with modifications as
+noted here.
+
+The parse CSV function shall take a CSV file as text data encoded in UTF-8 and
+return an array of arrays of strings where each array of strings represents one
+record in the CSV.
+
+The parse CSV function shall accept carriage return (CR), line feed (LF) or a
+CRLF pair as the end of record marker.
+
+If parsing fails, the parse CSV function shall return `nil` and an error
+describing the failure.
+
+If a subsequent record does match the field count of the first record, the parse
+CSV function shall fail and return an error.
+
+The generate CSV function shall take an array of array of strings and return a
+CSV file as text data encoded in UTF-8 where each array of strings represents a
+record.
+
+The generate CSV function shall only quote fields where necessary.
+
+The generate CSV function shall use CRLF as the end of record marker.
+
+
 # Launch behavior
 
 The **music library store** is the object owned by the app that holds the app
