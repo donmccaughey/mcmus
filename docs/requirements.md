@@ -50,9 +50,9 @@ programmatically and shall not use nibs or storyboards.
 On macOS, MC Mus shall use the App Sandbox so that it can be distributed through
 the Mac App Store.
 
-On macOS, MC Mus shall request only these sandbox entitlements: read-only access
-to user-selected files, app-scoped security bookmarks and read-only access to
-the user's Music folder.
+On macOS, MC Mus shall request these sandbox entitlements: read-only access
+to user-selected files, app-scoped security bookmarks, read-only access to
+the user's Music folder and network server.
 
 MC Mus shall use only APIs available on the minimum deployment targets.
 
@@ -143,7 +143,9 @@ library, with code and unit tests placed in the `src/csv/` subdirectory.
 
 The csv library shall not depend on any other library in the MC Mus project.
 
-The MC Mus project shall pace code for file sharing in the **file-sharing** library, with code and unit tests placed in the `src/file-sharing/` subdirectory.
+The MC Mus project shall place code for file sharing in the **file-sharing**
+library, with code and unit tests placed in the `src/file-sharing/`
+subdirectory.
 
 The file-sharing library shall depend on the wrappers, model, snapshot and csv
 libraries; file-sharing unit tests shall also depend on the wrappers-fakes
@@ -541,7 +543,7 @@ describing the failure.
 If a subsequent record does match the field count of the first record, the parse
 CSV function shall fail and return an error.
 
-The **generate CSV**() function shall take an array of array of strings and
+The **generate CSV** function shall take an array of array of strings and
 return a CSV file as text data encoded in UTF-8 where each array of strings
 represents a record.
 
@@ -564,29 +566,37 @@ The **file sharing thread** shall manage the background thread and run loop
 where file sharing operations run.
 
 When started, the file sharing thread shall take a snapshot of the music
-directory, load tracks and track metadata, write the track manifest CSV and
-start the file sharing HTTP server.
+directory, load tracks and track metadata, build the manifest, write the
+manifest CSV and start the file sharing server.
 
-When stopped, the file sharing thread shall stop the file sharing HTTP server
-and remove the snapshot.
+When stopped, the file sharing thread shall stop the file sharing server, remove
+the manifest CSV and remove the snapshot.
 
 
-## Manifest CSV
+## Manifest
+
+The **track relative path** is the track path relative to the root folder of a
+given music library, where the music library may be loaded from the music root
+directory or the snapshot directory.
+
+The **manifest** is an in-memory data structure with fast key lookup where keys
+are track relative paths and values are the corresponding track metadata.
 
 The **manifest CSV** file shall contain a header record and one record for each
-track in the snapshot. An example manifest CSV is below.
+track in the manifest sorted by the path field. An example manifest CSV is
+below.
 
 ```csv
 path,size,hash
 <artist1>/<album1>/<track1.mp3>,12345,1311768467463790320
-<artist1>/<album1>/<track2.m41>,23456,81985529216486895
+<artist1>/<album1>/<track2.m4a>,23456,81985529216486895
 ```
 
 The manifest CSV file shall include a header record with fields "path", "size"
 and "hash".
 
-The manifest CSV file shall put the path of the track relative to the snapshot's
-music root directory in the path field.
+The manifest CSV file shall put track relative path of the track in the path
+field.
 
 The manifest CSV file shall put the size of the track, in bytes, in the size
 field as a decimal integer.
@@ -601,6 +611,160 @@ the filename `manifest.csv`.
 
 If a previous manifest CSV exists in the application support directory, the file
 sharing thread shall overwrite it.
+
+
+## File sharing server
+
+TODO: define security requirements in a future revision.
+
+The **file sharing server** shall use the HTTP 1.1 protocol without TLS.
+
+The file sharing server shall select an available port to listen on, and
+advertise that port via Bonjour.
+
+The file sharing server shall use the `CFHTTPMessageRef` struct and associated
+functions from Apple's Core Foundation library to implement HTTP message
+parsing.
+
+The file sharing server shall allow only one client at a time to make requests.
+
+The file sharing server shall allow up to six simultaneous connections from the
+same client.
+
+If the same client opens a seventh simultaneous connection, the file sharing
+server shall respond to any request on this connection with status "429 Too Many
+Requests" and close the connection.
+
+The **idle time** for a connection is the time from connection accept to reading
+the first bytes of a request, or the time from writing the last byte of a
+response to reading the first bytes of the next request.
+
+The file sharing server shall track the idle time for each connection, setting
+it to zero when the first bytes of a request are received.
+
+If the idle time for a connection exceeds ten seconds, the file sharing server
+shall close that connection.
+
+The **request read time** for a connection is the time from reading the first
+bytes of a request to reading the last bytes of a request.
+
+The file sharing server shall track the request read time for each connection,
+setting it to zero when the last bytes of a request are received.
+
+If the request read time for a connection exceeds ten seconds, the file sharing
+server shall consider the request failed and close the connection.
+
+When it starts, the file sharing server shall be in the "waiting for client"
+state.
+
+When it enters the "waiting for client" state, including when it starts, the
+file sharing server shall notify the file sharing object that it is in the
+"waiting for client" state.
+
+When it completely reads the first request from a client, the file sharing
+server shall enter the "client connected" state.
+
+The file sharing server shall use the IP address of the client connection to
+distinguish one client from another.
+
+The file sharing server shall use the value of the `User-Agent` header as the
+client device name.
+
+If the request is missing the `User-Agent` header, the file sharing server shall
+return a response with status code "400 Bad Request" and the plain text response
+body "Missing User-Agent header" and close the connection.
+
+If it is unable to parse the request, the file sharing server shall return a
+response with status code "400 Bad Request" and the plain text response body
+"Invalid request" and close the connection.
+
+When it enters the "client connected" state, the file sharing server shall
+notify the file sharing object that it is in the "client connected" state,
+sending the client device name as part of the notification.
+
+While in the "client connected" state, if it receives a request from a different
+client, the file sharing server shall return a response with status code "503
+Service Unavailable" and the plain text response body "Max clients connected"
+and close the connection.
+
+While in the "client connected" state, the file sharing server shall keep a
+count of active requests.
+
+When it begins reading a request from the client, the file sharing server shall
+increment the active request count.
+
+When it has sent the last data for a response, the file sharing server shall
+decrement the active request count.
+
+If it closes a connection with an active request, the file sharing server shall
+decrement the active request count.
+
+While in the "client connected" state, when it decrements the active request
+count to zero, the file sharing server shall enter the "client lingering" state
+and start the five second "client timeout" timer.
+
+While in the "client lingering" state, when it increments the active request
+count from zero to 1, the file sharing server shall cancel the "client timeout"
+timer and enter the "client connected" state.
+
+While in the "client lingering" state, when the "client timeout" timer expires,
+the file sharing server shall enter the "waiting for client" state.
+
+
+### Get manifest
+
+The file sharing server shall accept GET `/manifest` and respond with status
+"200 OK", header `Content-Type: text/csv;charset=UTF-8`, a `Content-Length`
+header equal to the size of the manifest CSV file and with a body containing the
+manifest CSV file.
+
+
+### Post files
+
+A **tarball CSV** shall contain a header record and one record for each track
+being requested. An example tarball CSV is below.
+
+```csv
+path
+<artist1>/<album1>/<track1.mp3>
+<artist1>/<album1>/<track2.m4a>
+```
+
+A tarball CSV file shall include a header record with field "path".
+
+A tarball CSV file shall contain track relative paths in the path field.
+
+The file sharing server shall accept POST `/files` containing a tarball CSV.
+
+If the tarball CSV cannot be parsed, is empty or contains no records other than
+the header, the file sharing server shall respond to POST `/files` with status
+"400 Bad Request" and the plain text response body "Invalid CSV".
+
+When it parses the tarball CSV, the file sharing server shall calculate the
+requested size by summing the size field obtained by looking up the track
+relative path in the manifest.
+
+If the tarball contains a track relative path not in the manifest, the file
+sharing server shall respond to POST `/files` with status "400 Bad Request" and
+the plain text response body "Unknown track".
+
+If the requested size is greater than 100 MB, the file sharing server shall
+respond to POST `/files` with status "400 Bad Request" and the plain text
+response body "Tarball too big".
+
+When the tarball CSV is valid, the file sharing server shall respond with status
+"200 OK", `Content-Type: application/x-tar`, `Content-Length` equal to the
+generated tarball size and a response body containing the generated tarball of
+the requested track files from the snapshot music library in the order given in
+the tarball CSV.
+
+The generated tarball shall be uncompressed and shall be generated incrementally
+in memory and written directly to the file sharing server connection socket.
+
+
+## Bonjour
+
+The file sharing server shall advertise itself via Bonjour.
 
 
 # Launch behavior
