@@ -486,11 +486,11 @@
 		D4D092A230A4F96C009FBA83 /* Exceptions for "lib" folder in "xxHash" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"xxHash-0.8.4/xxhash.c",
-				"xxHash-0.8.4/xxhash.h",
+				xxHash/xxhash.c,
+				xxHash/xxhash.h,
 			);
 			publicHeaders = (
-				"xxHash-0.8.4/xxhash.h",
+				xxHash/xxhash.h,
 			);
 			target = D4D0929930A4F93D009FBA83 /* xxHash */;
 		};
