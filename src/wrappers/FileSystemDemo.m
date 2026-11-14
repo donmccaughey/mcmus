@@ -183,14 +183,18 @@ static void index_directory(NSDictionary *entry, NSString *path,
 }
 
 
-// The demo data has no sizes, so demo files report the "not gathered" size.
+// The demo data has no sizes or modified times, so demo files report the
+// "not gathered" value of zero for both.
 - (BOOL)getSize:(unsigned long long *)size
+          mtime:(time_t *)mtime
          ofFile:(NSURL *)url
           error:(NSError **)error;
 {
-    if (!_infoByPath[url.path])
-        return [_fileSystem getSize:size ofFile:url error:error];
+    if (!_infoByPath[url.path]) {
+        return [_fileSystem getSize:size mtime:mtime ofFile:url error:error];
+    }
     *size = 0;
+    *mtime = 0;
     return YES;
 }
 

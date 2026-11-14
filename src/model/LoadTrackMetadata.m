@@ -68,14 +68,16 @@ static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
 {
     NSURL *trackURL = track.url;
     unsigned long long size = 0;
+    time_t mtime = 0;
     NSError *error;
-    if (![fileSystem getSize:&size ofFile:trackURL error:&error]) {
+    if (![fileSystem getSize:&size mtime:&mtime ofFile:trackURL error:&error]) {
         [errors addObject:error];
         return nil;
     }
     NSUInteger fileHash = readTrackHash(trackURL, fileSystem, state, errors);
     return [[TrackMetadata alloc] initWithTrack:track
                                            size:size
+                                          mtime:mtime
                                        fileHash:fileHash];
 }
 

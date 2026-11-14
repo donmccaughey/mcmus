@@ -22,6 +22,7 @@ static void fail(NSString *path, NSError **error)
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName
                         size:(unsigned long long)size
+                       mtime:(time_t)mtime
                     contents:(nullable NSData *)contents;
 {
     self = [super init];
@@ -31,6 +32,7 @@ static void fail(NSString *path, NSError **error)
     _kind = kind;
     _localizedName = [localizedName copy];
     _size = size;
+    _mtime = mtime;
     _contents = [contents copy];
 
     return self;
@@ -45,6 +47,7 @@ static void fail(NSString *path, NSError **error)
                          kind:kind
                 localizedName:localizedName
                          size:size
+                        mtime:0
                      contents:nil];
 }
 
@@ -163,6 +166,19 @@ static void fail(NSString *path, NSError **error)
                                      size:size]];
 }
 
+- (void)addPath:(NSString *)path
+           size:(unsigned long long)size
+          mtime:(time_t)mtime;
+{
+    [_entries addObject:[[FileSystemFakeEntry alloc]
+                             initWithPath:path
+                                     kind:FileSystemFakeKindFile
+                            localizedName:nil
+                                     size:size
+                                    mtime:mtime
+                                 contents:nil]];
+}
+
 - (void)addPath:(NSString *)path contents:(NSData *)contents;
 {
     [_entries addObject:[[FileSystemFakeEntry alloc]
@@ -170,6 +186,7 @@ static void fail(NSString *path, NSError **error)
                                      kind:FileSystemFakeKindFile
                             localizedName:nil
                                      size:contents.length
+                                    mtime:0
                                  contents:contents]];
 }
 
@@ -249,6 +266,7 @@ static void fail(NSString *path, NSError **error)
 }
 
 - (BOOL)getSize:(unsigned long long *)size
+          mtime:(time_t *)mtime
          ofFile:(NSURL *)url
           error:(NSError **)error;
 {
@@ -258,6 +276,7 @@ static void fail(NSString *path, NSError **error)
         return NO;
     }
     *size = entry.size;
+    *mtime = entry.mtime;
     return YES;
 }
 

@@ -366,6 +366,8 @@ gathered by reading the file. A track metadata has these properties:
     - **track** is the track the metadata describes
     - **size** is the music file size in bytes, as given by `stat.st_size` or
       equivalent library call
+    - **mtime** is the music file last modified time in `time_t` format as given
+      by `stat.mtime` or equivalent library call
     - **file hash** is the XXH3 64-bit hash of the contents of the music file,
       or zero if the hash could not be calculated
 

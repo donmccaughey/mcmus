@@ -63,33 +63,41 @@
     return info;
 }
 
-- (void)testDemoFilesHaveZeroSize
+- (void)testDemoFilesHaveZeroSizeAndMtime
 {
     FileSystemDemo *demo = [self demoWithTrackInRoot];
 
     unsigned long long size = 42;
+    time_t mtime = 42;
     NSError *error;
     BOOL ok = [demo getSize:&size
+                      mtime:&mtime
                      ofFile:[self file:@"/Users/demo/Music/Song.mp3"]
                       error:&error];
 
     XCTAssertTrue(ok, @"%@", error);
     XCTAssertEqual(size, 0ULL);
+    XCTAssertEqual(mtime, 0L);
 }
 
-- (void)testSizeOfFileOutsideDemoRootComesFromWrappedFileSystem
+- (void)testSizeAndMtimeOfFileOutsideDemoRootComeFromWrappedFileSystem
 {
     FileSystemDemo *demo = [self demoWithTrackInRoot];
-    [_fileSystem addPath:@"/Users/real/Music/Song.mp3" size:4096];
+    [_fileSystem addPath:@"/Users/real/Music/Song.mp3"
+                    size:4096
+                   mtime:1700000000];
 
     unsigned long long size = 0;
+    time_t mtime = 0;
     NSError *error;
     BOOL ok = [demo getSize:&size
+                      mtime:&mtime
                      ofFile:[self file:@"/Users/real/Music/Song.mp3"]
                       error:&error];
 
     XCTAssertTrue(ok, @"%@", error);
     XCTAssertEqual(size, 4096ULL);
+    XCTAssertEqual(mtime, 1700000000L);
 }
 
 - (void)testDemoFilesHaveNoContents

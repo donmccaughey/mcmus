@@ -26,10 +26,11 @@ static Track *track(NSString *path)
 }
 
 static NSString *metadata(
-    NSString *path, unsigned long long size, NSUInteger fileHash)
+    NSString *path, unsigned long long size, time_t mtime, NSUInteger fileHash)
 {
     return [[TrackMetadata alloc] initWithTrack:track(path)
                                            size:size
+                                          mtime:mtime
                                        fileHash:fileHash]
         .description;
 }
@@ -108,6 +109,20 @@ static LoadTrackMetadataProgress progressRecorder(
     XCTAssertEqual(errors.count, 0UL);
 }
 
+- (void)testTrackMtimeIsRead
+{
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    [fileSystem addPath:@"/Music/Song.mp3" size:4096 mtime:1700000000];
+    NSArray<NSError *> *errors;
+
+    NSArray<TrackMetadata *> *loaded = loadTrackMetadata(
+        @[track(@"/Music/Song.mp3")], fileSystem, nil, &errors);
+
+    XCTAssertEqual(loaded.count, 1UL);
+    XCTAssertEqual(loaded[0].mtime, 1700000000L);
+    XCTAssertEqual(errors.count, 0UL);
+}
+
 - (void)testTrackSizeAndHashAreBothRead
 {
     FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
@@ -121,8 +136,8 @@ static LoadTrackMetadataProgress progressRecorder(
         loadTrackMetadata(tracks, fileSystem, nil, &errors);
 
     XCTAssertEqualObjects(descriptions(loaded), (@[
-        metadata(@"/Music/Empty.m4a", 0, emptyFileHash),
-        metadata(@"/Music/Song.mp3", 43, foxFileHash),
+        metadata(@"/Music/Empty.m4a", 0, 0, emptyFileHash),
+        metadata(@"/Music/Song.mp3", 43, 0, foxFileHash),
     ]));
     XCTAssertEqual(errors.count, 0UL);
 }
@@ -158,7 +173,7 @@ static LoadTrackMetadataProgress progressRecorder(
         loadTrackMetadata(tracks, fileSystem, nil, &errors);
 
     XCTAssertEqualObjects(descriptions(loaded), (@[
-        metadata(@"/Music/Good.mp3", 43, foxFileHash),
+        metadata(@"/Music/Good.mp3", 43, 0, foxFileHash),
     ]));
     XCTAssertEqual(errors.count, 1UL);
     XCTAssertEqualObjects(
@@ -179,8 +194,8 @@ static LoadTrackMetadataProgress progressRecorder(
         loadTrackMetadata(tracks, fileSystem, nil, &errors);
 
     XCTAssertEqualObjects(descriptions(loaded), (@[
-        metadata(@"/Music/Bad.mp3", 43, 0),
-        metadata(@"/Music/Good.mp3", 43, foxFileHash),
+        metadata(@"/Music/Bad.mp3", 43, 0, 0),
+        metadata(@"/Music/Good.mp3", 43, 0, foxFileHash),
     ]));
     XCTAssertEqual(errors.count, 1UL);
     XCTAssertEqualObjects(

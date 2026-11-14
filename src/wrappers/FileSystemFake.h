@@ -24,12 +24,14 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 @property (nonatomic, readonly) FileSystemFakeKind kind;
 @property (nonatomic, readonly, copy, nullable) NSString *localizedName;
 @property (nonatomic, readonly) unsigned long long size;
+@property (nonatomic, readonly) time_t mtime;
 @property (nonatomic, readonly, copy, nullable) NSData *contents;
 
 - (instancetype)initWithPath:(NSString *)path
                         kind:(FileSystemFakeKind)kind
                localizedName:(nullable NSString *)localizedName
                         size:(unsigned long long)size
+                       mtime:(time_t)mtime
                     contents:(nullable NSData *)contents
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithPath:(NSString *)path
@@ -74,6 +76,9 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
              kind:(FileSystemFakeKind)kind
     localizedName:(nullable NSString *)localizedName;
 - (void)addPath:(NSString *)path size:(unsigned long long)size;
+- (void)addPath:(NSString *)path
+           size:(unsigned long long)size
+          mtime:(time_t)mtime;
 - (void)addPath:(NSString *)path contents:(NSData *)contents;
 
 + (NSData *)bookmarkForPath:(NSString *)path;

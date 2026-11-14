@@ -81,6 +81,7 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
 }
 
 - (BOOL)getSize:(unsigned long long *)size
+          mtime:(time_t *)mtime
          ofFile:(NSURL *)url
           error:(NSError **)error;
 {
@@ -88,6 +89,7 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
     errno = 0;
     if (0 == stat(url.fileSystemRepresentation, &status)) {
         *size = (unsigned long long)status.st_size;
+        *mtime = status.st_mtime;
         return YES;
     }
     if (error) {

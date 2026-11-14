@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable FileSystemItemInfo *)getFileInfo:(NSURL *)url
                                        error:(NSError **)error;
 - (BOOL)getSize:(unsigned long long *)size
+          mtime:(time_t *)mtime
          ofFile:(NSURL *)url
           error:(NSError **)error;
 - (BOOL)readFile:(NSURL *)url

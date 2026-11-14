@@ -8,10 +8,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) Track *track;
 @property (nonatomic, readonly) unsigned long long size;
+@property (nonatomic, readonly) time_t mtime;
 @property (nonatomic, readonly) NSUInteger fileHash;
 
 - (instancetype)initWithTrack:(Track *)track
                          size:(unsigned long long)size
+                        mtime:(time_t)mtime
                      fileHash:(NSUInteger)fileHash NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
