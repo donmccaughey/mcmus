@@ -134,6 +134,11 @@ static BOOL posixFailure(NSURL *url, NSError **error)
     return ok;
 }
 
+- (BOOL)writeData:(NSData *)data toFile:(NSURL *)url error:(NSError **)error;
+{
+    return [data writeToURL:url options:NSDataWritingAtomic error:error];
+}
+
 - (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 {
     return [[NSFileManager defaultManager] removeItemAtURL:URL error:error];

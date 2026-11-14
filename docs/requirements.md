@@ -80,19 +80,6 @@ The MC Mus project shall place script files in the `scripts/` subdirectory.
 The MC Mus project shall place project source code in the `src/` subdirectory.
 
 
-## Third-party code
-
-The MC Mus project shall place third party source code in the `lib/`
-subdirectory.
-
-The MC Mus project shall "vendor" third party source code in the `lib/`
-subdirectory.
-
-The MC Mus project shall keep a software bill of materials (SBOM) in the file
-`bom.md`, with the source URL and version of each third party source code
-package.
-
-
 ## Code organization
 
 The MC Mus project shall organize code into static libraries that have low
@@ -158,7 +145,7 @@ The csv library shall not depend on any other library in the MC Mus project.
 
 The MC Mus project shall pace code for file sharing in the **file-sharing** library, with code and unit tests placed in the `src/file-sharing/` subdirectory.
 
-The file-sharing library shall depend on the wrappers, model and snapshot
+The file-sharing library shall depend on the wrappers, model, snapshot and csv
 libraries; file-sharing unit tests shall also depend on the wrappers-fakes
 library.
 
@@ -171,6 +158,22 @@ Main view and main window code shall live in `src/app/main/`. The primary queue
 panel code shall live in `src/app/queue/`. The settings dialog code shall live
 in `src/app/settings/`. Views, controls and UI utility code shared across major
 UI elements or feature shall live in `src/app/components/`.
+
+
+## Third-party code
+
+The MC Mus project shall place third party source code in the `lib/`
+subdirectory.
+
+The MC Mus project shall "vendor" third party source code in the `lib/`
+subdirectory.
+
+The MC Mus project shall keep a software bill of materials (SBOM) in the file
+`bom.md`, with the source URL and version of each third party source code
+package.
+
+The MC Mus project shall use the xxHash library for hashing track files for
+change detection during file sharing.
 
 
 # System service wrappers
@@ -525,9 +528,9 @@ The CSV library shall implement CSV parsing and generation in accordance with
 [RFC 4180](https://datatracker.ietf.org/doc/html/rfc4180) with modifications as
 noted here.
 
-The parse CSV function shall take a CSV file as text data encoded in UTF-8 and
-return an array of arrays of strings where each array of strings represents one
-record in the CSV.
+The **parse CSV** function shall take a CSV file as text data encoded in UTF-8
+and return an array of arrays of strings where each array of strings represents
+one record in the CSV.
 
 The parse CSV function shall accept carriage return (CR), line feed (LF) or a
 CRLF pair as the end of record marker.
@@ -538,13 +541,66 @@ describing the failure.
 If a subsequent record does match the field count of the first record, the parse
 CSV function shall fail and return an error.
 
-The generate CSV function shall take an array of array of strings and return a
-CSV file as text data encoded in UTF-8 where each array of strings represents a
-record.
+The **generate CSV**() function shall take an array of array of strings and
+return a CSV file as text data encoded in UTF-8 where each array of strings
+represents a record.
 
 The generate CSV function shall only quote fields where necessary.
 
 The generate CSV function shall use CRLF as the end of record marker.
+
+
+# File sharing
+
+The file sharing module shall consist of the file sharing object and the file
+sharing thread.
+
+The **file sharing object** shall define the high level interface between the
+app and the file sharing thread.
+
+The file sharing object shall run on the app's main thread.
+
+The **file sharing thread** shall manage the background thread and run loop
+where file sharing operations run.
+
+When started, the file sharing thread shall take a snapshot of the music
+directory, load tracks and track metadata, write the track manifest CSV and
+start the file sharing HTTP server.
+
+When stopped, the file sharing thread shall stop the file sharing HTTP server
+and remove the snapshot.
+
+
+## Manifest CSV
+
+The **manifest CSV** file shall contain a header record and one record for each
+track in the snapshot. An example manifest CSV is below.
+
+```csv
+path,size,hash
+<artist1>/<album1>/<track1.mp3>,12345,1311768467463790320
+<artist1>/<album1>/<track2.m41>,23456,81985529216486895
+```
+
+The manifest CSV file shall include a header record with fields "path", "size"
+and "hash".
+
+The manifest CSV file shall put the path of the track relative to the snapshot's
+music root directory in the path field.
+
+The manifest CSV file shall put the size of the track, in bytes, in the size
+field as a decimal integer.
+
+The manifest CSV file shall put the file hash digest of the track, calculated
+using the XXH3 64-bit hash algorithm, in the hash field as a decimal integer;
+the file hash digest shall be stored in the XXH3 hash preferred digest integer
+format, which is big endian.
+
+The manifest CSV file shall be saved to the application support directory with
+the filename `manifest.csv`.
+
+If a previous manifest CSV exists in the application support directory, the file
+sharing thread shall overwrite it.
 
 
 # Launch behavior

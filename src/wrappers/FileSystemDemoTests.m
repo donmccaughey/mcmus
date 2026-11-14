@@ -360,6 +360,11 @@
                             error:NULL]);
     XCTAssertEqualObjects(_fileSystem.clonedSources, @[@"/Users/demo/Music"]);
     XCTAssertEqualObjects(_fileSystem.clonedDestinations, @[@"/Snapshot"]);
+    NSData *data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+    XCTAssertTrue([demo writeData:data
+                           toFile:[NSURL fileURLWithPath:@"/manifest.csv"]
+                            error:NULL]);
+    XCTAssertEqualObjects(_fileSystem.writtenFiles, @{@"/manifest.csv": data});
     _fileSystem.removeItemAtURLError = [NSError errorWithDomain:@"Remove"
                                                            code:1
                                                        userInfo:nil];

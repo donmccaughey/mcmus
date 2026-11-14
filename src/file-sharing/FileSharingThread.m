@@ -6,12 +6,14 @@
 #import <os/log.h>
 #import <time.h>
 
+#import "CSV.h"
 #import "FileSystem.h"
 #import "LoadMusicLibrary.h"
 #import "LoadResult.h"
 #import "LoadTrackMetadata.h"
 #import "MusicLibrary.h"
 #import "Snapshot.h"
+#import "TrackMetadata.h"
 
 
 typedef void (^Reply)(NSError *_Nullable error);
@@ -70,6 +72,58 @@ static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
             metadata.count, milliseconds_since(start));
     }
     return metadata;
+}
+
+
+static NSString *path_relative_to_snapshot(Track *track, NSURL *snapshotDir)
+{
+    NSString *prefix = [snapshotDir.path stringByAppendingString:@"/"];
+    if (![track.path hasPrefix:prefix]) return track.path;
+    return [track.path substringFromIndex:prefix.length];
+}
+
+
+static NSArray<NSArray<NSString *> *> *manifest_records(
+    NSArray<TrackMetadata *> *metadata, NSURL *snapshotDir)
+{
+    NSMutableArray<NSArray<NSString *> *> *records =
+        [NSMutableArray arrayWithCapacity:metadata.count + 1];
+    [records addObject:@[@"path", @"size", @"hash"]];
+    for (TrackMetadata *trackMetadata in metadata) {
+        [records addObject:@[
+            path_relative_to_snapshot(trackMetadata.track, snapshotDir),
+            [NSString stringWithFormat:@"%llu", trackMetadata.size],
+            [NSString stringWithFormat:@"%lu", trackMetadata.fileHash],
+        ]];
+    }
+    return records;
+}
+
+
+static BOOL write_manifest_and_log_time(NSArray<TrackMetadata *> *metadata,
+    NSURL *snapshotDir, id<FileSystem> fileSystem, NSError **error)
+{
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    NSURL *appSupportDir =
+        [fileSystem getApplicationSupportDirectoryURLAndReturnError:error];
+    NSURL *manifest =
+        [appSupportDir URLByAppendingPathComponent:@"manifest.csv"];
+    BOOL wroteManifest = manifest &&
+        [fileSystem
+            writeData:generateCSV(manifest_records(metadata, snapshotDir))
+               toFile:manifest
+                error:error];
+    if (wroteManifest) {
+        os_log(snapshot_log(),
+            "Wrote manifest of %lu tracks to %{public}@ in %.1f ms",
+            metadata.count, manifest.path, milliseconds_since(start));
+    } else {
+        os_log(snapshot_log(),
+            "Writing manifest of %lu tracks took %.1f ms but failed: "
+            "%{public}@",
+            metadata.count, milliseconds_since(start), *error);
+    }
+    return wroteManifest;
 }
 
 
@@ -181,8 +235,16 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
                     [self->_client didLoadMetadataForTracks:tracksLoaded
                                                     ofTotal:totalTracks];
                 });
+        BOOL wroteManifest = write_manifest_and_log_time(
+            metadata, snapshotDir, _fileSystem, &error);
+        if (!wroteManifest) {
+            NSError *removeError = nil;
+            remove_snapshot_and_log_time(
+                snapshotDir, _fileSystem, &removeError);
+            [self replyToStart:error];
+            return;
+        }
         [self replyToStart:nil];
-        (void)metadata; // TODO: build manifest CSV
 
         [self runUntilStopRequested];
 

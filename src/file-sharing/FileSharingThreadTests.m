@@ -167,6 +167,78 @@
 }
 
 
+- (nullable NSString *)writtenManifest;
+{
+    NSData *manifest =
+        _fileSystem.writtenFiles[@"/container/AppSupport/manifest.csv"];
+    if (!manifest) return nil;
+    return [[NSString alloc] initWithData:manifest
+                                 encoding:NSUTF8StringEncoding];
+}
+
+
+- (void)testStartWritesManifestWithRelativePathSizeAndHashOfEachTrack;
+{
+    [_fileSystem addPath:@"/container/AppSupport/snapshot/Artist"
+                    kind:FileSystemFakeKindDirectory];
+    [_fileSystem addPath:@"/container/AppSupport/snapshot/Artist/Album"
+                    kind:FileSystemFakeKindDirectory];
+    [_fileSystem
+         addPath:@"/container/AppSupport/snapshot/Artist/Album/Song.mp3"
+        contents:[@"0123456789" dataUsingEncoding:NSUTF8StringEncoding]];
+
+    [self startAndWait];
+
+    XCTAssertEqualObjects([self writtenManifest],
+        @"path,size,hash\r\n"
+        @"Artist/Album/Song.mp3,10,7918246353190764831\r\n");
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testManifestQuotesPathContainingComma;
+{
+    [_fileSystem addPath:@"/container/AppSupport/snapshot/One, Two.mp3"];
+
+    [self startAndWait];
+
+    XCTAssertEqualObjects([self writtenManifest],
+        @"path,size,hash\r\n"
+        @"\"One, Two.mp3\",0,3244421341483603138\r\n");
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testManifestOfEmptySnapshotHasOnlyHeader;
+{
+    [self startAndWait];
+
+    XCTAssertEqualObjects([self writtenManifest], @"path,size,hash\r\n");
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testManifestWriteFailureFailsStartAndExitsThread;
+{
+    _fileSystem.writeDataToFileError =
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSFileWriteOutOfSpaceError
+                        userInfo:nil];
+
+    NSError *startError = [self startAndWait];
+
+    XCTAssertEqualObjects(startError.domain, NSCocoaErrorDomain);
+    XCTAssertEqual(startError.code, NSFileWriteOutOfSpaceError);
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
 @end
 
 

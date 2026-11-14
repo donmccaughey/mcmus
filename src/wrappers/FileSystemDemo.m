@@ -206,6 +206,12 @@ static void index_directory(NSDictionary *entry, NSString *path,
 }
 
 
+- (BOOL)writeData:(NSData *)data toFile:(NSURL *)url error:(NSError **)error;
+{
+    return [_fileSystem writeData:data toFile:url error:error];
+}
+
+
 - (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 {
     return [_fileSystem removeItemAtURL:URL error:error];

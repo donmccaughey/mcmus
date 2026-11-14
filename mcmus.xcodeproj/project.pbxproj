@@ -23,6 +23,8 @@
 		D4C0FFEE30A3000000000010 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D4C0FFEE30A3000000000011 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
 		D4C5A00030A4000000000001 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
+		D4C5A00030A6000000000001 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
+		D4C5A00030A6000000000002 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
 		D4D092B030A5000000000001 /* libxxHash.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D092A030A4F93D009FBA83 /* libxxHash.a */; };
 		D4DEF0B9309FA49800B3F3CB /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D4DEF0C6309FA71D00B3F3CB /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
@@ -144,6 +146,20 @@
 			remoteInfo = wrappersfakes;
 		};
 		D4C5A00030A4000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4C5A00030A400000000000A;
+			remoteInfo = csv;
+		};
+		D4C5A00030A6000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4C5A00030A400000000000A;
+			remoteInfo = csv;
+		};
+		D4C5A00030A6000000000004 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
 			proxyType = 1;
@@ -666,6 +682,7 @@
 				D49BFC7130A2700100AED804 /* libsnapshot.a in Frameworks */,
 				D49BFC4330A26EAF00AED804 /* libwrappers.a in Frameworks */,
 				D49BFC6A30A26FFD00AED804 /* libmodel.a in Frameworks */,
+				D4C5A00030A6000000000001 /* libcsv.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -677,6 +694,7 @@
 				D49BFC5130A26EBF00AED804 /* libwrappers.a in Frameworks */,
 				D49BFC5230A26EBF00AED804 /* libmodel.a in Frameworks */,
 				D49BFC5330A26EBF00AED804 /* libwrappers-fakes.a in Frameworks */,
+				D4C5A00030A6000000000002 /* libcsv.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -944,6 +962,7 @@
 				D49BFC7330A2700300AED804 /* PBXTargetDependency */,
 				D49BFC3E30A26EAF00AED804 /* PBXTargetDependency */,
 				D49BFC6C30A26FFD00AED804 /* PBXTargetDependency */,
+				D4C5A00030A6000000000005 /* PBXTargetDependency */,
 			);
 			name = "file-sharing";
 			packageProductDependencies = (
@@ -966,6 +985,7 @@
 				D49BFC4930A26EBF00AED804 /* PBXTargetDependency */,
 				D49BFC4B30A26EBF00AED804 /* PBXTargetDependency */,
 				D49BFC4D30A26EBF00AED804 /* PBXTargetDependency */,
+				D4C5A00030A6000000000006 /* PBXTargetDependency */,
 			);
 			name = "file-sharing-tests";
 			productName = mcmusBaseTests;
@@ -1379,6 +1399,16 @@
 			isa = PBXTargetDependency;
 			target = D4C5A00030A400000000000A /* csv */;
 			targetProxy = D4C5A00030A4000000000002 /* PBXContainerItemProxy */;
+		};
+		D4C5A00030A6000000000005 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4C5A00030A400000000000A /* csv */;
+			targetProxy = D4C5A00030A6000000000003 /* PBXContainerItemProxy */;
+		};
+		D4C5A00030A6000000000006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4C5A00030A400000000000A /* csv */;
+			targetProxy = D4C5A00030A6000000000004 /* PBXContainerItemProxy */;
 		};
 		D4D092B030A5000000000003 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

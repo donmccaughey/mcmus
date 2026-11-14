@@ -67,6 +67,7 @@ static void fail(NSString *path, NSError **error)
     NSMutableArray<NSString *> *_stopped;
     NSMutableArray<NSString *> *_clonedSources;
     NSMutableArray<NSString *> *_clonedDestinations;
+    NSMutableDictionary<NSString *, NSData *> *_writtenFiles;
 }
 
 - (instancetype)init
@@ -88,6 +89,7 @@ static void fail(NSString *path, NSError **error)
         _stopped = [NSMutableArray array];
         _clonedSources = [NSMutableArray array];
         _clonedDestinations = [NSMutableArray array];
+        _writtenFiles = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -125,6 +127,11 @@ static void fail(NSString *path, NSError **error)
 - (NSArray<NSString *> *)clonedDestinations
 {
     return [_clonedDestinations copy];
+}
+
+- (NSDictionary<NSString *, NSData *> *)writtenFiles
+{
+    return [_writtenFiles copy];
 }
 
 - (void)addPath:(NSString *)path
@@ -283,6 +290,16 @@ static void fail(NSString *path, NSError **error)
         }
     }
     return nil;
+}
+
+- (BOOL)writeData:(NSData *)data toFile:(NSURL *)url error:(NSError **)error;
+{
+    if (_writeDataToFileError) {
+        if (error) *error = _writeDataToFileError;
+        return NO;
+    }
+    _writtenFiles[url.path] = [data copy];
+    return YES;
 }
 
 - (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
