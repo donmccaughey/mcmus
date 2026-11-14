@@ -255,6 +255,7 @@
 /* Begin PBXFileReference section */
 		D3A5000000000000000000A2 /* MC Mus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MC Mus.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A5000000000000000000F1 /* app-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "app-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D408863A30A92C0900B9E22A /* bom.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = bom.md; sourceTree = "<group>"; };
 		D41DFEB0308C305900FEA684 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D41DFEB1308C305900FEA684 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D43B75F430A58FE900B14D7B /* .clang-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
@@ -777,6 +778,7 @@
 				D4DEF110309FAEC800B3F3CB /* src */,
 				D43B75F430A58FE900B14D7B /* .clang-format */,
 				D4A78314308D0B4000325F1E /* .gitignore */,
+				D408863A30A92C0900B9E22A /* bom.md */,
 				D41DFEB0308C305900FEA684 /* CLAUDE.md */,
 				D45D240330998DFB00F84DF9 /* Makefile */,
 				D41DFEB1308C305900FEA684 /* README.md */,
