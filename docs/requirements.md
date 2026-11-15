@@ -178,6 +178,27 @@ The MC Mus project shall use the xxHash library for hashing track files for
 change detection during file sharing.
 
 
+### libarchive
+
+The `libarchive` library shall use a custom Xcode target that builds libarchive
+as a static library with only support for the tar format; it omits other archive
+formats and compression.
+
+The `libarchive` library shall use a custom-generated `config_mcmus.h` file,
+which is stored in the `libarchive` source tree at `lib/libarchive/`. This
+config should be audited and regenerated if necessary when upgrading the
+`libarchive` source.
+
+The `libarchive` library shall use a custom-generated
+`archive_write_set_format_mcmus.c` file which is stored in the 'libarchive'
+source tree at `lib/libarchive/`; this file contains the
+`__archive_write_entry_filetype_unsupported()` function copied from
+`lib/libarchive/libarchive/archive_write_set_format.c` but omits the
+`archive_write_set_format()` function that would require including the other
+archive formats in the built static library. This file should be audited and
+regenerated if necessary when upgrading the `libarchive` source.
+
+
 # System service wrappers
 
 The **file system wrapper** shall wrap general file system information and

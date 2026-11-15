@@ -37,6 +37,8 @@
 		D4DEF16B309FB11D00B3F3CB /* libmodel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF148309FB00900B3F3CB /* libmodel.a */; };
 		D4EAD840309FF58900573748 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D4F1A00130A1A00000000001 /* libsnapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EAD844309FF58900573748 /* libsnapshot.a */; };
+		D4E7A10030B0000000000010 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
+		D4E7A10030B0000000000011 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -250,6 +252,20 @@
 			remoteGlobalIDString = D4EAD83A309FF58900573748;
 			remoteInfo = snapshot;
 		};
+		D4E7A10030B0000000000012 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4E7A10030B0000000000001;
+			remoteInfo = libarchive;
+		};
+		D4E7A10030B0000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4E7A10030B0000000000001;
+			remoteInfo = libarchive;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -273,6 +289,7 @@
 		D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libwrappers-fakes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF148309FB00900B3F3CB /* libmodel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmodel.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4EAD844309FF58900573748 /* libsnapshot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsnapshot.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4E7A10030B0000000000002 /* libarchive.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libarchive.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -454,6 +471,7 @@
 				"file-sharing/FileSharingTests.m",
 				"file-sharing/FileSharingThread.m",
 				"file-sharing/FileSharingThreadTests.m",
+				"file-sharing/TarRoundTripTests.m",
 			);
 			target = D49BFC4830A26EBF00AED804 /* file-sharing-tests */;
 		};
@@ -538,6 +556,56 @@
 			);
 			target = D3A5000000000000000000F2 /* app-tests */;
 		};
+		D4E7A10030B0000000000006 /* Exceptions for "lib" folder in "libarchive" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				libarchive/libarchive/archive.h,
+				libarchive/archive_write_set_format_mcmus.c,
+				libarchive/libarchive/archive_acl.c,
+				libarchive/libarchive/archive_check_magic.c,
+				libarchive/libarchive/archive_entry.c,
+				libarchive/libarchive/archive_entry.h,
+				libarchive/libarchive/archive_entry_copy_stat.c,
+				libarchive/libarchive/archive_entry_link_resolver.c,
+				libarchive/libarchive/archive_entry_sparse.c,
+				libarchive/libarchive/archive_entry_stat.c,
+				libarchive/libarchive/archive_entry_strmode.c,
+				libarchive/libarchive/archive_entry_xattr.c,
+				libarchive/libarchive/archive_options.c,
+				libarchive/libarchive/archive_pack_dev.c,
+				libarchive/libarchive/archive_random.c,
+				libarchive/libarchive/archive_rb.c,
+				libarchive/libarchive/archive_read.c,
+				libarchive/libarchive/archive_read_data_into_fd.c,
+				libarchive/libarchive/archive_read_open_fd.c,
+				libarchive/libarchive/archive_read_open_filename.c,
+				libarchive/libarchive/archive_read_open_memory.c,
+				libarchive/libarchive/archive_read_set_options.c,
+				libarchive/libarchive/archive_read_support_filter_none.c,
+				libarchive/libarchive/archive_read_support_format_empty.c,
+				libarchive/libarchive/archive_read_support_format_tar.c,
+				libarchive/libarchive/archive_string.c,
+				libarchive/libarchive/archive_string_sprintf.c,
+				libarchive/libarchive/archive_time.c,
+				libarchive/libarchive/archive_util.c,
+				libarchive/libarchive/archive_virtual.c,
+				libarchive/libarchive/archive_write.c,
+				libarchive/libarchive/archive_write_add_filter_none.c,
+				libarchive/libarchive/archive_write_open_fd.c,
+				libarchive/libarchive/archive_write_open_filename.c,
+				libarchive/libarchive/archive_write_open_memory.c,
+				libarchive/libarchive/archive_write_set_format_gnutar.c,
+				libarchive/libarchive/archive_write_set_format_pax.c,
+				libarchive/libarchive/archive_write_set_format_ustar.c,
+				libarchive/libarchive/archive_write_set_format_v7tar.c,
+				libarchive/libarchive/archive_write_set_options.c,
+			);
+			publicHeaders = (
+				libarchive/libarchive/archive.h,
+				libarchive/libarchive/archive_entry.h,
+			);
+			target = D4E7A10030B0000000000001 /* libarchive */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -609,6 +677,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				D4D092A230A4F96C009FBA83 /* Exceptions for "lib" folder in "xxHash" target */,
+				D4E7A10030B0000000000006 /* Exceptions for "lib" folder in "libarchive" target */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -681,6 +750,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D49BFC7130A2700100AED804 /* libsnapshot.a in Frameworks */,
+				D4E7A10030B0000000000010 /* libarchive.a in Frameworks */,
 				D49BFC4330A26EAF00AED804 /* libwrappers.a in Frameworks */,
 				D49BFC6A30A26FFD00AED804 /* libmodel.a in Frameworks */,
 				D4C5A00030A6000000000001 /* libcsv.a in Frameworks */,
@@ -692,6 +762,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D49BFC7430A2700400AED804 /* libsnapshot.a in Frameworks */,
+				D4E7A10030B0000000000011 /* libarchive.a in Frameworks */,
 				D49BFC5130A26EBF00AED804 /* libwrappers.a in Frameworks */,
 				D49BFC5230A26EBF00AED804 /* libmodel.a in Frameworks */,
 				D49BFC5330A26EBF00AED804 /* libwrappers-fakes.a in Frameworks */,
@@ -765,6 +836,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4E7A10030B0000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -804,6 +882,7 @@
 				D4C5A00030A4000000000003 /* libcsv.a */,
 				D4C5A00030A4000000000004 /* csv-tests.xctest */,
 				D4D092A030A4F93D009FBA83 /* libxxHash.a */,
+				D4E7A10030B0000000000002 /* libarchive.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -861,6 +940,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D4EAD83D309FF58900573748 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4E7A10030B0000000000003 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -962,6 +1048,7 @@
 			);
 			dependencies = (
 				D49BFC7330A2700300AED804 /* PBXTargetDependency */,
+				D4E7A10030B0000000000014 /* PBXTargetDependency */,
 				D49BFC3E30A26EAF00AED804 /* PBXTargetDependency */,
 				D49BFC6C30A26FFD00AED804 /* PBXTargetDependency */,
 				D4C5A00030A6000000000005 /* PBXTargetDependency */,
@@ -984,6 +1071,7 @@
 			);
 			dependencies = (
 				D49BFC7630A2700600AED804 /* PBXTargetDependency */,
+				D4E7A10030B0000000000015 /* PBXTargetDependency */,
 				D49BFC4930A26EBF00AED804 /* PBXTargetDependency */,
 				D49BFC4B30A26EBF00AED804 /* PBXTargetDependency */,
 				D49BFC4D30A26EBF00AED804 /* PBXTargetDependency */,
@@ -1147,6 +1235,25 @@
 			productReference = D4EAD844309FF58900573748 /* libsnapshot.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D4E7A10030B0000000000001 /* libarchive */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4E7A10030B0000000000007 /* Build configuration list for PBXNativeTarget "libarchive" */;
+			buildPhases = (
+				D4E7A10030B0000000000003 /* Headers */,
+				D4E7A10030B0000000000004 /* Sources */,
+				D4E7A10030B0000000000005 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libarchive;
+			packageProductDependencies = (
+			);
+			productName = libarchive;
+			productReference = D4E7A10030B0000000000002 /* libarchive.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1191,6 +1298,7 @@
 				D4C5A00030A400000000000B /* csv-tests */,
 				D49BFC3D30A26EAF00AED804 /* file-sharing */,
 				D49BFC4830A26EBF00AED804 /* file-sharing-tests */,
+				D4E7A10030B0000000000001 /* libarchive */,
 				D4DEF141309FB00900B3F3CB /* model */,
 				D4B100000000000000000030 /* model-tests */,
 				D4EAD83A309FF58900573748 /* snapshot */,
@@ -1313,6 +1421,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D4EAD83E309FF58900573748 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4E7A10030B0000000000004 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1471,6 +1586,16 @@
 			isa = PBXTargetDependency;
 			target = D4EAD83A309FF58900573748 /* snapshot */;
 			targetProxy = D4F1A00230A1A00000000002 /* PBXContainerItemProxy */;
+		};
+		D4E7A10030B0000000000014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4E7A10030B0000000000001 /* libarchive */;
+			targetProxy = D4E7A10030B0000000000012 /* PBXContainerItemProxy */;
+		};
+		D4E7A10030B0000000000015 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4E7A10030B0000000000001 /* libarchive */;
+			targetProxy = D4E7A10030B0000000000013 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2213,6 +2338,56 @@
 			};
 			name = Release;
 		};
+		D4E7A10030B0000000000008 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"PLATFORM_CONFIG_H=\\\"config_mcmus.h\\\"",
+				);
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/lib/libarchive",
+					"$(SRCROOT)/lib/libarchive/libarchive",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = archive;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4E7A10030B0000000000009 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"PLATFORM_CONFIG_H=\\\"config_mcmus.h\\\"",
+				);
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/lib/libarchive",
+					"$(SRCROOT)/lib/libarchive/libarchive",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = archive;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2347,6 +2522,15 @@
 			buildConfigurations = (
 				D4EAD842309FF58900573748 /* Debug */,
 				D4EAD843309FF58900573748 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4E7A10030B0000000000007 /* Build configuration list for PBXNativeTarget "libarchive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4E7A10030B0000000000008 /* Debug */,
+				D4E7A10030B0000000000009 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
