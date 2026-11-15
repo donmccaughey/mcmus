@@ -65,6 +65,29 @@ static void index_directory(NSDictionary *entry, NSString *path,
 }
 
 
+@interface EmptyFileReader : NSObject <FileReader>
+@end
+
+
+@implementation EmptyFileReader
+
+
+- (NSInteger)readInto:(void *)buffer
+               length:(size_t)length
+                error:(NSError **)error;
+{
+    return 0;
+}
+
+
+- (void)close;
+{
+}
+
+
+@end
+
+
 @implementation FileSystemDemo {
     id<FileSystem> _fileSystem;
     NSError *_Nullable _error;
@@ -207,6 +230,15 @@ static void index_directory(NSDictionary *entry, NSString *path,
     if (!_infoByPath[url.path])
         return [_fileSystem readFile:url chunks:chunk error:error];
     return YES;
+}
+
+
+- (nullable id<FileReader>)openFileForReading:(NSURL *)url
+                                        error:(NSError **)error;
+{
+    if (!_infoByPath[url.path])
+        return [_fileSystem openFileForReading:url error:error];
+    return [EmptyFileReader new];
 }
 
 

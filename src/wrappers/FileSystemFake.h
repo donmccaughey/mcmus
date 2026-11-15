@@ -52,6 +52,8 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 @property (nonatomic, copy) NSSet<NSString *> *unreadableEntries;
 @property (nonatomic, copy) NSSet<NSString *> *unsizeableFiles;
 @property (nonatomic, copy) NSSet<NSString *> *unreadableFiles;
+// These files open for reading but every read from them fails.
+@property (nonatomic, copy) NSSet<NSString *> *unreadableAfterOpenFiles;
 @property (nonatomic, copy) NSSet<NSString *> *uncreatableDirectories;
 @property (nonatomic, copy) NSSet<NSString *> *unbookmarkablePaths;
 @property (nonatomic, copy) NSSet<NSString *> *unresolvableBookmarks;

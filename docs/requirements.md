@@ -143,6 +143,13 @@ library, with code and unit tests placed in the `src/csv/` subdirectory.
 
 The csv library shall not depend on any other library in the MC Mus project.
 
+The MC Mus project shall place code for creating and parsing tar files in the
+**tarball** library, with code and unit tests placed in the `src/tarball/`
+subdirectory.
+
+The tarball library shall depend on the wrappers library and the `libarchive`
+library; tarball unit tests shall also depend on the wrappers-fakes library.
+
 The MC Mus project shall place code for file sharing in the **file-sharing**
 library, with code and unit tests placed in the `src/file-sharing/`
 subdirectory.
@@ -194,15 +201,20 @@ The `libarchive` library shall use a custom-generated
 source tree at `lib/libarchive/`; this file contains the
 `__archive_write_entry_filetype_unsupported()` function copied from
 `lib/libarchive/libarchive/archive_write_set_format.c` but omits the
-`archive_write_set_format()` function that would require including the other
-archive formats in the built static library. This file should be audited and
-regenerated if necessary when upgrading the `libarchive` source.
+`archive_write_set_format()` function and supporting table that would require
+including the other archive formats in the built static library. This file
+should be audited and regenerated if necessary when upgrading the `libarchive`
+source.
 
 
 # System service wrappers
 
 The **file system wrapper** shall wrap general file system information and
 operations.
+
+The file system wrapper shall open a file for reading and return a **file
+reader**, an object that reads the contents of the file incrementally into a
+buffer supplied by the caller until it reaches the end of the file or is closed.
 
 On macOS, the file system wrapper shall wrap security-scoped bookmark creation,
 resolution and access.
@@ -573,6 +585,68 @@ represents a record.
 The generate CSV function shall only quote fields where necessary.
 
 The generate CSV function shall use CRLF as the end of record marker.
+
+
+# Tarball
+
+The tarball library shall use `libarchive` for creating and parsing in-memory
+tar files.
+
+The tarball library shall define the **tarball entry** class with these
+read-only properties:, **relative path**; **size** in bytes; **mtime**, a
+`time_t` value.
+
+The tarball library shall define the **tarball writer** class that generates a
+tar file incrementally in memory.
+
+A tarball writer shall generate tar files in the GNU tar format, which stores
+paths of any length as uninterpreted bytes.
+
+A tarball writer shall have these read-only property: **base directory**, the
+absolute path to the directory where files will be found; **entries**, an array
+of tarball entry objects to go in the tar file; **file system**, a file system
+wrapper object.
+
+A tarball writer shall have a calculated read-only property **tarball size**,
+which is the calculated size of the resulting tar file.
+
+A tarball writer shall be initialized with an array of tarball entries.
+
+A tarball writer shall be used once to generate a tar file, then discarded.
+
+A tarball writer shall have one method, **next buffer** which shall return a
+buffer an `NSData` object containing the next chunk of the tar file on success
+or `nil` and an error on failure.
+
+The next buffer method shall generate an in-memory tar file containing files
+corresponding to and in the same order as the entries array.
+
+The next buffer method shall use private instance variables on the tarball
+writer object as necessary to maintain state between calls.
+
+The next buffer method shall return up to 64 KB of data at a time.
+
+The next buffer method shall return `nil` and an error when called after the
+complete tar file has been generated.
+
+The next buffer method shall use the relative path property of each tarball
+entry as the source of the filename and path for each entry in the tar file; the
+base directory is only used to locate files.
+
+The next buffer method shall store filenames and paths as UTF-8 encoded bytes in
+the default normal form returned by the tarball entry.
+
+The next buffer method shall use the size and mtime properties of each tarball
+entry as the source of these values for the corresponding tar file entry header.
+
+The next buffer method shall set the owner and group information for each entry
+in the tar file to zero or empty values.
+
+The next buffer method shall set the file mode for each entry in the tar file to
+`0666` so it is readable and writable by everyone.
+
+The next buffer method shall use a file reader obtained from the file system
+wrapper and a 1 MB buffer for reading file data.
 
 
 # File sharing

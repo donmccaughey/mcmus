@@ -50,6 +50,13 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D47A2B0030B100000000000B",
+        "name" : "tarball-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
         "identifier" : "D4C0FFEE30A3000000000017",
         "name" : "wrappers-tests"
       }

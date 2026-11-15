@@ -23,6 +23,7 @@
 		D4C0FFEE30A3000000000010 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D4C0FFEE30A3000000000011 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
 		D4C5A00030A4000000000001 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
+		D47A2B0030B1000000000001 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D4C5A00030A6000000000001 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
 		D4C5A00030A6000000000002 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
 		D4D092B030A5000000000001 /* libxxHash.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D092A030A4F93D009FBA83 /* libxxHash.a */; };
@@ -39,6 +40,11 @@
 		D4F1A00130A1A00000000001 /* libsnapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EAD844309FF58900573748 /* libsnapshot.a */; };
 		D4E7A10030B0000000000010 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
 		D4E7A10030B0000000000011 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
+		D47A2B0030B1000000000020 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D47A2B0030B1000000000021 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
+		D47A2B0030B1000000000022 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
+		D47A2B0030B1000000000023 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D47A2B0030B1000000000024 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +160,13 @@
 			remoteGlobalIDString = D4C5A00030A400000000000A;
 			remoteInfo = csv;
 		};
+		D47A2B0030B1000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
+		};
 		D4C5A00030A6000000000003 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
@@ -266,6 +279,27 @@
 			remoteGlobalIDString = D4E7A10030B0000000000001;
 			remoteInfo = libarchive;
 		};
+		D47A2B0030B1000000000030 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D47A2B0030B1000000000031 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4E7A10030B0000000000001;
+			remoteInfo = libarchive;
+		};
+		D47A2B0030B1000000000032 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4DEF0BC309FA6D800B3F3CB;
+			remoteInfo = wrappersfakes;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -284,7 +318,9 @@
 		D4B100000000000000000036 /* model-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "model-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C0FFEE30A3000000000014 /* wrappers-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "wrappers-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C5A00030A4000000000003 /* libcsv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcsv.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D47A2B0030B1000000000003 /* libtarball.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtarball.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C5A00030A4000000000004 /* csv-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "csv-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D47A2B0030B1000000000004 /* tarball-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "tarball-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D092A030A4F93D009FBA83 /* libxxHash.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxxHash.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libwrappers-fakes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4DEF148309FB00900B3F3CB /* libmodel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmodel.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -494,12 +530,33 @@
 			);
 			target = D4C5A00030A400000000000A /* csv */;
 		};
+		D47A2B0030B1000000000005 /* Exceptions for "src" folder in "tarball" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				tarball/TarballEntry.h,
+				tarball/TarballEntry.m,
+				tarball/TarballWriter.h,
+				tarball/TarballWriter.m,
+			);
+			publicHeaders = (
+				tarball/TarballEntry.h,
+				tarball/TarballWriter.h,
+			);
+			target = D47A2B0030B100000000000A /* tarball */;
+		};
 		D4C5A00030A4000000000006 /* Exceptions for "src" folder in "csv-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				csv/CSVTests.m,
 			);
 			target = D4C5A00030A400000000000B /* csv-tests */;
+		};
+		D47A2B0030B1000000000006 /* Exceptions for "src" folder in "tarball-tests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				tarball/TarballWriterTests.m,
+			);
+			target = D47A2B0030B100000000000B /* tarball-tests */;
 		};
 		D4D092A230A4F96C009FBA83 /* Exceptions for "lib" folder in "xxHash" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -689,7 +746,9 @@
 				D47252A7309FD2C9008D1F07 /* Exceptions for "src" folder in "Compile Sources" phase from "app" target */,
 				D4EAD6E4309FD51100573748 /* Exceptions for "src" folder in "app-tests" target */,
 				D4C5A00030A4000000000005 /* Exceptions for "src" folder in "csv" target */,
+				D47A2B0030B1000000000005 /* Exceptions for "src" folder in "tarball" target */,
 				D4C5A00030A4000000000006 /* Exceptions for "src" folder in "csv-tests" target */,
+				D47A2B0030B1000000000006 /* Exceptions for "src" folder in "tarball-tests" target */,
 				D49BFC5A30A26F0600AED804 /* Exceptions for "src" folder in "file-sharing" target */,
 				D49BFC6030A26F3700AED804 /* Exceptions for "src" folder in "file-sharing-tests" target */,
 				D41B8727309FB45700136AE5 /* Exceptions for "src" folder in "model" target */,
@@ -796,11 +855,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D47A2B0030B1000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D47A2B0030B1000000000021 /* libarchive.a in Frameworks */,
+				D47A2B0030B1000000000020 /* libwrappers.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4C5A00030A4000000000008 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D4C5A00030A4000000000001 /* libcsv.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D47A2B0030B1000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D47A2B0030B1000000000024 /* libwrappers-fakes.a in Frameworks */,
+				D47A2B0030B1000000000023 /* libwrappers.a in Frameworks */,
+				D47A2B0030B1000000000022 /* libarchive.a in Frameworks */,
+				D47A2B0030B1000000000001 /* libtarball.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -880,7 +959,9 @@
 				D49BFC5730A26EBF00AED804 /* file-sharing-tests.xctest */,
 				D4C0FFEE30A3000000000014 /* wrappers-tests.xctest */,
 				D4C5A00030A4000000000003 /* libcsv.a */,
+				D47A2B0030B1000000000003 /* libtarball.a */,
 				D4C5A00030A4000000000004 /* csv-tests.xctest */,
+				D47A2B0030B1000000000004 /* tarball-tests.xctest */,
 				D4D092A030A4F93D009FBA83 /* libxxHash.a */,
 				D4E7A10030B0000000000002 /* libarchive.a */,
 			);
@@ -912,6 +993,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D4C5A00030A4000000000009 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D47A2B0030B1000000000009 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1138,6 +1226,27 @@
 			productReference = D4C5A00030A4000000000003 /* libcsv.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D47A2B0030B100000000000A /* tarball */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D47A2B0030B1000000000013 /* Build configuration list for PBXNativeTarget "tarball" */;
+			buildPhases = (
+				D47A2B0030B1000000000009 /* Headers */,
+				D47A2B0030B100000000000C /* Sources */,
+				D47A2B0030B1000000000007 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D47A2B0030B1000000000039 /* PBXTargetDependency */,
+				D47A2B0030B1000000000038 /* PBXTargetDependency */,
+			);
+			name = tarball;
+			packageProductDependencies = (
+			);
+			productName = tarball;
+			productReference = D47A2B0030B1000000000003 /* libtarball.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D4C5A00030A400000000000B /* csv-tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D4C5A00030A4000000000014 /* Build configuration list for PBXNativeTarget "csv-tests" */;
@@ -1153,6 +1262,24 @@
 			name = "csv-tests";
 			productName = "csv-tests";
 			productReference = D4C5A00030A4000000000004 /* csv-tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D47A2B0030B100000000000B /* tarball-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D47A2B0030B1000000000014 /* Build configuration list for PBXNativeTarget "tarball-tests" */;
+			buildPhases = (
+				D47A2B0030B100000000000D /* Sources */,
+				D47A2B0030B1000000000008 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D47A2B0030B100000000003A /* PBXTargetDependency */,
+				D47A2B0030B100000000000E /* PBXTargetDependency */,
+			);
+			name = "tarball-tests";
+			productName = "tarball-tests";
+			productReference = D47A2B0030B1000000000004 /* tarball-tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D4D0929930A4F93D009FBA83 /* xxHash */ = {
@@ -1295,7 +1422,9 @@
 				D3A5000000000000000000C0 /* app */,
 				D3A5000000000000000000F2 /* app-tests */,
 				D4C5A00030A400000000000A /* csv */,
+				D47A2B0030B100000000000A /* tarball */,
 				D4C5A00030A400000000000B /* csv-tests */,
+				D47A2B0030B100000000000B /* tarball-tests */,
 				D49BFC3D30A26EAF00AED804 /* file-sharing */,
 				D49BFC4830A26EBF00AED804 /* file-sharing-tests */,
 				D4E7A10030B0000000000001 /* libarchive */,
@@ -1392,7 +1521,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D47A2B0030B100000000000C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4C5A00030A400000000000D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D47A2B0030B100000000000D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1517,6 +1660,11 @@
 			target = D4C5A00030A400000000000A /* csv */;
 			targetProxy = D4C5A00030A4000000000002 /* PBXContainerItemProxy */;
 		};
+		D47A2B0030B100000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D47A2B0030B1000000000002 /* PBXContainerItemProxy */;
+		};
 		D4C5A00030A6000000000005 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D4C5A00030A400000000000A /* csv */;
@@ -1596,6 +1744,21 @@
 			isa = PBXTargetDependency;
 			target = D4E7A10030B0000000000001 /* libarchive */;
 			targetProxy = D4E7A10030B0000000000013 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B1000000000038 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D47A2B0030B1000000000030 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B1000000000039 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4E7A10030B0000000000001 /* libarchive */;
+			targetProxy = D47A2B0030B1000000000031 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B100000000003A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */;
+			targetProxy = D47A2B0030B1000000000032 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2136,7 +2299,40 @@
 			};
 			name = Debug;
 		};
+		D47A2B0030B100000000000F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		D4C5A00030A4000000000010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D47A2B0030B1000000000010 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -2179,7 +2375,61 @@
 			};
 			name = Debug;
 		};
+		D47A2B0030B1000000000011 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.donm-mcmus-base-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		D4C5A00030A4000000000012 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.donm-mcmus-base-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D47A2B0030B1000000000012 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -2481,11 +2731,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		D47A2B0030B1000000000013 /* Build configuration list for PBXNativeTarget "tarball" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D47A2B0030B100000000000F /* Debug */,
+				D47A2B0030B1000000000010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D4C5A00030A4000000000014 /* Build configuration list for PBXNativeTarget "csv-tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D4C5A00030A4000000000011 /* Debug */,
 				D4C5A00030A4000000000012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D47A2B0030B1000000000014 /* Build configuration list for PBXNativeTarget "tarball-tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D47A2B0030B1000000000011 /* Debug */,
+				D47A2B0030B1000000000012 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

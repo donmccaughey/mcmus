@@ -63,6 +63,51 @@ static void fail(NSString *path, NSError **error)
 
 @end
 
+@interface FileReaderFake : NSObject <FileReader>
+
+- (instancetype)initWithContents:(NSData *)contents
+                           error:(nullable NSError *)error;
+
+@end
+
+@implementation FileReaderFake {
+    NSData *_contents;
+    NSError *_error;
+    NSUInteger _offset;
+}
+
+- (instancetype)initWithContents:(NSData *)contents
+                           error:(nullable NSError *)error;
+{
+    self = [super init];
+    if (!self) return nil;
+
+    _contents = contents;
+    _error = error;
+
+    return self;
+}
+
+- (NSInteger)readInto:(void *)buffer
+               length:(size_t)length
+                error:(NSError **)error;
+{
+    if (_error) {
+        if (error) *error = _error;
+        return -1;
+    }
+    NSUInteger count = MIN(length, _contents.length - _offset);
+    [_contents getBytes:buffer range:NSMakeRange(_offset, count)];
+    _offset += count;
+    return (NSInteger)count;
+}
+
+- (void)close;
+{
+}
+
+@end
+
 @implementation FileSystemFake {
     NSMutableArray<FileSystemFakeEntry *> *_entries;
     NSMutableArray<NSString *> *_bookmarked;
@@ -82,6 +127,7 @@ static void fail(NSString *path, NSError **error)
         _unreadableEntries = [NSSet set];
         _unsizeableFiles = [NSSet set];
         _unreadableFiles = [NSSet set];
+        _unreadableAfterOpenFiles = [NSSet set];
         _uncreatableDirectories = [NSSet set];
         _unbookmarkablePaths = [NSSet set];
         _unresolvableBookmarks = [NSSet set];
@@ -299,6 +345,22 @@ static void fail(NSString *path, NSError **error)
         chunk(bytes + offset, MIN(chunkLength, contents.length - offset));
     }
     return YES;
+}
+
+- (nullable id<FileReader>)openFileForReading:(NSURL *)url
+                                        error:(NSError **)error;
+{
+    FileSystemFakeEntry *entry = [self entryForPath:url.path];
+    if ([_unreadableFiles containsObject:url.path] || !entry) {
+        fail(url.path, error);
+        return nil;
+    }
+    NSError *readError = [_unreadableAfterOpenFiles containsObject:url.path]
+        ? operationFailed(url.path)
+        : nil;
+    return
+        [[FileReaderFake alloc] initWithContents:entry.contents ?: [NSData data]
+                                           error:readError];
 }
 
 - (nullable FileSystemFakeEntry *)entryForPath:(NSString *)path

@@ -133,6 +133,42 @@
     XCTAssertEqualObjects(read, contents);
 }
 
+- (void)testReaderForDemoFileIsAtEndOfFile
+{
+    FileSystemDemo *demo = [self demoWithTrackInRoot];
+
+    NSError *error;
+    id<FileReader> reader =
+        [demo openFileForReading:[self file:@"/Users/demo/Music/Song.mp3"]
+                           error:&error];
+
+    XCTAssertNotNil(reader, @"%@", error);
+    uint8_t buffer[16];
+    XCTAssertEqual(
+        [reader readInto:buffer length:sizeof buffer error:&error], 0L);
+}
+
+- (void)testReaderForFileOutsideDemoRootComesFromWrappedFileSystem
+{
+    FileSystemDemo *demo = [self demoWithTrackInRoot];
+    NSData *contents = [@"0123456789" dataUsingEncoding:NSUTF8StringEncoding];
+    [_fileSystem addPath:@"/Users/real/Music/Song.mp3" contents:contents];
+
+    NSError *error;
+    id<FileReader> reader =
+        [demo openFileForReading:[self file:@"/Users/real/Music/Song.mp3"]
+                           error:&error];
+
+    XCTAssertNotNil(reader, @"%@", error);
+    NSMutableData *read = [NSMutableData dataWithLength:16];
+    NSInteger count = [reader readInto:read.mutableBytes
+                                length:read.length
+                                 error:&error];
+    XCTAssertEqual(count, 10L);
+    read.length = (NSUInteger)count;
+    XCTAssertEqualObjects(read, contents);
+}
+
 - (void)testRootDirectoryNameBecomesRootURL
 {
     FileSystemDemo *demo = [self demo:

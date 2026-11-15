@@ -13,6 +13,64 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
     ];
 }
 
+static BOOL posixFailure(NSURL *url, NSError **error)
+{
+    if (error) {
+        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                     code:errno
+                                 userInfo:@{NSURLErrorKey: url}];
+    }
+    return NO;
+}
+
+@interface FileReaderReal : NSObject <FileReader>
+
+- (instancetype)initWithFile:(int)file url:(NSURL *)url;
+
+@end
+
+@implementation FileReaderReal {
+    int _file;
+    NSURL *_url;
+}
+
+- (instancetype)initWithFile:(int)file url:(NSURL *)url;
+{
+    self = [super init];
+    if (!self) return nil;
+
+    _file = file;
+    _url = url;
+
+    return self;
+}
+
+- (void)dealloc;
+{
+    [self close];
+}
+
+- (NSInteger)readInto:(void *)buffer
+               length:(size_t)length
+                error:(NSError **)error;
+{
+    ssize_t count;
+    do {
+        count = read(_file, buffer, length);
+    } while (count < 0 && errno == EINTR);
+    if (count < 0) posixFailure(_url, error);
+    return count;
+}
+
+- (void)close;
+{
+    if (_file < 0) return;
+    close(_file);
+    _file = -1;
+}
+
+@end
+
 @implementation FileSystemReal
 
 - (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error
@@ -100,16 +158,6 @@ static NSArray<NSURLResourceKey> *fileInfoKeys(void)
     return NO;
 }
 
-static BOOL posixFailure(NSURL *url, NSError **error)
-{
-    if (error) {
-        *error = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                     code:errno
-                                 userInfo:@{NSURLErrorKey: url}];
-    }
-    return NO;
-}
-
 - (BOOL)readFile:(NSURL *)url
           chunks:(void(NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
            error:(NSError **)error;
@@ -134,6 +182,17 @@ static BOOL posixFailure(NSURL *url, NSError **error)
     free(buffer);
     close(file);
     return ok;
+}
+
+- (nullable id<FileReader>)openFileForReading:(NSURL *)url
+                                        error:(NSError **)error;
+{
+    int file = open(url.fileSystemRepresentation, O_RDONLY | O_CLOEXEC);
+    if (file < 0) {
+        posixFailure(url, error);
+        return nil;
+    }
+    return [[FileReaderReal alloc] initWithFile:file url:url];
 }
 
 - (BOOL)writeData:(NSData *)data toFile:(NSURL *)url error:(NSError **)error;

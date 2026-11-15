@@ -29,6 +29,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@protocol FileReader <NSObject>
+
+// Returns the number of bytes read, which may be fewer than `length`, zero at
+// the end of the file or -1 on failure.
+- (NSInteger)readInto:(void *)buffer
+               length:(size_t)length
+                error:(NSError **)error;
+- (void)close;
+
+@end
+
 @protocol FileSystem <NSObject>
 
 - (nullable NSURL *)getMusicDirectoryURLAndReturnError:(NSError **)error;
@@ -47,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)readFile:(NSURL *)url
           chunks:(void(NS_NOESCAPE ^)(const void *bytes, size_t length))chunk
            error:(NSError **)error;
+- (nullable id<FileReader>)openFileForReading:(NSURL *)url
+                                        error:(NSError **)error;
 - (BOOL)writeData:(NSData *)data toFile:(NSURL *)url error:(NSError **)error;
 - (BOOL)removeItemAtURL:(NSURL *)URL error:(NSError **)error;
 - (BOOL)cloneFile:(NSURL *)source
