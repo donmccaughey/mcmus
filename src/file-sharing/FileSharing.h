@@ -5,7 +5,9 @@
 #import <Foundation/Foundation.h>
 
 
+@protocol Clock;
 @protocol FileSystem;
+@protocol Network;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,9 +35,15 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 @property (nonatomic, readonly) NSUInteger metadataTracksLoaded;
 @property (nonatomic, readonly) NSUInteger metadataTotalTracks;
 
+// The name of the device being served, or nil while sharing is off or the
+// server is waiting for a client.
+@property (nonatomic, readonly, copy, nullable) NSString *connectedDeviceName;
+
 - (instancetype)initWithMusicRootDirectoryURL:
                     (nullable NSURL *)musicRootDirectoryURL
                                    fileSystem:(id<FileSystem>)fileSystem
+                                      network:(id<Network>)network
+                                        clock:(id<Clock>)clock
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithMusicRootDirectoryURL:
     (nullable NSURL *)musicRootDirectoryURL;

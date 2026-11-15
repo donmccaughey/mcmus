@@ -4,8 +4,11 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ClockFake.h"
 #import "FileSharing.h"
+#import "FileSharingService.h"
 #import "FileSystemFake.h"
+#import "NetworkFake.h"
 #import "NotificationCounter.h"
 
 
@@ -15,6 +18,7 @@
 
 @implementation FileSharingTests {
     FileSystemFake *_fileSystem;
+    NetworkFake *_network;
     FileSharing *_fileSharing;
     NotificationCounter *_changes;
 }
@@ -30,9 +34,12 @@
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
     NSURL *musicRootDirectoryURL = [NSURL fileURLWithPath:@"/Users/user/Music"
                                               isDirectory:YES];
+    _network = [NetworkFake new];
     _fileSharing =
         [[FileSharing alloc] initWithMusicRootDirectoryURL:musicRootDirectoryURL
-                                                fileSystem:_fileSystem];
+                                                fileSystem:_fileSystem
+                                                   network:_network
+                                                     clock:[ClockFake new]];
     _changes = [[NotificationCounter alloc]
         initWithName:FileSharing.didChangeNotification
               object:_fileSharing];
@@ -183,7 +190,9 @@
 {
     FileSharing *fileSharing =
         [[FileSharing alloc] initWithMusicRootDirectoryURL:nil
-                                                fileSystem:_fileSystem];
+                                                fileSystem:_fileSystem
+                                                   network:_network
+                                                     clock:[ClockFake new]];
 
     [self startAndWait:fileSharing];
 
@@ -191,6 +200,108 @@
     XCTAssertFalse(fileSharing.isSharing);
     XCTAssertNotNil(fileSharing.error);
     XCTAssertEqual(_fileSystem.clonedSources.count, 0UL);
+}
+
+
+- (void)testStartReportsListenFailure;
+{
+    _network.listenError = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                               code:EADDRINUSE
+                                           userInfo:nil];
+
+    [self startAndWait:_fileSharing];
+
+    XCTAssertEqual(_fileSharing.state, FileSharingStateOff);
+    XCTAssertEqualObjects(_fileSharing.error, _network.listenError);
+}
+
+
+#pragma mark - connected device tests
+
+
+// The server's reports reach the file sharing object on the main queue, so
+// the tests wait for a block queued behind them.
+- (void)waitForMainQueue;
+{
+    XCTestExpectation *drained = [self expectationWithDescription:@"drained"];
+    dispatch_async(dispatch_get_main_queue(), ^{ [drained fulfill]; });
+    [self waitForExpectations:@[drained] timeout:5];
+}
+
+
+- (void)reportClient:(nullable NSString *)deviceName;
+{
+    id<FileSharingClient> client = (id<FileSharingClient>)_fileSharing;
+    if (deviceName) {
+        [client serverDidConnectClient:deviceName];
+    } else {
+        [client serverIsWaitingForClient];
+    }
+    [self waitForMainQueue];
+}
+
+
+- (void)testNoDeviceIsConnectedWhenSharingStarts;
+{
+    [self startAndWait:_fileSharing];
+    [self waitForMainQueue];
+
+    XCTAssertNil(_fileSharing.connectedDeviceName);
+    XCTAssertEqual(_changes.count, 2UL);
+}
+
+
+- (void)testConnectedClientSetsConnectedDeviceName;
+{
+    [self startAndWait:_fileSharing];
+
+    [self reportClient:@"Don's iPhone"];
+
+    XCTAssertEqualObjects(_fileSharing.connectedDeviceName, @"Don's iPhone");
+    XCTAssertEqual(_changes.count, 3UL);
+}
+
+
+- (void)testRepeatedReportOfSameClientIsNotAChange;
+{
+    [self startAndWait:_fileSharing];
+    [self reportClient:@"Don's iPhone"];
+
+    [self reportClient:@"Don's iPhone"];
+
+    XCTAssertEqual(_changes.count, 3UL);
+}
+
+
+- (void)testWaitingForClientClearsConnectedDeviceName;
+{
+    [self startAndWait:_fileSharing];
+    [self reportClient:@"Don's iPhone"];
+
+    [self reportClient:nil];
+
+    XCTAssertNil(_fileSharing.connectedDeviceName);
+    XCTAssertEqual(_changes.count, 4UL);
+}
+
+
+- (void)testStopClearsConnectedDeviceName;
+{
+    [self startAndWait:_fileSharing];
+    [self reportClient:@"Don's iPhone"];
+
+    [self stopAndWait:_fileSharing];
+
+    XCTAssertNil(_fileSharing.connectedDeviceName);
+}
+
+
+- (void)testClientReportedWhileOffIsIgnored;
+{
+    [self reportClient:@"Don's iPhone"];
+
+    XCTAssertNil(_fileSharing.connectedDeviceName);
+    XCTAssertEqual(_changes.count, 0UL);
 }
 
 
@@ -248,6 +359,18 @@
     XCTAssertEqual(_fileSharing.state, FileSharingStateSharing);
     XCTAssertTrue(_fileSharing.isSharing);
     XCTAssertEqual(_changes.count, 2UL);
+}
+
+
+- (void)testStopClosesServer;
+{
+    [self startAndWait:_fileSharing];
+    XCTAssertFalse(_network.listener.isClosed);
+
+    [self stopAndWait:_fileSharing];
+
+    XCTAssertTrue(_network.listener.isClosed);
+    XCTAssertTrue(_network.advertisement.isClosed);
 }
 
 

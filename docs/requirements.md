@@ -861,7 +861,8 @@ in memory and written directly to the file sharing server connection socket.
 
 ## Bonjour
 
-The file sharing server shall advertise itself via Bonjour.
+The file sharing server shall advertise itself via Bonjour using the service
+name `_mcmus._tcp`.
 
 
 # Launch behavior

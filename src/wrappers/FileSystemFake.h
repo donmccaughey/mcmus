@@ -68,6 +68,7 @@ typedef NS_ENUM(NSInteger, FileSystemFakeKind) {
 @property (nonatomic, readonly, copy) NSArray<NSString *> *clonedDestinations;
 @property (nonatomic, readonly, copy)
     NSDictionary<NSString *, NSData *> *writtenFiles;
+@property (nonatomic, readonly, copy) NSArray<NSString *> *removedPaths;
 @property (nonatomic, nullable) NSError *writeDataToFileError;
 @property (nonatomic, nullable) NSError *removeItemAtURLError;
 @property (nonatomic, nullable) NSError *cloneFileToFileError;

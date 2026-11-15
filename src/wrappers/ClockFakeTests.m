@@ -1,0 +1,107 @@
+#import <XCTest/XCTest.h>
+
+#import "ClockFake.h"
+
+
+@interface ClockFakeTests : XCTestCase
+@end
+
+
+@implementation ClockFakeTests {
+    ClockFake *_clock;
+    NSMutableArray<NSString *> *_fired;
+}
+
+
+- (void)setUp;
+{
+    [super setUp];
+    _clock = [ClockFake new];
+    _fired = [NSMutableArray new];
+}
+
+
+- (void)after:(NSTimeInterval)delay record:(NSString *)name;
+{
+    NSMutableArray<NSString *> *fired = _fired;
+    [_clock after:delay run:^{ [fired addObject:name]; }];
+}
+
+
+- (void)testTimerDoesNotRunBeforeItIsDue;
+{
+    [self after:10 record:@"ten"];
+
+    [_clock advance:9.5];
+
+    XCTAssertEqualObjects(_fired, @[]);
+    XCTAssertEqual(_clock.pendingTimerCount, 1UL);
+}
+
+
+- (void)testTimerRunsOnceWhenDue;
+{
+    [self after:10 record:@"ten"];
+
+    [_clock advance:10];
+    [_clock advance:10];
+
+    XCTAssertEqualObjects(_fired, @[@"ten"]);
+    XCTAssertEqual(_clock.pendingTimerCount, 0UL);
+}
+
+
+- (void)testAdvancesAccumulate;
+{
+    [self after:10 record:@"ten"];
+
+    [_clock advance:6];
+    [_clock advance:6];
+
+    XCTAssertEqualObjects(_fired, @[@"ten"]);
+}
+
+
+- (void)testTimersRunInDueOrder;
+{
+    [self after:10 record:@"ten"];
+    [self after:5 record:@"five"];
+
+    [_clock advance:20];
+
+    XCTAssertEqualObjects(_fired, (@[@"five", @"ten"]));
+}
+
+
+- (void)testCancelledTimerDoesNotRun;
+{
+    NSMutableArray<NSString *> *fired = _fired;
+    id<ClockTimer> timer = [_clock after:10 run:^{ [fired addObject:@"ten"]; }];
+
+    [timer cancel];
+    [_clock advance:20];
+
+    XCTAssertEqualObjects(_fired, @[]);
+    XCTAssertEqual(_clock.pendingTimerCount, 0UL);
+}
+
+
+- (void)testTimerScheduledByARunningTimerIsMeasuredFromThatTimersDueTime;
+{
+    ClockFake *clock = _clock;
+    NSMutableArray<NSString *> *fired = _fired;
+    [_clock after:5
+              run:^{
+                  [fired addObject:@"first"];
+                  [clock after:5 run:^{ [fired addObject:@"second"]; }];
+              }];
+
+    [_clock advance:9];
+    XCTAssertEqualObjects(_fired, @[@"first"]);
+
+    [_clock advance:1];
+    XCTAssertEqualObjects(_fired, (@[@"first", @"second"]));
+}
+
+
+@end

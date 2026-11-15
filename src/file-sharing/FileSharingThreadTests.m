@@ -4,12 +4,15 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ClockFake.h"
 #import "FileSharingThread.h"
 #import "FileSystemFake.h"
+#import "NetworkFake.h"
 
 
 @interface FileSharingClientFake : NSObject <FileSharingClient>
 @property (nonatomic, readonly) NSMutableArray<NSString *> *progress;
+@property (nonatomic, readonly) NSMutableArray<NSString *> *serverEvents;
 @end
 
 
@@ -21,6 +24,7 @@
     if (!self) return nil;
 
     _progress = [NSMutableArray array];
+    _serverEvents = [NSMutableArray array];
 
     return self;
 }
@@ -32,6 +36,17 @@
                              totalTracks]];
 }
 
+- (void)serverIsWaitingForClient;
+{
+    [_serverEvents addObject:@"waiting"];
+}
+
+- (void)serverDidConnectClient:(NSString *)deviceName;
+{
+    [_serverEvents
+        addObject:[@"connected: " stringByAppendingString:deviceName]];
+}
+
 @end
 
 
@@ -41,6 +56,8 @@
 
 @implementation FileSharingThreadTests {
     FileSystemFake *_fileSystem;
+    NetworkFake *_network;
+    ClockFake *_clock;
     FileSharingClientFake *_client;
     NSURL *_musicDir;
     FileSharingThread *_thread;
@@ -57,8 +74,12 @@
         [NSURL fileURLWithPath:@"/container/AppSupport" isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
     _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
+    _network = [NetworkFake new];
+    _clock = [ClockFake new];
     _client = [FileSharingClientFake new];
     _thread = [[FileSharingThread alloc] initWithFileSystem:_fileSystem
+                                                    network:_network
+                                                      clock:_clock
                                                      client:_client];
     _threadExited = [[XCTNSNotificationExpectation alloc]
         initWithName:NSThreadWillExitNotification
@@ -220,6 +241,121 @@
     XCTAssertEqualObjects([self writtenManifest], @"path,size,hash\r\n");
 
     [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testManifestIsSortedByPathBytes;
+{
+    for (NSString *name in @[@"b.mp3", @"Z.mp3", @"a.mp3"]) {
+        [_fileSystem addPath:[@"/container/AppSupport/snapshot/"
+                                 stringByAppendingString:name]];
+    }
+
+    [self startAndWait];
+
+    XCTAssertEqualObjects([self writtenManifest],
+        @"path,size,hash\r\n"
+        @"Z.mp3,0,3244421341483603138\r\n"
+        @"a.mp3,0,3244421341483603138\r\n"
+        @"b.mp3,0,3244421341483603138\r\n");
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testStopRemovesManifest;
+{
+    NSString *manifestPath = @"/container/AppSupport/manifest.csv";
+    [self startAndWait];
+    XCTAssertFalse([_fileSystem.removedPaths containsObject:manifestPath]);
+
+    [self stopAndWait];
+
+    XCTAssertTrue([_fileSystem.removedPaths containsObject:manifestPath]);
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+#pragma mark - server tests
+
+
+// The server belongs to the sharing thread, so the tests reach it there.
+- (void)onThread:(void (^)(void))block;
+{
+    [self performSelector:@selector(run:)
+                 onThread:_thread
+               withObject:[block copy]
+            waitUntilDone:YES];
+}
+
+
+- (void)run:(void (^)(void))block;
+{
+    block();
+}
+
+
+- (void)testStartStartsServerAndStopStopsIt;
+{
+    [self startAndWait];
+
+    XCTAssertEqualObjects(_network.advertisement.type, @"_mcmus._tcp");
+    XCTAssertFalse(_network.listener.isClosed);
+    XCTAssertEqualObjects(_client.serverEvents, @[@"waiting"]);
+
+    [self stopAndWait];
+
+    XCTAssertTrue(_network.listener.isClosed);
+    XCTAssertTrue(_network.advertisement.isClosed);
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testServerServesTheWrittenManifestAndReportsClientToClient;
+{
+    [_fileSystem addPath:@"/container/AppSupport/snapshot/One, Two.mp3"];
+    [self startAndWait];
+
+    __block NetworkConnectionFake *connection = nil;
+    [self onThread:^{
+        connection = [self->_network connectFrom:@"192.168.1.20"];
+        [connection receive:@"GET /manifest HTTP/1.1\r\n"
+                            @"User-Agent: Don's iPhone\r\n"
+                            @"\r\n"];
+    }];
+
+    NSString *end =
+        [@"\r\n\r\n" stringByAppendingString:[self writtenManifest]];
+    XCTAssertTrue([connection.sentText hasPrefix:@"HTTP/1.1 200 OK\r\n"]);
+    XCTAssertTrue([connection.sentText hasSuffix:end]);
+    XCTAssertEqualObjects(
+        _client.serverEvents, (@[@"waiting", @"connected: Don's iPhone"]));
+
+    [self onThread:^{ [self->_clock advance:5]; }];
+
+    XCTAssertEqualObjects(_client.serverEvents,
+        (@[@"waiting", @"connected: Don's iPhone", @"waiting"]));
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testListenFailureFailsStartRemovesManifestAndSnapshotAndExitsThread;
+{
+    _network.listenError = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                               code:EADDRINUSE
+                                           userInfo:nil];
+
+    NSError *startError = [self startAndWait];
+
+    XCTAssertEqualObjects(startError, _network.listenError);
+    XCTAssertTrue([_fileSystem.removedPaths
+        containsObject:@"/container/AppSupport/manifest.csv"]);
+    XCTAssertTrue([_fileSystem.removedPaths
+        containsObject:@"/container/AppSupport/snapshot"]);
     [self waitForExpectations:@[_threadExited] timeout:5];
 }
 

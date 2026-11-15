@@ -117,10 +117,13 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 - (NSString *)statusText
 {
     if (_fileSharing.error) {
-        return [NSString stringWithFormat:@"Snapshot failed: %@",
+        return [NSString stringWithFormat:@"Sharing failed: %@",
             _fileSharing.error.localizedDescription];
     }
-    return _fileSharing.isSharing ? @"No device connected." : @"Not sharing.";
+    if (!_fileSharing.isSharing) return @"Not sharing.";
+    NSString *deviceName = _fileSharing.connectedDeviceName;
+    if (!deviceName) return @"No device connected.";
+    return [NSString stringWithFormat:@"Connected to %@.", deviceName];
 }
 
 - (NSString *)progressText

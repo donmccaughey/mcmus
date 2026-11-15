@@ -7,7 +7,9 @@
 #import "FileSharingService.h"
 
 
+@protocol Clock;
 @protocol FileSystem;
+@protocol Network;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FileSharingThread : NSThread <FileSharingService>
 
 - (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
+                           network:(id<Network>)network
+                             clock:(id<Clock>)clock
                             client:(nullable id<FileSharingClient>)client
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

@@ -3,8 +3,10 @@
 #if TARGET_OS_OSX
 
 
+#import "ClockReal.h"
 #import "FileSharingThread.h"
 #import "FileSystemReal.h"
+#import "NetworkReal.h"
 
 
 static NSErrorDomain const FileSharingErrorDomain = @"FileSharingErrorDomain";
@@ -32,6 +34,8 @@ static NSError *no_music_root_directory_error(void)
 @implementation FileSharing {
     NSURL *_Nullable _musicRootDirectoryURL;
     id<FileSystem> _fileSystem;
+    id<Network> _network;
+    id<Clock> _clock;
     id<FileSharingService> _Nullable _service;
 }
 
@@ -44,13 +48,17 @@ static NSError *no_music_root_directory_error(void)
 
 - (instancetype)initWithMusicRootDirectoryURL:
                     (nullable NSURL *)musicRootDirectoryURL
-                                   fileSystem:(id<FileSystem>)fileSystem;
+                                   fileSystem:(id<FileSystem>)fileSystem
+                                      network:(id<Network>)network
+                                        clock:(id<Clock>)clock;
 {
     self = [super init];
     if (!self) return nil;
 
     _musicRootDirectoryURL = musicRootDirectoryURL;
     _fileSystem = fileSystem;
+    _network = network;
+    _clock = clock;
 
     return self;
 }
@@ -60,7 +68,9 @@ static NSError *no_music_root_directory_error(void)
     (nullable NSURL *)musicRootDirectoryURL;
 {
     return [self initWithMusicRootDirectoryURL:musicRootDirectoryURL
-                                    fileSystem:[[FileSystemReal alloc] init]];
+                                    fileSystem:[FileSystemReal new]
+                                       network:[NetworkReal new]
+                                         clock:[ClockReal new]];
 }
 
 
@@ -106,6 +116,8 @@ static NSError *no_music_root_directory_error(void)
         return;
     }
     _service = [[FileSharingThread alloc] initWithFileSystem:_fileSystem
+                                                     network:_network
+                                                       clock:_clock
                                                       client:self];
     [_service startSharingMusicDirectory:_musicRootDirectoryURL reply:reply];
 }
@@ -141,6 +153,7 @@ static NSError *no_music_root_directory_error(void)
     _error = error;
     _metadataTracksLoaded = 0;
     _metadataTotalTracks = 0;
+    _connectedDeviceName = nil;
     [self postDidChange];
 }
 
@@ -163,6 +176,33 @@ static NSError *no_music_root_directory_error(void)
         if (FileSharingStateStarting != self->_state) return;
         self->_metadataTracksLoaded = tracksLoaded;
         self->_metadataTotalTracks = totalTracks;
+        [self postDidChange];
+    });
+}
+
+
+- (void)serverIsWaitingForClient;
+{
+    [self serverDidChangeClient:nil];
+}
+
+
+- (void)serverDidConnectClient:(NSString *)deviceName;
+{
+    [self serverDidChangeClient:deviceName];
+}
+
+
+// The server reports the client again each time the client resumes after a
+// pause, so reports that change nothing are not passed on.
+- (void)serverDidChangeClient:(nullable NSString *)deviceName;
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (FileSharingStateSharing != self->_state) return;
+        BOOL isUnchanged = deviceName == self->_connectedDeviceName ||
+            [deviceName isEqual:self->_connectedDeviceName];
+        if (isUnchanged) return;
+        self->_connectedDeviceName = [deviceName copy];
         [self postDidChange];
     });
 }

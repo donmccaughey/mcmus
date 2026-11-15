@@ -7,6 +7,7 @@
 #import <time.h>
 
 #import "CSV.h"
+#import "FileSharingServer.h"
 #import "FileSystem.h"
 #import "LoadMusicLibrary.h"
 #import "LoadResult.h"
@@ -83,12 +84,23 @@ static NSString *path_relative_to_snapshot(Track *track, NSURL *snapshotDir)
 }
 
 
+// Orders paths by their UTF-8 bytes, so that the order does not depend on
+// the locale or on Unicode normalization.
+static NSComparisonResult compare_records_by_path(
+    NSArray<NSString *> *first, NSArray<NSString *> *second, void *context)
+{
+    int order = strcmp(first[0].UTF8String, second[0].UTF8String);
+    if (order < 0) return NSOrderedAscending;
+    if (order > 0) return NSOrderedDescending;
+    return NSOrderedSame;
+}
+
+
 static NSArray<NSArray<NSString *> *> *manifest_records(
     NSArray<TrackMetadata *> *metadata, NSURL *snapshotDir)
 {
     NSMutableArray<NSArray<NSString *> *> *records =
         [NSMutableArray arrayWithCapacity:metadata.count + 1];
-    [records addObject:@[@"path", @"size", @"hash"]];
     for (TrackMetadata *trackMetadata in metadata) {
         [records addObject:@[
             path_relative_to_snapshot(trackMetadata.track, snapshotDir),
@@ -96,34 +108,53 @@ static NSArray<NSArray<NSString *> *> *manifest_records(
             [NSString stringWithFormat:@"%lu", trackMetadata.fileHash],
         ]];
     }
+    [records sortUsingFunction:compare_records_by_path context:NULL];
+    [records insertObject:@[@"path", @"size", @"hash"] atIndex:0];
     return records;
 }
 
 
-static BOOL write_manifest_and_log_time(NSArray<TrackMetadata *> *metadata,
-    NSURL *snapshotDir, id<FileSystem> fileSystem, NSError **error)
+static NSURL *_Nullable get_manifest_url(
+    id<FileSystem> fileSystem, NSError **error)
 {
-    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSURL *appSupportDir =
         [fileSystem getApplicationSupportDirectoryURLAndReturnError:error];
-    NSURL *manifest =
-        [appSupportDir URLByAppendingPathComponent:@"manifest.csv"];
-    BOOL wroteManifest = manifest &&
-        [fileSystem
-            writeData:generateCSV(manifest_records(metadata, snapshotDir))
-               toFile:manifest
-                error:error];
+    return [appSupportDir URLByAppendingPathComponent:@"manifest.csv"];
+}
+
+
+static NSData *_Nullable write_manifest_and_log_time(
+    NSArray<TrackMetadata *> *metadata, NSURL *snapshotDir,
+    id<FileSystem> fileSystem, NSError **error)
+{
+    uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    NSURL *manifestURL = get_manifest_url(fileSystem, error);
+    NSData *manifest = generateCSV(manifest_records(metadata, snapshotDir));
+    BOOL wroteManifest = manifestURL &&
+        [fileSystem writeData:manifest toFile:manifestURL error:error];
     if (wroteManifest) {
         os_log(snapshot_log(),
             "Wrote manifest of %lu tracks to %{public}@ in %.1f ms",
-            metadata.count, manifest.path, milliseconds_since(start));
+            metadata.count, manifestURL.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(),
             "Writing manifest of %lu tracks took %.1f ms but failed: "
             "%{public}@",
             metadata.count, milliseconds_since(start), *error);
     }
-    return wroteManifest;
+    return wroteManifest ? manifest : nil;
+}
+
+
+static BOOL remove_manifest(id<FileSystem> fileSystem, NSError **error)
+{
+    NSURL *manifestURL = get_manifest_url(fileSystem, error);
+    BOOL removedManifest =
+        manifestURL && [fileSystem removeItemAtURL:manifestURL error:error];
+    if (!removedManifest) {
+        os_log(snapshot_log(), "Removing manifest failed: %{public}@", *error);
+    }
+    return removedManifest;
 }
 
 
@@ -165,6 +196,8 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 
 @implementation FileSharingThread {
     id<FileSystem> _fileSystem;
+    id<Network> _network;
+    id<Clock> _clock;
     __weak id<FileSharingClient> _client;
     NSURL *_musicDir;
     MusicLibrary *_musicLibrary;
@@ -175,12 +208,16 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 
 
 - (instancetype)initWithFileSystem:(id<FileSystem>)fileSystem
+                           network:(id<Network>)network
+                             clock:(id<Clock>)clock
                             client:(nullable id<FileSharingClient>)client;
 {
     self = [super init];
     if (!self) return nil;
 
     _fileSystem = fileSystem;
+    _network = network;
+    _clock = clock;
     _client = client;
     self.name = @"cc.donm.mcmus.file-sharing";
     self.qualityOfService = NSQualityOfServiceUserInitiated;
@@ -235,12 +272,16 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
                     [self->_client didLoadMetadataForTracks:tracksLoaded
                                                     ofTotal:totalTracks];
                 });
-        BOOL wroteManifest = write_manifest_and_log_time(
+        NSData *manifest = write_manifest_and_log_time(
             metadata, snapshotDir, _fileSystem, &error);
-        if (!wroteManifest) {
-            NSError *removeError = nil;
+        FileSharingServer *server = manifest
+            ? [self startServerWithManifest:manifest error:&error]
+            : nil;
+        if (!server) {
+            NSError *cleanUpError = nil;
+            if (manifest) remove_manifest(_fileSystem, &cleanUpError);
             remove_snapshot_and_log_time(
-                snapshotDir, _fileSystem, &removeError);
+                snapshotDir, _fileSystem, &cleanUpError);
             [self replyToStart:error];
             return;
         }
@@ -248,10 +289,37 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 
         [self runUntilStopRequested];
 
-        error = nil;
-        remove_snapshot_and_log_time(snapshotDir, _fileSystem, &error);
-        [self replyToStop:error];
+        [server stop];
+        [self replyToStop:[self removeManifestAndSnapshot:snapshotDir]];
     }
+}
+
+
+- (nullable FileSharingServer *)startServerWithManifest:(NSData *)manifest
+                                                  error:(NSError **)error;
+{
+    FileSharingServer *server =
+        [[FileSharingServer alloc] initWithNetwork:_network
+                                             clock:_clock
+                                          manifest:manifest];
+    server.onWaitingForClient = ^{ [self->_client serverIsWaitingForClient]; };
+    server.onClientConnected = ^(NSString *deviceName) {
+        [self->_client serverDidConnectClient:deviceName];
+    };
+    return [server startAndReturnError:error] ? server : nil;
+}
+
+
+// Both are attempted even when the first fails; the first error is returned.
+- (nullable NSError *)removeManifestAndSnapshot:(NSURL *)snapshotDir;
+{
+    NSError *manifestError = nil;
+    NSError *snapshotError = nil;
+    BOOL removedManifest = remove_manifest(_fileSystem, &manifestError);
+    BOOL removedSnapshot =
+        remove_snapshot_and_log_time(snapshotDir, _fileSystem, &snapshotError);
+    if (!removedManifest) return manifestError;
+    return removedSnapshot ? nil : snapshotError;
 }
 
 

@@ -116,6 +116,7 @@ static void fail(NSString *path, NSError **error)
     NSMutableArray<NSString *> *_clonedSources;
     NSMutableArray<NSString *> *_clonedDestinations;
     NSMutableDictionary<NSString *, NSData *> *_writtenFiles;
+    NSMutableArray<NSString *> *_removedPaths;
 }
 
 - (instancetype)init
@@ -139,6 +140,7 @@ static void fail(NSString *path, NSError **error)
         _clonedSources = [NSMutableArray array];
         _clonedDestinations = [NSMutableArray array];
         _writtenFiles = [NSMutableDictionary dictionary];
+        _removedPaths = [NSMutableArray array];
     }
     return self;
 }
@@ -181,6 +183,11 @@ static void fail(NSString *path, NSError **error)
 - (NSDictionary<NSString *, NSData *> *)writtenFiles
 {
     return [_writtenFiles copy];
+}
+
+- (NSArray<NSString *> *)removedPaths
+{
+    return [_removedPaths copy];
 }
 
 - (void)addPath:(NSString *)path
@@ -389,6 +396,7 @@ static void fail(NSString *path, NSError **error)
         if (error) *error = _removeItemAtURLError;
         return NO;
     }
+    [_removedPaths addObject:URL.path];
     return YES;
 }
 

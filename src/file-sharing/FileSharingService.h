@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didLoadMetadataForTracks:(NSUInteger)tracksLoaded
                          ofTotal:(NSUInteger)totalTracks;
+- (void)serverIsWaitingForClient;
+- (void)serverDidConnectClient:(NSString *)deviceName;
 
 @end
 

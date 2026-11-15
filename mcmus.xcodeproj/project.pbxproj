@@ -336,10 +336,14 @@
 				wrappers/AudioFake.m,
 				wrappers/AudioFakeCall.h,
 				wrappers/AudioFakeCall.m,
+				wrappers/ClockFake.h,
+				wrappers/ClockFake.m,
 				wrappers/FileSystemFake.h,
 				wrappers/FileSystemFake.m,
 				wrappers/FileSystemFakeErrorMatching.h,
 				wrappers/FileSystemFakeErrorMatching.m,
+				wrappers/NetworkFake.h,
+				wrappers/NetworkFake.m,
 				wrappers/NotificationCounter.h,
 				wrappers/NotificationCounter.m,
 				wrappers/PreferencesFake.h,
@@ -348,8 +352,10 @@
 			publicHeaders = (
 				wrappers/AudioFake.h,
 				wrappers/AudioFakeCall.h,
+				wrappers/ClockFake.h,
 				wrappers/FileSystemFake.h,
 				wrappers/FileSystemFakeErrorMatching.h,
+				wrappers/NetworkFake.h,
 				wrappers/NotificationCounter.h,
 				wrappers/PreferencesFake.h,
 			);
@@ -487,13 +493,25 @@
 			membershipExceptions = (
 				"file-sharing/FileSharing.h",
 				"file-sharing/FileSharing.m",
+				"file-sharing/FileSharingConnection.h",
+				"file-sharing/FileSharingConnection.m",
+				"file-sharing/FileSharingServer.h",
+				"file-sharing/FileSharingServer.m",
 				"file-sharing/FileSharingService.h",
 				"file-sharing/FileSharingThread.h",
 				"file-sharing/FileSharingThread.m",
+				"file-sharing/HTTPRequestParser.h",
+				"file-sharing/HTTPRequestParser.m",
+				"file-sharing/HTTPResponse.h",
+				"file-sharing/HTTPResponse.m",
 			);
 			privateHeaders = (
+				"file-sharing/FileSharingConnection.h",
+				"file-sharing/FileSharingServer.h",
 				"file-sharing/FileSharingService.h",
 				"file-sharing/FileSharingThread.h",
+				"file-sharing/HTTPRequestParser.h",
+				"file-sharing/HTTPResponse.h",
 			);
 			publicHeaders = (
 				"file-sharing/FileSharing.h",
@@ -504,9 +522,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"file-sharing/FileSharing.m",
+				"file-sharing/FileSharingConnection.m",
+				"file-sharing/FileSharingServer.m",
+				"file-sharing/FileSharingServerTests.m",
 				"file-sharing/FileSharingTests.m",
 				"file-sharing/FileSharingThread.m",
 				"file-sharing/FileSharingThreadTests.m",
+				"file-sharing/HTTPRequestParser.m",
+				"file-sharing/HTTPRequestParserTests.m",
+				"file-sharing/HTTPResponse.m",
+				"file-sharing/HTTPResponseTests.m",
 				"file-sharing/TarRoundTripTests.m",
 			);
 			target = D49BFC4830A26EBF00AED804 /* file-sharing-tests */;
@@ -515,7 +540,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				wrappers/AudioDemoTests.m,
+				wrappers/ClockFakeTests.m,
 				wrappers/FileSystemDemoTests.m,
+				wrappers/NetworkRealTests.m,
 			);
 			target = D4C0FFEE30A3000000000017 /* wrappers-tests */;
 		};
@@ -577,12 +604,18 @@
 				wrappers/AudioDemo.m,
 				wrappers/AudioReal.h,
 				wrappers/AudioReal.m,
+				wrappers/Clock.h,
+				wrappers/ClockReal.h,
+				wrappers/ClockReal.m,
 				wrappers/FileSystem.h,
 				wrappers/FileSystem.m,
 				wrappers/FileSystemDemo.h,
 				wrappers/FileSystemDemo.m,
 				wrappers/FileSystemReal.h,
 				wrappers/FileSystemReal.m,
+				wrappers/Network.h,
+				wrappers/NetworkReal.h,
+				wrappers/NetworkReal.m,
 				wrappers/Preferences.h,
 				wrappers/PreferencesReal.h,
 				wrappers/PreferencesReal.m,
@@ -591,9 +624,13 @@
 				wrappers/Audio.h,
 				wrappers/AudioDemo.h,
 				wrappers/AudioReal.h,
+				wrappers/Clock.h,
+				wrappers/ClockReal.h,
 				wrappers/FileSystem.h,
 				wrappers/FileSystemDemo.h,
 				wrappers/FileSystemReal.h,
+				wrappers/Network.h,
+				wrappers/NetworkReal.h,
 				wrappers/Preferences.h,
 				wrappers/PreferencesReal.h,
 			);
