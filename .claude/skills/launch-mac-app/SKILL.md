@@ -8,7 +8,7 @@ Use the bundled script rather than hand-rolling `open` and AppleScript. It
 handles every pitfall listed below.
 
 ```bash
-.claude/skills/launch-mac-app/scripts/launch-mac-app.sh [--demo] [--build] [--screenshot PATH] [--keep] [--wait SECONDS]
+.claude/skills/launch-mac-app/scripts/launch-mac-app.sh [--demo] [--root PATH] [--build] [--screenshot PATH] [--keep] [--wait SECONDS]
 ```
 
 Typical verification of a change, both library modes:
@@ -65,6 +65,9 @@ script in ways that reintroduce them.
 
 - Normal mode: the Files panel lists folders from the music root chosen in
   Settings (`~/Music` on a fresh install).
+- With `--root PATH` (Debug builds only outside `~/Music`): the Files panel
+  lists folders from PATH, and Settings shows PATH. A missing PATH falls back
+  to normal mode; `--demo` wins over `--root`.
 - Demo mode: the Files panel lists artist folders from the bundled
   `demo-data.json` (starting with "3 Doors Down").
 - Either mode with an empty Files panel after a few seconds means the load

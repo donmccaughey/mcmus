@@ -36,6 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadInBackgroundWithCompletion:(nullable void (^)(void))completion;
 
 #if TARGET_OS_OSX
+// Takes precedence over the saved music root directory until the root is
+// changed, so that a later load keeps the changed root.
+@property (nonatomic, copy, nullable) NSURL *rootOverrideURL;
+
 - (void)changeMusicRootDirectoryTo:(NSURL *)url;
 - (void)changeMusicRootDirectoryTo:(NSURL *)url
                         completion:(nullable void (^)(void))completion;

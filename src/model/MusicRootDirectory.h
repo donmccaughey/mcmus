@@ -20,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                 error:(NSError **)error;
 
 #if TARGET_OS_OSX
+// A root override that cannot be listed is ignored.
++ (nullable MusicRootDirectory *)
+    locateWithFileSystem:(id<FileSystem>)fileSystem
+             preferences:(id<Preferences>)preferences
+            rootOverride:(nullable NSURL *)rootOverride
+                   error:(NSError **)error;
 + (MusicRootDirectory *)choose:(NSURL *)url
                     fileSystem:(id<FileSystem>)fileSystem
                    preferences:(id<Preferences>)preferences;

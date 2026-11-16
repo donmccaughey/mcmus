@@ -144,6 +144,71 @@
     XCTAssertNil(preferences.musicRootDirectoryBookmark);
 }
 
+- (void)testUsesRootOverrideWithoutBookmarkOrAccess
+{
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:_savedBookmark];
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    NSURL *override = [NSURL fileURLWithPath:@"/Given/Music" isDirectory:YES];
+
+    NSError *error;
+    MusicRootDirectory *root =
+        [MusicRootDirectory locateWithFileSystem:fileSystem
+                                     preferences:preferences
+                                    rootOverride:override
+                                           error:&error];
+
+    XCTAssertNotNil(root);
+    XCTAssertEqualObjects(root.url.path, @"/Given/Music");
+    XCTAssertFalse(root.isSecurityScoped);
+    XCTAssertEqual(fileSystem.started.count, 0UL);
+    XCTAssertEqual(fileSystem.bookmarked.count, 0UL);
+    XCTAssertEqualObjects(
+        preferences.musicRootDirectoryBookmark, _savedBookmark);
+}
+
+- (void)testFallsBackToSavedBookmarkWhenRootOverrideCannotBeListed
+{
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:_savedBookmark];
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    fileSystem.unlistableDirectories = [NSSet setWithObject:@"/Given/Music"];
+    NSURL *override = [NSURL fileURLWithPath:@"/Given/Music" isDirectory:YES];
+
+    NSError *error;
+    MusicRootDirectory *root =
+        [MusicRootDirectory locateWithFileSystem:fileSystem
+                                     preferences:preferences
+                                    rootOverride:override
+                                           error:&error];
+
+    XCTAssertNotNil(root);
+    XCTAssertEqualObjects(root.url.path, @"/Saved/Music");
+    XCTAssertTrue(root.isSecurityScoped);
+    XCTAssertEqualObjects(fileSystem.started, @[@"/Saved/Music"]);
+}
+
+- (void)testFallsBackToSystemMusicDirectoryWhenRootOverrideCannotBeListed
+{
+    PreferencesFake *preferences = [[PreferencesFake alloc] init];
+    FileSystemFake *fileSystem = [[FileSystemFake alloc] init];
+    fileSystem.unlistableDirectories = [NSSet setWithObject:@"/Given/Music"];
+    fileSystem.musicDirectoryURL = _systemMusicDirectory;
+    NSURL *override = [NSURL fileURLWithPath:@"/Given/Music" isDirectory:YES];
+
+    NSError *error;
+    MusicRootDirectory *root =
+        [MusicRootDirectory locateWithFileSystem:fileSystem
+                                     preferences:preferences
+                                    rootOverride:override
+                                           error:&error];
+
+    XCTAssertNotNil(root);
+    XCTAssertEqualObjects(root.url.path, @"/Users/me/Music");
+    XCTAssertFalse(root.isSecurityScoped);
+    XCTAssertNil(preferences.musicRootDirectoryBookmark);
+}
+
 - (void)testChoosingSavesBookmarkAndStartsAccess
 {
     PreferencesFake *preferences = [[PreferencesFake alloc] init];

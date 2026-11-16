@@ -5,9 +5,10 @@ set -euo pipefail
 
 usage() {
     cat <<USAGE
-usage: launch-mac-app.sh [--demo] [--build] [--screenshot PATH] [--keep] [--wait SECONDS]
+usage: launch-mac-app.sh [--demo] [--root PATH] [--build] [--screenshot PATH] [--keep] [--wait SECONDS]
 
   --demo             launch with the bundled demo library instead of ~/Music
+  --root PATH        use PATH as the music root directory for this launch
   --build            run xcodebuild for macOS first
   --screenshot PATH  capture the main window to PATH (PNG) once it appears
   --keep             leave the app running (default: quit it before exiting)
@@ -15,10 +16,11 @@ usage: launch-mac-app.sh [--demo] [--build] [--screenshot PATH] [--keep] [--wait
 USAGE
 }
 
-demo=0 build=0 keep=0 wait_seconds=20 screenshot=""
+demo=0 build=0 keep=0 wait_seconds=20 screenshot="" root=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --demo) demo=1 ;;
+        --root) root="${2:A}"; shift ;;
         --build) build=1 ;;
         --keep) keep=1 ;;
         --screenshot) screenshot="$2"; shift ;;
@@ -59,6 +61,7 @@ fi
 # parser otherwise swallows the pair and the app runs with no window.
 args=(-ApplePersistenceIgnoreState YES)
 (( demo )) && args+=(--demo)
+[[ -n "$root" ]] && args+=(--root "$root")
 log="$cache_dir/launch-$(date +%Y%m%d-%H%M%S)-$$.log"
 "$binary" "${args[@]}" > "$log" 2>&1 &
 app_pid=$!

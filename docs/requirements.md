@@ -54,6 +54,10 @@ On macOS, MC Mus shall request these sandbox entitlements: read-only access
 to user-selected files, app-scoped security bookmarks, read-only access to
 the user's Music folder and network server.
 
+On macOS, Debug builds of MC Mus shall also request a temporary exception
+entitlement for read-only access to all absolute paths, so that the `--root`
+command line option can name a directory outside the sandbox.
+
 MC Mus shall use only APIs available on the minimum deployment targets.
 
 On iOS, MC Mus shall declare support for all four interface orientations:
@@ -296,6 +300,14 @@ the saved bookmark with a fresh one.
 On macOS, when no bookmark is saved or the saved bookmark does not resolve or
 cannot be accessed, MC Mus shall use the system music directory for the current
 user as the music root directory without saving a bookmark.
+
+On macOS, when a **root override** is given and its directory can be listed, MC
+Mus shall use the root override as the music root directory in place of the
+saved bookmark and the system music directory, without reading, saving or
+accessing a bookmark.
+
+On macOS, if the root override is missing or cannot be listed, MC Mus shall
+locate the music root directory as if no root override were given.
 
 On iOS, MC Mus shall use the `Music/` subdirectory of the standard application
 support directory as the music root directory, creating it on launch if it does
@@ -885,6 +897,16 @@ in **demo mode** and shall wrap the file system wrapper in the demo file system
 wrapper, created from the `demo-data.json` file in the app bundle, and the audio
 wrapper in the demo audio wrapper, created with the URL of the `demo-track.mp3`
 file in the app bundle, before creating the music library store and the player.
+
+On macOS, when the app launches and the `--root` command line option is given
+followed by a path, MC Mus shall give the path to the music library store as the
+root override, resolving a relative path against the working directory.
+
+On macOS, when both the `--demo` and `--root` command line options are given, MC
+Mus shall ignore the `--root` option.
+
+On macOS, when the user changes the music root directory, MC Mus shall discard
+the root override for the rest of the session.
 
 When the app launches, MC Mus shall locate the music root directory and call the
 load music library function in the background, passing it the path of the music

@@ -91,12 +91,23 @@ static dispatch_queue_t loadQueue(void)
     NSInteger generation = [self nextLoadGeneration];
     id<FileSystem> fileSystem = _fileSystem;
     id<Preferences> preferences = _preferences;
+#if TARGET_OS_OSX
+    NSURL *rootOverrideURL = _rootOverrideURL;
+#endif
     dispatch_async(loadQueue(), ^{
         NSError *locateError;
+#if TARGET_OS_OSX
+        MusicRootDirectory *musicRootDirectory =
+            [MusicRootDirectory locateWithFileSystem:fileSystem
+                                         preferences:preferences
+                                        rootOverride:rootOverrideURL
+                                               error:&locateError];
+#else
         MusicRootDirectory *musicRootDirectory =
             [MusicRootDirectory locateWithFileSystem:fileSystem
                                          preferences:preferences
                                                error:&locateError];
+#endif
         dispatch_async(dispatch_get_main_queue(),
             ^{ self.musicRootDirectory = musicRootDirectory; });
         LoadResult *result =
@@ -125,6 +136,7 @@ static dispatch_queue_t loadQueue(void)
         return;
     }
     [_musicRootDirectory stopAccessingWithFileSystem:_fileSystem];
+    _rootOverrideURL = nil;
     MusicRootDirectory *musicRootDirectory =
         [MusicRootDirectory choose:url
                         fileSystem:_fileSystem

@@ -9,6 +9,7 @@
 #import "MusicLibraryStore.h"
 #import "Player.h"
 #import "PreferencesReal.h"
+#import "RootOption.h"
 #import "SettingsWindowController.h"
 
 @implementation AppDelegate {
@@ -37,6 +38,7 @@
 
     _store = [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                                preferences:_preferences];
+    _store.rootOverrideURL = rootOptionURL(NSProcessInfo.processInfo.arguments);
     _player = [[Player alloc] initWithAudio:_audio];
 
     return self;

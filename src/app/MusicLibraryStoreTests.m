@@ -202,6 +202,48 @@ static NSError *someError(void)
         @"getMusicDirectoryURL");
 }
 
+- (void)testBackgroundLoadPrefersRootOverrideToSavedBookmark
+{
+    [_fileSystem addPath:@"/Saved/Music/Saved.mp3"];
+    [_fileSystem addPath:@"/Given/Music/Given.mp3"];
+    PreferencesFake *preferences =
+        [[PreferencesFake alloc] initWithMusicRootDirectoryBookmark:
+                [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
+    MusicLibraryStore *store =
+        [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
+                                          preferences:preferences];
+    store.rootOverrideURL = [NSURL fileURLWithPath:@"/Given/Music"
+                                       isDirectory:YES];
+
+    [self loadInBackgroundAndWait:store];
+
+    XCTAssertEqualObjects(store.musicRootDirectory.url.path, @"/Given/Music");
+    XCTAssertFalse(store.loadDidFail);
+    XCTAssertEqualObjects([self trackNamesInStore:store], @[@"Given"]);
+    XCTAssertEqualObjects(preferences.musicRootDirectoryBookmark,
+        [FileSystemFake bookmarkForPath:@"/Saved/Music"]);
+}
+
+- (void)testLoadAfterChangingRootKeepsChangedRootOverRootOverride
+{
+    [_fileSystem addPath:@"/Given/Music/Given.mp3"];
+    [_fileSystem addPath:@"/Other/Music/New.mp3"];
+    MusicLibraryStore *store =
+        [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
+                                          preferences:_preferences];
+    store.rootOverrideURL = [NSURL fileURLWithPath:@"/Given/Music"
+                                       isDirectory:YES];
+    [self loadInBackgroundAndWait:store];
+    [self changeMusicRootDirectoryOfStore:store
+                             toURLAndWait:[NSURL fileURLWithPath:@"/Other/Music"
+                                                     isDirectory:YES]];
+
+    [self loadInBackgroundAndWait:store];
+
+    XCTAssertEqualObjects(store.musicRootDirectory.url.path, @"/Other/Music");
+    XCTAssertEqualObjects([self trackNamesInStore:store], @[@"New"]);
+}
+
 - (void)testChangingRootSavesBookmarkSwapsAccessAndReloads
 {
     [_fileSystem addPath:@"/Saved/Music/Old.mp3"];

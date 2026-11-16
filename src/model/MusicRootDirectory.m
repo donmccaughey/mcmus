@@ -42,20 +42,10 @@ static MusicRootDirectory *_Nullable accessBookmark(
                                                 error:(NSError **)error
 {
 #if TARGET_OS_OSX
-    NSData *bookmark = [preferences getMusicRootDirectoryBookmark];
-    if (bookmark) {
-        MusicRootDirectory *saved =
-            accessBookmark(bookmark, fileSystem, preferences);
-        if (saved) {
-            return saved;
-        }
-    }
-    // The Music folder entitlement grants access without a bookmark.
-    NSURL *url = [fileSystem getMusicDirectoryURLAndReturnError:error];
-    if (!url) {
-        return nil;
-    }
-    return [[MusicRootDirectory alloc] initWithURL:url isSecurityScoped:NO];
+    return [self locateWithFileSystem:fileSystem
+                          preferences:preferences
+                         rootOverride:nil
+                                error:error];
 #else
     NSURL *applicationSupport =
         [fileSystem getApplicationSupportDirectoryURLAndReturnError:error];
@@ -75,6 +65,32 @@ static MusicRootDirectory *_Nullable accessBookmark(
 }
 
 #if TARGET_OS_OSX
++ (nullable MusicRootDirectory *)
+    locateWithFileSystem:(id<FileSystem>)fileSystem
+             preferences:(id<Preferences>)preferences
+            rootOverride:(nullable NSURL *)rootOverride
+                   error:(NSError **)error
+{
+    if (rootOverride && [fileSystem listDirectory:rootOverride error:NULL]) {
+        return [[MusicRootDirectory alloc] initWithURL:rootOverride
+                                      isSecurityScoped:NO];
+    }
+    NSData *bookmark = [preferences getMusicRootDirectoryBookmark];
+    if (bookmark) {
+        MusicRootDirectory *saved =
+            accessBookmark(bookmark, fileSystem, preferences);
+        if (saved) {
+            return saved;
+        }
+    }
+    // The Music folder entitlement grants access without a bookmark.
+    NSURL *url = [fileSystem getMusicDirectoryURLAndReturnError:error];
+    if (!url) {
+        return nil;
+    }
+    return [[MusicRootDirectory alloc] initWithURL:url isSecurityScoped:NO];
+}
+
 + (MusicRootDirectory *)choose:(NSURL *)url
                     fileSystem:(id<FileSystem>)fileSystem
                    preferences:(id<Preferences>)preferences
