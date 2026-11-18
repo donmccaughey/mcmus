@@ -102,6 +102,9 @@ $(TMP)/analyzed-macOS.stamp : $(src_files) | $$(dir $$@)
 # `st_mtime` usable for change detection; also, the app bundle name contains a
 # space and thus can't be a target name
 $(TMP)/built-release.stamp : \
+		$(TMP)/analyzed-iOS.stamp \
+		$(TMP)/analyzed-macOS.stamp \
+		$(TMP)/built-share-test.stamp \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp \
