@@ -3,6 +3,7 @@
 #if TARGET_OS_OSX
 #import "EmptyStateView-macOS.h"
 #import "FileSharing.h"
+#import "FileSystemReal.h"
 #import "FilesTreeView.h"
 #import "NSStackView+SeparatedRows.h"
 #import "NSView+FillingSubview.h"
@@ -24,8 +25,7 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _store = store;
-        _fileSharing = [[FileSharing alloc]
-            initWithMusicRootDirectoryURL:store.musicRootDirectory.url];
+        _fileSharing = [self makeFileSharing];
         _findButton = [NSButton buttonWithTitle:@"Find" target:nil action:nil];
         _emptyFilesView = [[EmptyStateView alloc] initWithTitle:@"No music"
                                                     systemImage:@"folder"
@@ -46,9 +46,19 @@
 - (void)replaceFileSharing
 {
     [self retireFileSharing:_fileSharing];
-    _fileSharing = [[FileSharing alloc]
-        initWithMusicRootDirectoryURL:_store.musicRootDirectory.url];
+    _fileSharing = [self makeFileSharing];
     _shareStatusBar.fileSharing = _fileSharing;
+}
+
+// A failed lookup leaves the working directory nil, which file sharing
+// reports as an error when the share is started.
+- (FileSharing *)makeFileSharing
+{
+    NSURL *workingDirectoryURL = [[FileSystemReal new]
+        getApplicationSupportDirectoryURLAndReturnError:NULL];
+    return [[FileSharing alloc]
+        initWithMusicRootDirectoryURL:_store.musicRootDirectory.url
+                  workingDirectoryURL:workingDirectoryURL];
 }
 
 // A share that is still starting ignores stop, so a root change during

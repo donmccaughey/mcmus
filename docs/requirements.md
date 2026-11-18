@@ -79,6 +79,12 @@ The MC Mus project shall place source files for artwork and other media in the
 
 The MC Mus project shall place documentation files in the `docs/` subdirectory.
 
+The MC Mus project shall place functional test scripts and supporting data in
+the `functional-tests/` subdirectory.
+
+The MC Mus project shall place a small test music library in the
+`functional-tests/music/` subdirectory.
+
 The MC Mus project shall place script files in the `scripts/` subdirectory.
 
 The MC Mus project shall place project source code in the `src/` subdirectory.
@@ -161,6 +167,11 @@ subdirectory.
 The file-sharing library shall depend on the wrappers, model, snapshot and csv
 libraries; file-sharing unit tests shall also depend on the wrappers-fakes
 library.
+
+The MC Mus project shall place code for the share test tool in the file-sharing
+library, with code placed in the `src/file-sharing/share-test/` subdirectory.
+
+The share test tool shall depend on the file-sharing library.
 
 The MC Mus project shall place **app** code, configuration, assets and
 corresponding unit tests in the `src/app/` subdirectory.
@@ -545,20 +556,22 @@ clear commands.
 
 # Snapshots
 
-The snapshot library shall export three functions: get snapshot directory,
-take snapshot and remove snapshot.
+The snapshot library shall export two functions: take snapshot and remove
+snapshot.
 
 The snapshot library functions shall take a file system wrapper object as a
 parameter.
 
-The **get snapshot directory** function shall return a path inside the app's
-application support director where the snapshot can reside.
+The **working directory** is a directory supplied by the caller in which the
+snapshot library and the file-sharing library place their files.
 
-If lookup of the application support directory fails, the get snapshot directory
-function shall return `nil`.
+The snapshot library functions shall take the working directory as a parameter.
 
-The **take snapshot** function shall remove any previous snapshot and take a new
-snapshot of the music root directory.
+The snapshot library functions shall place the snapshot in a subdirectory of the
+working directory and shall not remove the working directory itself.
+
+The **take snapshot** function shall remove any previous snapshot, take a new
+snapshot of the music root directory and return the location of the snapshot.
 
 If it cannot create the snapshot, the take snapshot function shall return an
 error.
@@ -671,12 +684,19 @@ app and the file sharing thread.
 
 The file sharing object shall run on the app's main thread.
 
+The file sharing object shall be given the music root directory and the working
+directory when it is created.
+
+If it has no music root directory or no working directory when started, the file
+sharing object shall report an error and remain off.
+
 The **file sharing thread** shall manage the background thread and run loop
 where file sharing operations run.
 
 When started, the file sharing thread shall take a snapshot of the music
-directory, load tracks and track metadata, build the manifest, write the
-manifest CSV and start the file sharing server.
+directory inside the working directory, load tracks and track metadata from the
+snapshot, build the manifest, write the manifest CSV to the working directory
+and start the file sharing server.
 
 When stopped, the file sharing thread shall stop the file sharing server, remove
 the manifest CSV and remove the snapshot.
@@ -686,7 +706,7 @@ the manifest CSV and remove the snapshot.
 
 The **track relative path** is the track path relative to the root folder of a
 given music library, where the music library may be loaded from the music root
-directory or the snapshot directory.
+directory or the snapshot inside the working directory.
 
 The **manifest** is an in-memory data structure with fast key lookup where keys
 are track relative paths and values are the corresponding track metadata.
@@ -875,6 +895,20 @@ in memory and written directly to the file sharing server connection socket.
 
 The file sharing server shall advertise itself via Bonjour using the service
 name `_mcmus._tcp`.
+
+
+## Test server
+
+**Share test** is a stand-along command line tool that runs the file sharing
+thread and server for testing.
+
+Share test shall link to the file-sharing library.
+
+Share test shall accept one required positional command line arguments:
+`MUSIC_DIR` specifies the location of the music root directory.
+
+Share test shall accept one command line option: `--snapshot=DIR`, where the `DIR`
+value is required, specifies the 
 
 
 # Launch behavior
@@ -1108,6 +1142,9 @@ text "Not sharing."
 
 On macOS, while file sharing is on, the share status label shall show the text
 "No device connected."
+
+On macOS, MC Mus shall use the app's application support directory as the
+working directory for file sharing.
 
 On macOS, when the share switch is switched on, MC Mus shall create a snapshot
 of the music library and log the time needed to create the snapshot.

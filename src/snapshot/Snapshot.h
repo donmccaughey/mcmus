@@ -11,13 +11,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-NSURL *getSnapshotDirURL(id<FileSystem> fileSystem, NSError **error);
-
-
 BOOL removeSnapshot(
-    NSURL *snapshotDir, id<FileSystem> fileSystem, NSError **error);
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error);
 
-BOOL takeSnapshot(NSURL *musicDir, NSURL *snapshotDir,
+// Returns the directory inside the working directory that holds the snapshot
+// of the music directory, or nil on failure.
+NSURL *_Nullable takeSnapshot(NSURL *musicDir, NSURL *workingDir,
     id<FileSystem> fileSystem, NSError **error);
 
 

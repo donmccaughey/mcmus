@@ -38,19 +38,19 @@ static double milliseconds_since(uint64_t start)
 
 
 static NSArray<Track *> *load_tracks_and_log_time(
-    NSURL *snapshotDir, id<FileSystem> fileSystem)
+    NSURL *musicLibraryDir, id<FileSystem> fileSystem)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    LoadResult *result = loadMusicLibrary(snapshotDir, fileSystem);
+    LoadResult *result = loadMusicLibrary(musicLibraryDir, fileSystem);
     NSArray<Track *> *tracks = [result.library getTracks];
     if (result.errors.count) {
         os_log(snapshot_log(),
             "Loaded %lu tracks from %{public}@ in %.1f ms with %lu errors",
-            tracks.count, snapshotDir.path, milliseconds_since(start),
+            tracks.count, musicLibraryDir.path, milliseconds_since(start),
             result.errors.count);
     } else {
         os_log(snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms",
-            tracks.count, snapshotDir.path, milliseconds_since(start));
+            tracks.count, musicLibraryDir.path, milliseconds_since(start));
     }
     return tracks;
 }
@@ -76,9 +76,10 @@ static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
 }
 
 
-static NSString *path_relative_to_snapshot(Track *track, NSURL *snapshotDir)
+static NSString *path_relative_to_music_library(
+    Track *track, NSURL *musicLibraryDir)
 {
-    NSString *prefix = [snapshotDir.path stringByAppendingString:@"/"];
+    NSString *prefix = [musicLibraryDir.path stringByAppendingString:@"/"];
     if (![track.path hasPrefix:prefix]) return track.path;
     return [track.path substringFromIndex:prefix.length];
 }
@@ -97,13 +98,14 @@ static NSComparisonResult compare_records_by_path(
 
 
 static NSArray<NSArray<NSString *> *> *manifest_records(
-    NSArray<TrackMetadata *> *metadata, NSURL *snapshotDir)
+    NSArray<TrackMetadata *> *metadata, NSURL *musicLibraryDir)
 {
     NSMutableArray<NSArray<NSString *> *> *records =
         [NSMutableArray arrayWithCapacity:metadata.count + 1];
     for (TrackMetadata *trackMetadata in metadata) {
         [records addObject:@[
-            path_relative_to_snapshot(trackMetadata.track, snapshotDir),
+            path_relative_to_music_library(
+                trackMetadata.track, musicLibraryDir),
             [NSString stringWithFormat:@"%llu", trackMetadata.size],
             [NSString stringWithFormat:@"%lu", trackMetadata.fileHash],
         ]];
@@ -114,24 +116,22 @@ static NSArray<NSArray<NSString *> *> *manifest_records(
 }
 
 
-static NSURL *_Nullable get_manifest_url(
-    id<FileSystem> fileSystem, NSError **error)
+static NSURL *get_manifest_url(NSURL *workingDir)
 {
-    NSURL *appSupportDir =
-        [fileSystem getApplicationSupportDirectoryURLAndReturnError:error];
-    return [appSupportDir URLByAppendingPathComponent:@"manifest.csv"];
+    return [workingDir URLByAppendingPathComponent:@"manifest.csv"];
 }
 
 
 static NSData *_Nullable write_manifest_and_log_time(
-    NSArray<TrackMetadata *> *metadata, NSURL *snapshotDir,
-    id<FileSystem> fileSystem, NSError **error)
+    NSArray<TrackMetadata *> *metadata, NSURL *musicLibraryDir,
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    NSURL *manifestURL = get_manifest_url(fileSystem, error);
-    NSData *manifest = generateCSV(manifest_records(metadata, snapshotDir));
-    BOOL wroteManifest = manifestURL &&
-        [fileSystem writeData:manifest toFile:manifestURL error:error];
+    NSURL *manifestURL = get_manifest_url(workingDir);
+    NSData *manifest = generateCSV(manifest_records(metadata, musicLibraryDir));
+    BOOL wroteManifest = [fileSystem writeData:manifest
+                                        toFile:manifestURL
+                                         error:error];
     if (wroteManifest) {
         os_log(snapshot_log(),
             "Wrote manifest of %lu tracks to %{public}@ in %.1f ms",
@@ -146,11 +146,11 @@ static NSData *_Nullable write_manifest_and_log_time(
 }
 
 
-static BOOL remove_manifest(id<FileSystem> fileSystem, NSError **error)
+static BOOL remove_manifest(
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
 {
-    NSURL *manifestURL = get_manifest_url(fileSystem, error);
     BOOL removedManifest =
-        manifestURL && [fileSystem removeItemAtURL:manifestURL error:error];
+        [fileSystem removeItemAtURL:get_manifest_url(workingDir) error:error];
     if (!removedManifest) {
         os_log(snapshot_log(), "Removing manifest failed: %{public}@", *error);
     }
@@ -159,38 +159,40 @@ static BOOL remove_manifest(id<FileSystem> fileSystem, NSError **error)
 
 
 static BOOL remove_snapshot_and_log_time(
-    NSURL *snapshotDir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    BOOL removedSnapshot = removeSnapshot(snapshotDir, fileSystem, error);
+    BOOL removedSnapshot = removeSnapshot(workingDir, fileSystem, error);
     if (removedSnapshot) {
-        os_log(snapshot_log(), "Removing snapshot %{public}@ took %.1f ms",
-            snapshotDir.path, milliseconds_since(start));
+        os_log(snapshot_log(), "Removing snapshot in %{public}@ took %.1f ms",
+            workingDir.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(),
-            "Removing snapshot %{public}@ took %.1f ms but failed: %{public}@",
-            snapshotDir.path, milliseconds_since(start), *error);
+            "Removing snapshot in %{public}@ took %.1f ms but failed: "
+            "%{public}@",
+            workingDir.path, milliseconds_since(start), *error);
     }
     return removedSnapshot;
 }
 
 
-static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
-    id<FileSystem> fileSystem, NSError **error)
+static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
-    BOOL tookSnapshot = takeSnapshot(musicDir, snapshotDir, fileSystem, error);
-    if (tookSnapshot) {
+    NSURL *musicLibraryDir =
+        takeSnapshot(musicDir, workingDir, fileSystem, error);
+    if (musicLibraryDir) {
         os_log(snapshot_log(),
             "Snapshot of %{public}@ to %{public}@ took %.1f ms", musicDir.path,
-            snapshotDir.path, milliseconds_since(start));
+            musicLibraryDir.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(),
-            "Snapshot of %{public}@ to %{public}@ took %.1f ms but failed: "
+            "Snapshot of %{public}@ in %{public}@ took %.1f ms but failed: "
             "%{public}@",
-            musicDir.path, snapshotDir.path, milliseconds_since(start), *error);
+            musicDir.path, workingDir.path, milliseconds_since(start), *error);
     }
-    return tookSnapshot;
+    return musicLibraryDir;
 }
 
 
@@ -200,6 +202,7 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
     id<Clock> _clock;
     __weak id<FileSharingClient> _client;
     NSURL *_musicDir;
+    NSURL *_workingDir;
     MusicLibrary *_musicLibrary;
     Reply _Nullable _startReply;
     Reply _Nullable _stopReply;
@@ -229,9 +232,12 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 #pragma mark - Client side, called on the app's thread
 
 
-- (void)startSharingMusicDirectory:(NSURL *)musicDir reply:(Reply)reply;
+- (void)startSharingMusicDirectory:(NSURL *)musicDir
+                  workingDirectory:(NSURL *)workingDir
+                             reply:(Reply)reply;
 {
     _musicDir = musicDir;
+    _workingDir = workingDir;
     _startReply = [reply copy];
     [self start];
 }
@@ -255,17 +261,15 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 {
     @autoreleasepool {
         NSError *error = nil;
-        NSURL *snapshotDir = getSnapshotDirURL(_fileSystem, &error);
-        BOOL tookSnapshot = snapshotDir
-            && take_snapshot_and_log_time(
-                _musicDir, snapshotDir, _fileSystem, &error);
-        if (!tookSnapshot) {
+        NSURL *musicLibraryDir = take_snapshot_and_log_time(
+            _musicDir, _workingDir, _fileSystem, &error);
+        if (!musicLibraryDir) {
             [self replyToStart:error];
             return;
         }
 
         NSArray<Track *> *tracks =
-            load_tracks_and_log_time(snapshotDir, _fileSystem);
+            load_tracks_and_log_time(musicLibraryDir, _fileSystem);
         NSArray<TrackMetadata *> *metadata =
             load_track_metadata_and_log_time(tracks, _fileSystem,
                 ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
@@ -273,15 +277,17 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
                                                     ofTotal:totalTracks];
                 });
         NSData *manifest = write_manifest_and_log_time(
-            metadata, snapshotDir, _fileSystem, &error);
+            metadata, musicLibraryDir, _workingDir, _fileSystem, &error);
         FileSharingServer *server = manifest
             ? [self startServerWithManifest:manifest error:&error]
             : nil;
         if (!server) {
             NSError *cleanUpError = nil;
-            if (manifest) remove_manifest(_fileSystem, &cleanUpError);
+            if (manifest) {
+                remove_manifest(_workingDir, _fileSystem, &cleanUpError);
+            }
             remove_snapshot_and_log_time(
-                snapshotDir, _fileSystem, &cleanUpError);
+                _workingDir, _fileSystem, &cleanUpError);
             [self replyToStart:error];
             return;
         }
@@ -290,7 +296,7 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
         [self runUntilStopRequested];
 
         [server stop];
-        [self replyToStop:[self removeManifestAndSnapshot:snapshotDir]];
+        [self replyToStop:[self removeManifestAndSnapshot]];
     }
 }
 
@@ -311,13 +317,14 @@ static BOOL take_snapshot_and_log_time(NSURL *musicDir, NSURL *snapshotDir,
 
 
 // Both are attempted even when the first fails; the first error is returned.
-- (nullable NSError *)removeManifestAndSnapshot:(NSURL *)snapshotDir;
+- (nullable NSError *)removeManifestAndSnapshot;
 {
     NSError *manifestError = nil;
     NSError *snapshotError = nil;
-    BOOL removedManifest = remove_manifest(_fileSystem, &manifestError);
+    BOOL removedManifest =
+        remove_manifest(_workingDir, _fileSystem, &manifestError);
     BOOL removedSnapshot =
-        remove_snapshot_and_log_time(snapshotDir, _fileSystem, &snapshotError);
+        remove_snapshot_and_log_time(_workingDir, _fileSystem, &snapshotError);
     if (!removedManifest) return manifestError;
     return removedSnapshot ? nil : snapshotError;
 }

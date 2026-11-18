@@ -25,35 +25,34 @@ static BOOL remove_dir_if_exists(
 }
 
 
-NSURL *getSnapshotDirURL(id<FileSystem> fileSystem, NSError **error)
+static NSURL *snapshot_url(NSURL *workingDir)
 {
-    NSURL *appSupportDir =
-        [fileSystem getApplicationSupportDirectoryURLAndReturnError:error];
-    return [appSupportDir URLByAppendingPathComponent:@"snapshot"];
+    return [workingDir URLByAppendingPathComponent:@"snapshot"];
 }
 
 
 BOOL removeSnapshot(
-    NSURL *snapshotDir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
 {
-    return remove_dir_if_exists(snapshotDir, fileSystem, error);
+    return remove_dir_if_exists(snapshot_url(workingDir), fileSystem, error);
 }
 
 
-BOOL takeSnapshot(NSURL *musicDir, NSURL *snapshotDir,
+NSURL *_Nullable takeSnapshot(NSURL *musicDir, NSURL *workingDir,
     id<FileSystem> fileSystem, NSError **error)
 {
-    BOOL removed = remove_dir_if_exists(snapshotDir, fileSystem, error);
-    if (!removed) return NO;
+    NSURL *snapshotURL = snapshot_url(workingDir);
+    BOOL removed = remove_dir_if_exists(snapshotURL, fileSystem, error);
+    if (!removed) return nil;
 
     BOOL cloned = [fileSystem cloneFile:musicDir
-                                 toFile:snapshotDir
+                                 toFile:snapshotURL
                                   error:error];
     if (cloned) {
         if (error) *error = nil;
-        return YES;
+        return snapshotURL;
     } else {
-        return NO;
+        return nil;
     }
 }
 

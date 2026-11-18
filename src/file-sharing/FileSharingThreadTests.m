@@ -60,6 +60,7 @@
     ClockFake *_clock;
     FileSharingClientFake *_client;
     NSURL *_musicDir;
+    NSURL *_workingDir;
     FileSharingThread *_thread;
     XCTestExpectation *_threadExited;
 }
@@ -70,10 +71,10 @@
     [super setUp];
     self.continueAfterFailure = NO;
     _fileSystem = [FileSystemFake new];
-    _fileSystem.applicationSupportDirectoryURL =
-        [NSURL fileURLWithPath:@"/container/AppSupport" isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
     _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
+    _workingDir = [NSURL fileURLWithPath:@"/container/AppSupport"
+                             isDirectory:YES];
     _network = [NetworkFake new];
     _clock = [ClockFake new];
     _client = [FileSharingClientFake new];
@@ -92,6 +93,7 @@
     __block NSError *startError = nil;
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
     [_thread startSharingMusicDirectory:_musicDir
+                       workingDirectory:_workingDir
                                   reply:^(NSError *_Nullable error) {
                                       startError = error;
                                       [started fulfill];

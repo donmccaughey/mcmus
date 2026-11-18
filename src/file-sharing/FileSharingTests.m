@@ -19,6 +19,8 @@
 @implementation FileSharingTests {
     FileSystemFake *_fileSystem;
     NetworkFake *_network;
+    NSURL *_musicRootDirectoryURL;
+    NSURL *_workingDirectoryURL;
     FileSharing *_fileSharing;
     NotificationCounter *_changes;
 }
@@ -29,20 +31,31 @@
     [super setUp];
     self.continueAfterFailure = NO;
     _fileSystem = [FileSystemFake new];
-    _fileSystem.applicationSupportDirectoryURL =
-        [NSURL fileURLWithPath:@"/container/AppSupport" isDirectory:YES];
     [_fileSystem addPath:@"/Users/user/Music/Song.mp3"];
-    NSURL *musicRootDirectoryURL = [NSURL fileURLWithPath:@"/Users/user/Music"
-                                              isDirectory:YES];
+    _musicRootDirectoryURL = [NSURL fileURLWithPath:@"/Users/user/Music"
+                                        isDirectory:YES];
+    _workingDirectoryURL = [NSURL fileURLWithPath:@"/container/AppSupport"
+                                      isDirectory:YES];
     _network = [NetworkFake new];
     _fileSharing =
-        [[FileSharing alloc] initWithMusicRootDirectoryURL:musicRootDirectoryURL
-                                                fileSystem:_fileSystem
-                                                   network:_network
-                                                     clock:[ClockFake new]];
+        [self fileSharingWithMusicRootDirectoryURL:_musicRootDirectoryURL
+                               workingDirectoryURL:_workingDirectoryURL];
     _changes = [[NotificationCounter alloc]
         initWithName:FileSharing.didChangeNotification
               object:_fileSharing];
+}
+
+
+- (FileSharing *)
+    fileSharingWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+                     workingDirectoryURL:(nullable NSURL *)workingDirectoryURL;
+{
+    return
+        [[FileSharing alloc] initWithMusicRootDirectoryURL:musicRootDirectoryURL
+                                       workingDirectoryURL:workingDirectoryURL
+                                                fileSystem:_fileSystem
+                                                   network:_network
+                                                     clock:[ClockFake new]];
 }
 
 
@@ -172,16 +185,18 @@
 }
 
 
-- (void)testStartReportsMissingApplicationSupportDirectory;
+- (void)testStartReportsMissingWorkingDirectory;
 {
-    _fileSystem.applicationSupportDirectoryURL = nil;
+    FileSharing *fileSharing =
+        [self fileSharingWithMusicRootDirectoryURL:_musicRootDirectoryURL
+                               workingDirectoryURL:nil];
 
-    [self startAndWait:_fileSharing];
+    [self startAndWait:fileSharing];
 
-    XCTAssertEqual(_fileSharing.state, FileSharingStateOff);
-    XCTAssertFalse(_fileSharing.isSharing);
-    XCTAssertEqualObjects(_fileSharing.error.domain, FileSystemFakeErrorDomain);
-    XCTAssertEqual(_changes.count, 2UL);
+    XCTAssertEqual(fileSharing.state, FileSharingStateOff);
+    XCTAssertFalse(fileSharing.isSharing);
+    XCTAssertEqualObjects(
+        fileSharing.error.localizedDescription, @"No working directory.");
     XCTAssertEqual(_fileSystem.clonedSources.count, 0UL);
 }
 
@@ -189,10 +204,8 @@
 - (void)testStartReportsMissingMusicRootDirectory;
 {
     FileSharing *fileSharing =
-        [[FileSharing alloc] initWithMusicRootDirectoryURL:nil
-                                                fileSystem:_fileSystem
-                                                   network:_network
-                                                     clock:[ClockFake new]];
+        [self fileSharingWithMusicRootDirectoryURL:nil
+                               workingDirectoryURL:_workingDirectoryURL];
 
     [self startAndWait:fileSharing];
 

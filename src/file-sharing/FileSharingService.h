@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol FileSharingService <NSObject>
 
 - (void)startSharingMusicDirectory:(NSURL *)musicDir
+                  workingDirectory:(NSURL *)workingDir
                              reply:(void (^)(NSError *_Nullable error))reply;
 - (void)stopSharingWithReply:(void (^)(NSError *_Nullable error))reply;
 

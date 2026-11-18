@@ -15,7 +15,7 @@
 
 @implementation SnapshotTests {
     NSURL *_musicDir;
-    NSURL *_snapshotDir;
+    NSURL *_workingDir;
 }
 
 
@@ -23,38 +23,8 @@
 {
     [super setUp];
     _musicDir = [NSURL fileURLWithPath:@"/Users/user/Music" isDirectory:YES];
-    _snapshotDir = [NSURL fileURLWithPath:@"/container/AppSupport"
-                              isDirectory:YES];
-}
-
-
-#pragma mark - getSnapshotDirURL() tests
-
-
-- (void)testGetSnapshotDirURL;
-{
-    FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.applicationSupportDirectoryURL =
-        [NSURL fileURLWithPath:@"/tmp/snapshot/appsupport" isDirectory:YES];
-
-    NSError *error = nil;
-    NSURL *snapshotDir = getSnapshotDirURL(fileSystem, &error);
-
-    XCTAssertEqualObjects(
-        @"/tmp/snapshot/appsupport/snapshot", snapshotDir.path);
-}
-
-
-- (void)testGetSnapshotDirURLWhenGetAppSupportDirFails;
-{
-    FileSystemFake *fileSystem = [FileSystemFake new];
-    fileSystem.applicationSupportDirectoryURL = nil;
-
-    NSError *error = nil;
-    NSURL *snapshotDir = getSnapshotDirURL(fileSystem, &error);
-
-    XCTAssertNil(snapshotDir);
-    XCTAssertEqual(error.domain, FileSystemFakeErrorDomain);
+    _workingDir = [NSURL fileURLWithPath:@"/container/AppSupport"
+                             isDirectory:YES];
 }
 
 
@@ -70,10 +40,10 @@
                         userInfo:nil];
 
     NSError *error = nil;
-    BOOL tookSnapshot =
-        takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+    NSURL *snapshotURL =
+        takeSnapshot(_musicDir, _workingDir, fileSystem, &error);
 
-    XCTAssertFalse(tookSnapshot);
+    XCTAssertNil(snapshotURL);
     XCTAssertNotNil(error);
     XCTAssertEqual(error.domain, NSCocoaErrorDomain);
     XCTAssertEqual(error.code, NSFileReadUnknownError);
@@ -91,10 +61,10 @@
         [NSError errorWithDomain:NSPOSIXErrorDomain code:ENOTSUP userInfo:nil];
 
     NSError *error = nil;
-    BOOL tookSnapshot =
-        takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+    NSURL *snapshotURL =
+        takeSnapshot(_musicDir, _workingDir, fileSystem, &error);
 
-    XCTAssertFalse(tookSnapshot);
+    XCTAssertNil(snapshotURL);
     XCTAssertNotNil(error);
     XCTAssertEqual(error.domain, NSPOSIXErrorDomain);
     XCTAssertEqual(error.code, ENOTSUP);
@@ -111,11 +81,28 @@
     fileSystem.cloneFileToFileError = nil;
 
     NSError *error = nil;
-    BOOL tookSnapshot =
-        takeSnapshot(_musicDir, _snapshotDir, fileSystem, &error);
+    NSURL *snapshotURL =
+        takeSnapshot(_musicDir, _workingDir, fileSystem, &error);
 
-    XCTAssertTrue(tookSnapshot);
+    XCTAssertEqualObjects(snapshotURL.path, @"/container/AppSupport/snapshot");
     XCTAssertNil(error);
+    XCTAssertEqualObjects(fileSystem.clonedSources, @[@"/Users/user/Music"]);
+    XCTAssertEqualObjects(
+        fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
+}
+
+
+- (void)testTakeSnapshotRemovesOldSnapshotButNotWorkingDir;
+{
+    FileSystemFake *fileSystem = [FileSystemFake new];
+
+    NSError *error = nil;
+    NSURL *snapshotURL =
+        takeSnapshot(_musicDir, _workingDir, fileSystem, &error);
+
+    XCTAssertNotNil(snapshotURL);
+    XCTAssertEqualObjects(
+        fileSystem.removedPaths, @[@"/container/AppSupport/snapshot"]);
 }
 
 
@@ -131,7 +118,7 @@
                         userInfo:nil];
 
     NSError *error = nil;
-    BOOL removed = removeSnapshot(_snapshotDir, fileSystem, &error);
+    BOOL removed = removeSnapshot(_workingDir, fileSystem, &error);
 
     XCTAssertFalse(removed);
     XCTAssertNotNil(error);
@@ -149,7 +136,7 @@
                         userInfo:nil];
 
     NSError *error = nil;
-    BOOL removed = removeSnapshot(_snapshotDir, fileSystem, &error);
+    BOOL removed = removeSnapshot(_workingDir, fileSystem, &error);
 
     XCTAssertTrue(removed);
     XCTAssertNil(error);
@@ -162,10 +149,12 @@
     fileSystem.removeItemAtURLError = nil;
 
     NSError *error = nil;
-    BOOL removed = removeSnapshot(_snapshotDir, fileSystem, &error);
+    BOOL removed = removeSnapshot(_workingDir, fileSystem, &error);
 
     XCTAssertTrue(removed);
     XCTAssertNil(error);
+    XCTAssertEqualObjects(
+        fileSystem.removedPaths, @[@"/container/AppSupport/snapshot"]);
 }
 
 

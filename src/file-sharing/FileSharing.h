@@ -39,14 +39,17 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 // server is waiting for a client.
 @property (nonatomic, readonly, copy, nullable) NSString *connectedDeviceName;
 
-- (instancetype)initWithMusicRootDirectoryURL:
-                    (nullable NSURL *)musicRootDirectoryURL
-                                   fileSystem:(id<FileSystem>)fileSystem
-                                      network:(id<Network>)network
-                                        clock:(id<Clock>)clock
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithMusicRootDirectoryURL:
-    (nullable NSURL *)musicRootDirectoryURL;
+// The snapshot and the manifest CSV are placed inside the working directory;
+// the working directory itself is never removed.
+- (instancetype)
+    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL
+                       fileSystem:(id<FileSystem>)fileSystem
+                          network:(id<Network>)network
+                            clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)start;

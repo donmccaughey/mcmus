@@ -13,6 +13,7 @@ static NSErrorDomain const FileSharingErrorDomain = @"FileSharingErrorDomain";
 
 typedef NS_ENUM(NSInteger, FileSharingErrorCode) {
     FileSharingErrorCodeNoMusicRootDirectory = 1,
+    FileSharingErrorCodeNoWorkingDirectory = 2,
 };
 
 
@@ -27,12 +28,24 @@ static NSError *no_music_root_directory_error(void)
 }
 
 
+static NSError *no_working_directory_error(void)
+{
+    return
+        [NSError errorWithDomain:FileSharingErrorDomain
+                            code:FileSharingErrorCodeNoWorkingDirectory
+                        userInfo:@{
+                            NSLocalizedDescriptionKey: @"No working directory.",
+                        }];
+}
+
+
 @interface FileSharing () <FileSharingClient>
 @end
 
 
 @implementation FileSharing {
     NSURL *_Nullable _musicRootDirectoryURL;
+    NSURL *_Nullable _workingDirectoryURL;
     id<FileSystem> _fileSystem;
     id<Network> _network;
     id<Clock> _clock;
@@ -46,16 +59,18 @@ static NSError *no_music_root_directory_error(void)
 }
 
 
-- (instancetype)initWithMusicRootDirectoryURL:
-                    (nullable NSURL *)musicRootDirectoryURL
-                                   fileSystem:(id<FileSystem>)fileSystem
-                                      network:(id<Network>)network
-                                        clock:(id<Clock>)clock;
+- (instancetype)
+    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL
+                       fileSystem:(id<FileSystem>)fileSystem
+                          network:(id<Network>)network
+                            clock:(id<Clock>)clock;
 {
     self = [super init];
     if (!self) return nil;
 
     _musicRootDirectoryURL = musicRootDirectoryURL;
+    _workingDirectoryURL = workingDirectoryURL;
     _fileSystem = fileSystem;
     _network = network;
     _clock = clock;
@@ -64,10 +79,12 @@ static NSError *no_music_root_directory_error(void)
 }
 
 
-- (instancetype)initWithMusicRootDirectoryURL:
-    (nullable NSURL *)musicRootDirectoryURL;
+- (instancetype)
+    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL;
 {
     return [self initWithMusicRootDirectoryURL:musicRootDirectoryURL
+                           workingDirectoryURL:workingDirectoryURL
                                     fileSystem:[FileSystemReal new]
                                        network:[NetworkReal new]
                                          clock:[ClockReal new]];
@@ -115,11 +132,17 @@ static NSError *no_music_root_directory_error(void)
         reply(no_music_root_directory_error());
         return;
     }
+    if (!_workingDirectoryURL) {
+        reply(no_working_directory_error());
+        return;
+    }
     _service = [[FileSharingThread alloc] initWithFileSystem:_fileSystem
                                                      network:_network
                                                        clock:_clock
                                                       client:self];
-    [_service startSharingMusicDirectory:_musicRootDirectoryURL reply:reply];
+    [_service startSharingMusicDirectory:_musicRootDirectoryURL
+                        workingDirectory:_workingDirectoryURL
+                                   reply:reply];
 }
 
 
