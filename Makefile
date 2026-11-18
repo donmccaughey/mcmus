@@ -156,6 +156,8 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 
 # use a stamp file since the disk image name contains a space and thus can't be
 # a target name
-$(TMP)/made-disk-image.stamp : $(TMP)/built-release.stamp scripts/make-dmg.sh
-	scripts/make-dmg.sh "$(TMP)/Release/MC Mus.app" $(TMP)
+$(TMP)/made-disk-image.stamp : \
+		$(TMP)/built-release.stamp \
+		scripts/make-disk-image
+	scripts/make-disk-image "$(TMP)/Release/MC Mus.app" $(TMP)
 	touch $@

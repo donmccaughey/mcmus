@@ -2,7 +2,7 @@
 # Package a built .app into a compressed disk image whose Finder window shows
 # the app at a large icon size beside an Applications alias.
 #
-# usage: make-dmg.sh path/to/App.app output-dir
+# usage: make-disk-image path/to/App.app output-dir
 
 set -euo pipefail
 
@@ -70,7 +70,7 @@ APPLESCRIPT
 }
 
 if ! wait_for_finder_to_see_disk || ! layout_finder_window; then
-    echo "make-dmg.sh: could not lay out the Finder window." >&2
+    echo "make-disk-image: could not lay out the Finder window." >&2
     echo "If macOS asked to let this terminal control Finder, allow it and rerun." >&2
     exit 1
 fi
