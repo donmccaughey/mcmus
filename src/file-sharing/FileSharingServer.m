@@ -79,6 +79,12 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
 }
 
 
+- (uint16_t)port;
+{
+    return _listener.port;
+}
+
+
 - (BOOL)startAndReturnError:(NSError **)error;
 {
     _listener = [_network listenAndReturnError:error];

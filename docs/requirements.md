@@ -168,10 +168,8 @@ The file-sharing library shall depend on the wrappers, model, snapshot and csv
 libraries; file-sharing unit tests shall also depend on the wrappers-fakes
 library.
 
-The MC Mus project shall place code for the share test tool in the file-sharing
-library, with code placed in the `src/file-sharing/share-test/` subdirectory.
 
-The share test tool shall depend on the file-sharing library.
+## Executables
 
 The MC Mus project shall place **app** code, configuration, assets and
 corresponding unit tests in the `src/app/` subdirectory.
@@ -182,6 +180,11 @@ Main view and main window code shall live in `src/app/main/`. The primary queue
 panel code shall live in `src/app/queue/`. The settings dialog code shall live
 in `src/app/settings/`. Views, controls and UI utility code shared across major
 UI elements or feature shall live in `src/app/components/`.
+
+The MC Mus project shall place code for the **share test server** in the
+`src/share-test/` subdirectory.
+
+The share test tool shall depend on the file-sharing library.
 
 
 ## Third-party code
@@ -690,6 +693,9 @@ directory when it is created.
 If it has no music root directory or no working directory when started, the file
 sharing object shall report an error and remain off.
 
+While sharing, the file sharing object shall expose the port the file sharing
+server is listening on.
+
 The **file sharing thread** shall manage the background thread and run loop
 where file sharing operations run.
 
@@ -735,11 +741,11 @@ using the XXH3 64-bit hash algorithm, in the hash field as a decimal integer;
 the file hash digest shall be stored in the XXH3 hash preferred digest integer
 format, which is big endian.
 
-The manifest CSV file shall be saved to the application support directory with
+The manifest CSV file shall be saved to the file sharing working directory with
 the filename `manifest.csv`.
 
-If a previous manifest CSV exists in the application support directory, the file
-sharing thread shall overwrite it.
+If a previous manifest CSV exists in the file sharing working directory, the
+file sharing thread shall overwrite it.
 
 
 ## File sharing server
@@ -899,16 +905,63 @@ name `_mcmus._tcp`.
 
 ## Test server
 
-**Share test** is a stand-along command line tool that runs the file sharing
-thread and server for testing.
+**Share test** is a stand-alone command line tool for macOS only that creates a
+file sharing object which runs the file sharing thread and server for testing.
 
-Share test shall link to the file-sharing library.
+Share test shall link to the file-sharing and wrappers libraries.
 
 Share test shall accept one required positional command line arguments:
 `MUSIC_DIR` specifies the location of the music root directory.
 
-Share test shall accept one command line option: `--snapshot=DIR`, where the `DIR`
-value is required, specifies the 
+If the `MUSIC_DIR` command line argument is missing, share test shall exit with
+an error and a usage message.
+
+If the `MUSIC_DIR` command line argument is a relative path, share test shall
+resolve it against the current working directory.
+
+If the music root directory is missing or unreadable, share test shall exit with
+an error.
+
+Share test shall accept the command line option: `--workdir=DIR`, where the
+`DIR` value is required, specifies the working directory where the snapshot and
+manifest are written.
+
+If the `DIR` value of the `--workdir` option is a relative path, share test
+shall resolve it against the current working directory.
+
+When the `--workdir=DIR` option is not given, share test shall use the current
+working directory as the working directory.
+
+If the working directory is missing or unreadable, share test shall exit with an
+error.
+
+Share test shall write status messages to `stdout` and errors to `stderr`, using
+the same text for status messages that the app uses where practical.
+
+Share test shall write each status message to a separate line.
+
+Share test shall write a status message with the port it is listening on at
+startup.
+
+Share test shall shut down gracefully when it receives `SIGINT` by calling the
+appropriate stop method of the file sharing object and waiting for it to
+complete before exiting with status 0.
+
+
+## Test scripts
+
+The `get-manifest` test script shall be written in Python, shall be executable
+and shall use `xcrun python3` in its shebang line.
+
+The `get-manifest` test script shall be located in the project `scripts/`
+directory.
+
+The `get-manifest` test script shall locate and connect to the file sharing
+server, send a `GET /manifest` HTTP request, write the returned manifest to
+`manifest.csv` in the current working directory, and disconnect.
+
+If it encounters an error, the `get-manifest` test script shall write an error
+message to `stderr`.
 
 
 # Launch behavior

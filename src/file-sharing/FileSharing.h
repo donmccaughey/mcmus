@@ -39,6 +39,9 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 // server is waiting for a client.
 @property (nonatomic, readonly, copy, nullable) NSString *connectedDeviceName;
 
+// The port the server is listening on, or zero unless sharing.
+@property (nonatomic, readonly) uint16_t port;
+
 // The snapshot and the manifest CSV are placed inside the working directory;
 // the working directory itself is never removed.
 - (instancetype)

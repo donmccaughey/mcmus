@@ -13,9 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 // void methods, one reply block each, and the reply may arrive on any thread.
 @protocol FileSharingService <NSObject>
 
+// The reply carries the port the server is listening on, or zero with an
+// error when sharing did not start.
 - (void)startSharingMusicDirectory:(NSURL *)musicDir
                   workingDirectory:(NSURL *)workingDir
-                             reply:(void (^)(NSError *_Nullable error))reply;
+                             reply:(void (^)(uint16_t port,
+                                       NSError *_Nullable error))reply;
 - (void)stopSharingWithReply:(void (^)(NSError *_Nullable error))reply;
 
 @end

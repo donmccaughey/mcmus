@@ -127,6 +127,19 @@ static NSUInteger count_of(NSString *part, NSString *text)
 }
 
 
+- (void)testPortIsTheListenerPortWhileStarted;
+{
+    _network.port = 51234;
+    XCTAssertEqual(_server.port, 0);
+
+    [self start];
+    XCTAssertEqual(_server.port, 51234);
+
+    [_server stop];
+    XCTAssertEqual(_server.port, 0);
+}
+
+
 - (void)testStartNotifiesWaitingForClient;
 {
     XCTAssertTrue([_server startAndReturnError:NULL]);

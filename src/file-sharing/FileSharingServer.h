@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, FileSharingServerState) {
 @interface FileSharingServer : NSObject
 
 @property (nonatomic, readonly) FileSharingServerState state;
+// Zero unless the server is started.
+@property (nonatomic, readonly) uint16_t port;
 @property (nonatomic, copy, nullable) void (^onWaitingForClient)(void);
 @property (nonatomic, copy, nullable) void (^onClientConnected)
     (NSString *deviceName);

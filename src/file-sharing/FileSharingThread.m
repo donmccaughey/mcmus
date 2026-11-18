@@ -17,6 +17,7 @@
 #import "TrackMetadata.h"
 
 
+typedef void (^StartReply)(uint16_t port, NSError *_Nullable error);
 typedef void (^Reply)(NSError *_Nullable error);
 
 
@@ -204,7 +205,7 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
     NSURL *_musicDir;
     NSURL *_workingDir;
     MusicLibrary *_musicLibrary;
-    Reply _Nullable _startReply;
+    StartReply _Nullable _startReply;
     Reply _Nullable _stopReply;
     BOOL _stopRequested;
 }
@@ -234,7 +235,7 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
 
 - (void)startSharingMusicDirectory:(NSURL *)musicDir
                   workingDirectory:(NSURL *)workingDir
-                             reply:(Reply)reply;
+                             reply:(StartReply)reply;
 {
     _musicDir = musicDir;
     _workingDir = workingDir;
@@ -264,7 +265,7 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
         NSURL *musicLibraryDir = take_snapshot_and_log_time(
             _musicDir, _workingDir, _fileSystem, &error);
         if (!musicLibraryDir) {
-            [self replyToStart:error];
+            [self replyToStartWithPort:0 error:error];
             return;
         }
 
@@ -288,10 +289,10 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
             }
             remove_snapshot_and_log_time(
                 _workingDir, _fileSystem, &cleanUpError);
-            [self replyToStart:error];
+            [self replyToStartWithPort:0 error:error];
             return;
         }
-        [self replyToStart:nil];
+        [self replyToStartWithPort:server.port error:nil];
 
         [self runUntilStopRequested];
 
@@ -354,11 +355,11 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
 }
 
 
-- (void)replyToStart:(nullable NSError *)error;
+- (void)replyToStartWithPort:(uint16_t)port error:(nullable NSError *)error;
 {
-    Reply reply = _startReply;
+    StartReply reply = _startReply;
     _startReply = nil;
-    reply(error);
+    reply(port, error);
 }
 
 

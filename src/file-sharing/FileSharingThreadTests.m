@@ -63,6 +63,7 @@
     NSURL *_workingDir;
     FileSharingThread *_thread;
     XCTestExpectation *_threadExited;
+    uint16_t _startPort;
 }
 
 
@@ -92,12 +93,14 @@
 {
     __block NSError *startError = nil;
     XCTestExpectation *started = [self expectationWithDescription:@"started"];
-    [_thread startSharingMusicDirectory:_musicDir
-                       workingDirectory:_workingDir
-                                  reply:^(NSError *_Nullable error) {
-                                      startError = error;
-                                      [started fulfill];
-                                  }];
+    [_thread
+        startSharingMusicDirectory:_musicDir
+                  workingDirectory:_workingDir
+                             reply:^(uint16_t port, NSError *_Nullable error) {
+                                 self->_startPort = port;
+                                 startError = error;
+                                 [started fulfill];
+                             }];
     [self waitForExpectations:@[started] timeout:5];
     return startError;
 }
@@ -113,6 +116,32 @@
     }];
     [self waitForExpectations:@[stopped] timeout:5];
     return stopError;
+}
+
+
+- (void)testStartRepliesWithTheServerPort;
+{
+    _network.port = 51234;
+
+    NSError *startError = [self startAndWait];
+
+    XCTAssertNil(startError);
+    XCTAssertEqual(_startPort, 51234);
+    [self stopAndWait];
+}
+
+
+- (void)testFailedStartRepliesWithPortZero;
+{
+    _network.port = 51234;
+    _network.listenError = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                               code:EADDRINUSE
+                                           userInfo:nil];
+
+    NSError *startError = [self startAndWait];
+
+    XCTAssertEqualObjects(startError, _network.listenError);
+    XCTAssertEqual(_startPort, 0);
 }
 
 

@@ -29,6 +29,7 @@ ver := 1.0
 check : \
 		$(TMP)/analyzed-iOS.stamp \
 		$(TMP)/analyzed-macOS.stamp \
+		$(TMP)/built-share-test.stamp \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp
@@ -114,6 +115,17 @@ $(TMP)/built-release.stamp : \
 		-destination 'generic/platform=macOS' \
 		-derivedDataPath $(derived_data_dir)/build-release \
 		CONFIGURATION_BUILD_DIR=$(TMP)/Release \
+		$(BUILD_FLAGS)
+	touch $@
+
+
+$(TMP)/built-share-test.stamp : $(src_files) | $$(dir $$@)
+	xcodebuild build \
+		-project mcmus.xcodeproj \
+		-scheme share-test \
+		-configuration Debug \
+		-destination 'platform=macOS,arch=$(arch)' \
+		-derivedDataPath $(derived_data_dir)/build-share-test \
 		$(BUILD_FLAGS)
 	touch $@
 

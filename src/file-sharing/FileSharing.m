@@ -116,24 +116,26 @@ static NSError *no_working_directory_error(void)
         if (completion) completion();
         return;
     }
-    [self didChangeState:FileSharingStateStarting error:nil];
+    [self didChangeState:FileSharingStateStarting port:0 error:nil];
 
-    void (^reply)(NSError *_Nullable) = ^(NSError *_Nullable error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error) self->_service = nil;
-            [self didChangeState:(error ? FileSharingStateOff
-                                        : FileSharingStateSharing)
-                           error:error];
-            if (completion) completion();
-        });
-    };
+    void (^reply)(uint16_t, NSError *_Nullable) =
+        ^(uint16_t port, NSError *_Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error) self->_service = nil;
+                [self didChangeState:(error ? FileSharingStateOff
+                                            : FileSharingStateSharing)
+                                port:port
+                               error:error];
+                if (completion) completion();
+            });
+        };
 
     if (!_musicRootDirectoryURL) {
-        reply(no_music_root_directory_error());
+        reply(0, no_music_root_directory_error());
         return;
     }
     if (!_workingDirectoryURL) {
-        reply(no_working_directory_error());
+        reply(0, no_working_directory_error());
         return;
     }
     _service = [[FileSharingThread alloc] initWithFileSystem:_fileSystem
@@ -158,21 +160,24 @@ static NSError *no_working_directory_error(void)
         if (completion) completion();
         return;
     }
-    [self didChangeState:FileSharingStateStopping error:nil];
+    [self didChangeState:FileSharingStateStopping port:0 error:nil];
 
     [_service stopSharingWithReply:^(NSError *_Nullable error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_service = nil;
-            [self didChangeState:FileSharingStateOff error:error];
+            [self didChangeState:FileSharingStateOff port:0 error:error];
             if (completion) completion();
         });
     }];
 }
 
 
-- (void)didChangeState:(FileSharingState)state error:(nullable NSError *)error;
+- (void)didChangeState:(FileSharingState)state
+                  port:(uint16_t)port
+                 error:(nullable NSError *)error;
 {
     _state = state;
+    _port = port;
     _error = error;
     _metadataTracksLoaded = 0;
     _metadataTotalTracks = 0;

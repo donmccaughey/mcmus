@@ -218,6 +218,7 @@
 
 - (void)testStartReportsListenFailure;
 {
+    _network.port = 51234;
     _network.listenError = [NSError errorWithDomain:NSPOSIXErrorDomain
                                                code:EADDRINUSE
                                            userInfo:nil];
@@ -226,6 +227,20 @@
 
     XCTAssertEqual(_fileSharing.state, FileSharingStateOff);
     XCTAssertEqualObjects(_fileSharing.error, _network.listenError);
+    XCTAssertEqual(_fileSharing.port, 0);
+}
+
+
+- (void)testPortIsTheServerPortOnlyWhileSharing;
+{
+    _network.port = 51234;
+    XCTAssertEqual(_fileSharing.port, 0);
+
+    [self startAndWait:_fileSharing];
+    XCTAssertEqual(_fileSharing.port, 51234);
+
+    [self stopAndWait:_fileSharing];
+    XCTAssertEqual(_fileSharing.port, 0);
 }
 
 
