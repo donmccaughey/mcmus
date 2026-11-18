@@ -49,13 +49,18 @@ format :
 	xcrun clang-format -i --style=file:.clang-format $(objc_files)
 
 
-.PHONY : release
-release: $(TMP)/made-disk-image.stamp
-
-
 .PHONY : list-simulators
 list-simulators :
 	xcodebuild -project mcmus.xcodeproj -scheme app -showdestinations
+
+
+.PHONY : release
+release : $(TMP)/made-disk-image.stamp
+
+
+.PHONY : share-test
+share-test : $(TMP)/built-share-test.stamp
+	$(TMP)/share-test/share-test functional-tests/music --workdir=$(TMP)
 
 
 .PHONY : clean
@@ -72,7 +77,8 @@ clean :
 
 
 $(TMP)/ \
-$(TMP)/Release :
+$(TMP)/app-release \
+$(TMP)/share-test :
 	mkdir -p $@
 
 
@@ -108,26 +114,28 @@ $(TMP)/built-release.stamp : \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp \
-		| $(TMP)/Release
-	rm -rf $(TMP)/Release
+		| $(TMP)/app-release
+	rm -rf $(TMP)/app-release
 	xcodebuild build \
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-configuration Release \
 		-destination 'generic/platform=macOS' \
 		-derivedDataPath $(TMP)/build-release \
-		CONFIGURATION_BUILD_DIR=$(TMP)/Release \
+		CONFIGURATION_BUILD_DIR=$(TMP)/app-release \
 		$(BUILD_FLAGS)
 	touch $@
 
 
-$(TMP)/built-share-test.stamp : $(src_files) | $$(dir $$@)
+$(TMP)/built-share-test.stamp : $(src_files) | $(TMP)/share-test
+	rm -rf $(TMP)/share-test
 	xcodebuild build \
 		-project mcmus.xcodeproj \
 		-scheme share-test \
 		-configuration Debug \
 		-destination 'platform=macOS,arch=$(arch)' \
 		-derivedDataPath $(TMP)/build-share-test \
+		CONFIGURATION_BUILD_DIR=$(TMP)/share-test \
 		$(BUILD_FLAGS)
 	touch $@
 
@@ -162,5 +170,5 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 $(TMP)/made-disk-image.stamp : \
 		$(TMP)/built-release.stamp \
 		scripts/make-disk-image
-	scripts/make-disk-image "$(TMP)/Release/MC Mus.app" $(TMP)
+	scripts/make-disk-image "$(TMP)/app-release/MC Mus.app" $(TMP)
 	touch $@
