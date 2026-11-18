@@ -1,0 +1,128 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "zeroconf",
+# ]
+# ///
+"""Find the MC Mus file sharing server via Bonjour, request its manifest and
+write the manifest CSV to stdout.
+
+usage: get-manifest
+"""
+
+import http.client
+import sys
+import threading
+
+from zeroconf import IPVersion, ServiceBrowser, ServiceStateChange, Zeroconf
+
+SERVICE_TYPE = "_mcmus._tcp.local."
+USER_AGENT = "get-manifest"
+BROWSE_TIMEOUT_SECONDS = 5
+RESOLVE_TIMEOUT_MILLISECONDS = 5000
+HTTP_TIMEOUT_SECONDS = 10
+
+
+class GetManifestError(Exception):
+    pass
+
+
+def find_service_name(zeroconf: Zeroconf) -> str:
+    found = threading.Event()
+    names: list[str] = []
+
+    # zeroconf calls handlers with keyword arguments, so the parameter names
+    # are fixed.
+    def on_service_state_change(
+        zeroconf: Zeroconf,
+        service_type: str,
+        name: str,
+        state_change: ServiceStateChange,
+    ) -> None:
+        if state_change is ServiceStateChange.Added:
+            names.append(name)
+            found.set()
+
+    browser = ServiceBrowser(
+        zeroconf, SERVICE_TYPE, handlers=[on_service_state_change]
+    )
+    try:
+        if not found.wait(BROWSE_TIMEOUT_SECONDS):
+            raise GetManifestError(
+                f"no {SERVICE_TYPE} service found "
+                f"after {BROWSE_TIMEOUT_SECONDS} seconds"
+            )
+    finally:
+        browser.cancel()
+    return names[0]
+
+
+def locate_server() -> tuple[list[str], int]:
+    """Return the addresses and port of the first file sharing server found."""
+    zeroconf = Zeroconf()
+    try:
+        name = find_service_name(zeroconf)
+        info = zeroconf.get_service_info(
+            SERVICE_TYPE, name, timeout=RESOLVE_TIMEOUT_MILLISECONDS
+        )
+    finally:
+        zeroconf.close()
+    if info is None:
+        raise GetManifestError(f"cannot resolve service {name}")
+    if info.port is None:
+        raise GetManifestError(f"service {name} has no port")
+
+    # IPv4 first: a link-local IPv6 address only connects with its scope.
+    addresses = info.parsed_scoped_addresses(IPVersion.V4Only)
+    addresses += info.parsed_scoped_addresses(IPVersion.V6Only)
+    if not addresses:
+        raise GetManifestError(f"service {name} has no addresses")
+    return addresses, info.port
+
+
+def connect(addresses: list[str], port: int) -> http.client.HTTPConnection:
+    errors: list[str] = []
+    for address in addresses:
+        connection = http.client.HTTPConnection(
+            address, port, timeout=HTTP_TIMEOUT_SECONDS
+        )
+        try:
+            connection.connect()
+            return connection
+        except OSError as error:
+            errors.append(f"{address} port {port}: {error}")
+    raise GetManifestError("cannot connect to " + "; ".join(errors))
+
+
+def get_manifest(connection: http.client.HTTPConnection) -> bytes:
+    connection.request("GET", "/manifest", headers={"User-Agent": USER_AGENT})
+    response = connection.getresponse()
+    body = response.read()
+    if response.status != http.client.OK:
+        detail = body.decode("utf-8", errors="replace").strip()
+        raise GetManifestError(
+            f"GET /manifest returned {response.status} {response.reason}"
+            + (f": {detail}" if detail else "")
+        )
+    return body
+
+
+def main() -> int:
+    try:
+        addresses, port = locate_server()
+        connection = connect(addresses, port)
+        try:
+            manifest = get_manifest(connection)
+        finally:
+            connection.close()
+    except (GetManifestError, OSError, http.client.HTTPException) as error:
+        print(f"get-manifest: {error}", file=sys.stderr)
+        return 1
+    sys.stdout.buffer.write(manifest)
+    sys.stdout.buffer.flush()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

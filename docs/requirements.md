@@ -951,14 +951,24 @@ complete before exiting with status 0.
 ## Test scripts
 
 The `get-manifest` test script shall be written in Python, shall be executable
-and shall use `xcrun python3` in its shebang line.
+and shall use `/usr/bin/env -S uv run --script` in its shebang line.
+
+The `get-manifest` test script shall require Python 3.9 or later.
+
+The `get-manifest` test script shall use the
+[`zeroconf`](https://pypi.org/project/zeroconf/) package for Bonjour support
+
+The `get-manifest` test script shall specify dependencies using [inline script
+metadata](https://packaging.python.org/en/latest/specifications/inline-script-metadata/).
+
+The `get-manifest` test script shall use Python type annotations.
 
 The `get-manifest` test script shall be located in the project `scripts/`
 directory.
 
 The `get-manifest` test script shall locate and connect to the file sharing
 server, send a `GET /manifest` HTTP request, write the returned manifest to
-`manifest.csv` in the current working directory, and disconnect.
+`stdout`, and disconnect.
 
 If it encounters an error, the `get-manifest` test script shall write an error
 message to `stderr`.
