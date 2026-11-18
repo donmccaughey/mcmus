@@ -7,7 +7,6 @@ TEST_FLAGS ?= -quiet
 
 
 arch := $(shell uname -m)
-derived_data_dir = $(TMP)/DerivedData
 objc_files := $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
 project_files := \
 		mcmus.xcodeproj/project.pbxproj \
@@ -83,7 +82,7 @@ $(TMP)/analyzed-iOS.stamp : $(src_files) | $$(dir $$@)
 		-scheme app \
 		-configuration Debug \
 		-destination 'platform=iOS Simulator,name=$(IOS_TEST_DEVICE)' \
-		-derivedDataPath $(derived_data_dir)/analyze-iOS \
+		-derivedDataPath $(TMP)/analyze-iOS \
 		$(ANALYZE_FLAGS)
 	touch $@
 
@@ -94,7 +93,7 @@ $(TMP)/analyzed-macOS.stamp : $(src_files) | $$(dir $$@)
 		-scheme app \
 		-configuration Debug \
 		-destination 'platform=macOS,arch=$(arch)' \
-		-derivedDataPath $(derived_data_dir)/analyze-macOS \
+		-derivedDataPath $(TMP)/analyze-macOS \
 		$(ANALYZE_FLAGS)
 	touch $@
 
@@ -113,7 +112,7 @@ $(TMP)/built-release.stamp : \
 		-scheme app \
 		-configuration Release \
 		-destination 'generic/platform=macOS' \
-		-derivedDataPath $(derived_data_dir)/build-release \
+		-derivedDataPath $(TMP)/build-release \
 		CONFIGURATION_BUILD_DIR=$(TMP)/Release \
 		$(BUILD_FLAGS)
 	touch $@
@@ -125,7 +124,7 @@ $(TMP)/built-share-test.stamp : $(src_files) | $$(dir $$@)
 		-scheme share-test \
 		-configuration Debug \
 		-destination 'platform=macOS,arch=$(arch)' \
-		-derivedDataPath $(derived_data_dir)/build-share-test \
+		-derivedDataPath $(TMP)/build-share-test \
 		$(BUILD_FLAGS)
 	touch $@
 
@@ -140,7 +139,7 @@ $(TMP)/checked-iOS.stamp : $(src_files) | $$(dir $$@)
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-destination 'platform=iOS Simulator,name=$(IOS_TEST_DEVICE)' \
-		-derivedDataPath $(derived_data_dir)/test-iOS \
+		-derivedDataPath $(TMP)/check-iOS \
 		$(TEST_FLAGS)
 	touch $@
 
@@ -150,7 +149,7 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 		-project mcmus.xcodeproj \
 		-scheme app \
 		-destination 'platform=macOS,arch=$(arch)' \
-		-derivedDataPath $(derived_data_dir)/test-macOS \
+		-derivedDataPath $(TMP)/check-macOS \
 		$(TEST_FLAGS)
 	touch $@
 
