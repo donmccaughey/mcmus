@@ -11,13 +11,13 @@
 		D45A7E0030C1000000000003 /* libfile-sharing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D49BFC4730A26EAF00AED804 /* libfile-sharing.a */; };
 		D45A7E0030C1000000000004 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000001 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
-		D47A2B0030B1000000000041 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
-		D47A2B0030B1000000000042 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D47A2B0030B1000000000020 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000021 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
 		D47A2B0030B1000000000022 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
 		D47A2B0030B1000000000023 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000024 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
+		D47A2B0030B1000000000041 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
+		D47A2B0030B1000000000042 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D48B390D30A0016F00B21A13 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D48B390E30A0016F00B21A13 /* libmodel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF148309FB00900B3F3CB /* libmodel.a */; };
 		D48B390F30A0016F00B21A13 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
@@ -80,20 +80,6 @@
 			remoteGlobalIDString = D47A2B0030B100000000000A;
 			remoteInfo = tarball;
 		};
-		D47A2B0030B1000000000043 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3A5000000000000000000E0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D47A2B0030B100000000000A;
-			remoteInfo = tarball;
-		};
-		D47A2B0030B1000000000044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3A5000000000000000000E0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D47A2B0030B100000000000A;
-			remoteInfo = tarball;
-		};
 		D47A2B0030B1000000000030 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
@@ -114,6 +100,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = D4DEF0BC309FA6D800B3F3CB;
 			remoteInfo = wrappersfakes;
+		};
+		D47A2B0030B1000000000043 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
+		};
+		D47A2B0030B1000000000044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
 		};
 		D48B390630A0016F00B21A13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -614,10 +614,10 @@
 				"file-sharing/HTTPResponseTests.m",
 				"file-sharing/Manifest.m",
 				"file-sharing/ManifestTests.m",
-				"file-sharing/TarReading.m",
-				"file-sharing/TarRoundTripTests.m",
 				"file-sharing/TarballRequest.m",
 				"file-sharing/TarballRequestTests.m",
+				"file-sharing/TarReading.m",
+				"file-sharing/TarRoundTripTests.m",
 			);
 			target = D49BFC4830A26EBF00AED804 /* file-sharing-tests */;
 		};
@@ -1784,16 +1784,6 @@
 			target = D47A2B0030B100000000000A /* tarball */;
 			targetProxy = D47A2B0030B1000000000002 /* PBXContainerItemProxy */;
 		};
-		D47A2B0030B1000000000045 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D47A2B0030B100000000000A /* tarball */;
-			targetProxy = D47A2B0030B1000000000043 /* PBXContainerItemProxy */;
-		};
-		D47A2B0030B1000000000046 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D47A2B0030B100000000000A /* tarball */;
-			targetProxy = D47A2B0030B1000000000044 /* PBXContainerItemProxy */;
-		};
 		D47A2B0030B1000000000038 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
@@ -1808,6 +1798,16 @@
 			isa = PBXTargetDependency;
 			target = D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */;
 			targetProxy = D47A2B0030B1000000000032 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B1000000000045 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D47A2B0030B1000000000043 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B1000000000046 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D47A2B0030B1000000000044 /* PBXContainerItemProxy */;
 		};
 		D48B390530A0016F00B21A13 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

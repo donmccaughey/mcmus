@@ -1,0 +1,344 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "zeroconf",
+# ]
+# ///
+"""Find the MC Mus file sharing server via Bonjour, request its manifest and
+download every track in the manifest as a series of tar files.
+"""
+
+import argparse
+import csv
+import http.client
+import io
+import os
+import sys
+import tarfile
+import threading
+from typing import NamedTuple, Optional
+
+from zeroconf import IPVersion, ServiceBrowser, ServiceStateChange, Zeroconf
+
+SERVICE_TYPE = "_mcmus._tcp.local."
+USER_AGENT = "full-sync"
+BROWSE_TIMEOUT_SECONDS = 5
+RESOLVE_TIMEOUT_MILLISECONDS = 5000
+HTTP_TIMEOUT_SECONDS = 10
+MAX_TARBALL_BYTES = 100 * 1024 * 1024
+CSV_CONTENT_TYPE = "text/csv;charset=UTF-8"
+READ_CHUNK_BYTES = 64 * 1024
+MANIFEST_HEADER = ["path", "size", "hash"]
+
+
+class FullSyncError(Exception):
+    pass
+
+
+class ManifestRecord(NamedTuple):
+    path: str
+    size: int
+    hash: int
+
+
+class Arguments(NamedTuple):
+    workdir: str
+    extract: bool
+
+
+def parse_arguments(argv: list[str]) -> Arguments:
+    parser = argparse.ArgumentParser(
+        prog="full-sync",
+        description=(
+            "Download every track from the MC Mus file sharing server "
+            "into WORKDIR as tar files."
+        ),
+    )
+    parser.add_argument(
+        "workdir",
+        metavar="WORKDIR",
+        help="directory where the manifest, tarball CSVs and tar files "
+        "are written",
+    )
+    parser.add_argument(
+        "--extract",
+        action="store_true",
+        help="extract each tar file into WORKDIR/music/",
+    )
+    namespace = parser.parse_args(argv)
+    return Arguments(workdir=namespace.workdir, extract=namespace.extract)
+
+
+def check_workdir(workdir: str) -> None:
+    if not os.path.isdir(workdir):
+        raise FullSyncError(f"{workdir} is not a directory")
+    if not os.access(workdir, os.R_OK | os.W_OK | os.X_OK):
+        raise FullSyncError(f"{workdir} is not accessible")
+
+
+def find_service_name(zeroconf: Zeroconf) -> str:
+    found = threading.Event()
+    names: list[str] = []
+
+    # zeroconf calls handlers with keyword arguments, so the parameter names
+    # are fixed.
+    def on_service_state_change(
+        zeroconf: Zeroconf,
+        service_type: str,
+        name: str,
+        state_change: ServiceStateChange,
+    ) -> None:
+        if state_change is ServiceStateChange.Added:
+            names.append(name)
+            found.set()
+
+    browser = ServiceBrowser(
+        zeroconf, SERVICE_TYPE, handlers=[on_service_state_change]
+    )
+    try:
+        if not found.wait(BROWSE_TIMEOUT_SECONDS):
+            raise FullSyncError(
+                f"no {SERVICE_TYPE} service found "
+                f"after {BROWSE_TIMEOUT_SECONDS} seconds"
+            )
+    finally:
+        browser.cancel()
+    return names[0]
+
+
+def locate_server() -> tuple[list[str], int]:
+    """Return the addresses and port of the first file sharing server found."""
+    zeroconf = Zeroconf()
+    try:
+        name = find_service_name(zeroconf)
+        info = zeroconf.get_service_info(
+            SERVICE_TYPE, name, timeout=RESOLVE_TIMEOUT_MILLISECONDS
+        )
+    finally:
+        zeroconf.close()
+    if info is None:
+        raise FullSyncError(f"cannot resolve service {name}")
+    if info.port is None:
+        raise FullSyncError(f"service {name} has no port")
+
+    # IPv4 first: a link-local IPv6 address only connects with its scope.
+    addresses = info.parsed_scoped_addresses(IPVersion.V4Only)
+    addresses += info.parsed_scoped_addresses(IPVersion.V6Only)
+    if not addresses:
+        raise FullSyncError(f"service {name} has no addresses")
+    return addresses, info.port
+
+
+def connect(addresses: list[str], port: int) -> http.client.HTTPConnection:
+    errors: list[str] = []
+    for address in addresses:
+        connection = http.client.HTTPConnection(
+            address, port, timeout=HTTP_TIMEOUT_SECONDS
+        )
+        try:
+            connection.connect()
+            return connection
+        except OSError as error:
+            errors.append(f"{address} port {port}: {error}")
+    raise FullSyncError("cannot connect to " + "; ".join(errors))
+
+
+def status_error(
+    request: str, response: http.client.HTTPResponse
+) -> FullSyncError:
+    detail = response.read().decode("utf-8", errors="replace").strip()
+    return FullSyncError(
+        f"{request} returned {response.status} {response.reason}"
+        + (f": {detail}" if detail else "")
+    )
+
+
+def get_manifest(addresses: list[str], port: int) -> bytes:
+    connection = connect(addresses, port)
+    try:
+        connection.request(
+            "GET", "/manifest", headers={"User-Agent": USER_AGENT}
+        )
+        response = connection.getresponse()
+        if response.status != http.client.OK:
+            raise status_error("GET /manifest", response)
+        return response.read()
+    finally:
+        connection.close()
+
+
+def parse_manifest(data: bytes) -> list[ManifestRecord]:
+    try:
+        text = data.decode("utf-8")
+        rows = list(csv.reader(io.StringIO(text, newline=""), strict=True))
+    except (UnicodeDecodeError, csv.Error) as error:
+        raise FullSyncError(f"cannot parse manifest: {error}")
+    if not rows or rows[0] != MANIFEST_HEADER:
+        raise FullSyncError("manifest has no path,size,hash header record")
+
+    records: list[ManifestRecord] = []
+    for number, row in enumerate(rows[1:], start=2):
+        try:
+            path, size, file_hash = row
+            records.append(ManifestRecord(path, int(size), int(file_hash)))
+        except ValueError:
+            raise FullSyncError(f"manifest record {number} is invalid: {row}")
+    return records
+
+
+def plan_tarballs(records: list[ManifestRecord]) -> list[list[ManifestRecord]]:
+    """Return the tracks of each tarball: every large track on its own, then
+    the small tracks in groups smaller than the server's tarball limit."""
+    by_path = sorted(records, key=lambda record: record.path)
+    groups = [[r] for r in by_path if r.size >= MAX_TARBALL_BYTES]
+
+    group: list[ManifestRecord] = []
+    group_size = 0
+    for record in by_path:
+        if record.size >= MAX_TARBALL_BYTES:
+            continue
+        if group and group_size + record.size >= MAX_TARBALL_BYTES:
+            groups.append(group)
+            group = []
+            group_size = 0
+        group.append(record)
+        group_size += record.size
+    if group:
+        groups.append(group)
+    return groups
+
+
+def tarball_csv(group: list[ManifestRecord]) -> bytes:
+    text = io.StringIO(newline="")
+    writer = csv.writer(text, lineterminator="\r\n")
+    writer.writerow(["path"])
+    for record in group:
+        writer.writerow([record.path])
+    return text.getvalue().encode("utf-8")
+
+
+def write_file(path: str, data: bytes) -> None:
+    with open(path, "wb") as file:
+        file.write(data)
+
+
+def write_tarball_csvs(
+    workdir: str, groups: list[list[ManifestRecord]]
+) -> list[str]:
+    """Return the path of each tarball CSV written, without its extension."""
+    base_paths: list[str] = []
+    for number, group in enumerate(groups, start=1):
+        base_path = os.path.join(workdir, f"tarball-{number:03d}")
+        write_file(base_path + ".csv", tarball_csv(group))
+        base_paths.append(base_path)
+    return base_paths
+
+
+def expected_length(response: http.client.HTTPResponse) -> Optional[int]:
+    content_length = response.getheader("Content-Length")
+    try:
+        return None if content_length is None else int(content_length)
+    except ValueError:
+        return None
+
+
+def post_files(
+    addresses: list[str], port: int, csv_path: str, tar_path: str
+) -> None:
+    with open(csv_path, "rb") as file:
+        body = file.read()
+    connection = connect(addresses, port)
+    try:
+        connection.request(
+            "POST",
+            "/files",
+            body=body,
+            headers={
+                "User-Agent": USER_AGENT,
+                "Content-Type": CSV_CONTENT_TYPE,
+            },
+        )
+        response = connection.getresponse()
+        if response.status != http.client.OK:
+            raise status_error("POST /files", response)
+
+        received = 0
+        with open(tar_path, "wb") as tar_file:
+            while True:
+                chunk = response.read(READ_CHUNK_BYTES)
+                if not chunk:
+                    break
+                tar_file.write(chunk)
+                received += len(chunk)
+    finally:
+        connection.close()
+
+    # A chunked read returns short when the server closes the connection
+    # early, where a whole-body read would raise IncompleteRead.
+    expected = expected_length(response)
+    if expected is not None and received != expected:
+        raise FullSyncError(
+            f"POST /files sent {received} of {expected} bytes"
+        )
+
+
+def extract_tarball(tar_path: str, music_dir: str) -> None:
+    with tarfile.open(tar_path, "r:") as tarball:
+        # The filter parameter is missing from early 3.9 to 3.11 releases.
+        if hasattr(tarfile, "data_filter"):
+            tarball.extractall(music_dir, filter="data")
+        else:
+            tarball.extractall(music_dir)
+
+
+def sync_tarballs(
+    addresses: list[str],
+    port: int,
+    base_paths: list[str],
+    music_dir: Optional[str],
+) -> bool:
+    """Return whether every tarball was received and, when given a music
+    directory, extracted."""
+    succeeded = True
+    for base_path in base_paths:
+        tar_path = base_path + ".tar"
+        try:
+            post_files(addresses, port, base_path + ".csv", tar_path)
+            if music_dir is not None:
+                extract_tarball(tar_path, music_dir)
+        except (
+            FullSyncError,
+            OSError,
+            http.client.HTTPException,
+            tarfile.TarError,
+        ) as error:
+            name = os.path.basename(base_path)
+            print(f"full-sync: {name}: {error}", file=sys.stderr)
+            succeeded = False
+    return succeeded
+
+
+def main() -> int:
+    arguments = parse_arguments(sys.argv[1:])
+    try:
+        check_workdir(arguments.workdir)
+        addresses, port = locate_server()
+        manifest = get_manifest(addresses, port)
+        records = parse_manifest(manifest)
+        write_file(os.path.join(arguments.workdir, "manifest.csv"), manifest)
+        base_paths = write_tarball_csvs(
+            arguments.workdir, plan_tarballs(records)
+        )
+        music_dir: Optional[str] = None
+        if arguments.extract:
+            music_dir = os.path.join(arguments.workdir, "music")
+            os.makedirs(music_dir, exist_ok=True)
+    except (FullSyncError, OSError, http.client.HTTPException) as error:
+        print(f"full-sync: {error}", file=sys.stderr)
+        return 1
+    return 0 if sync_tarballs(addresses, port, base_paths, music_dir) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

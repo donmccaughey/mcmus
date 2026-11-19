@@ -35,6 +35,11 @@ Objective-C code.
 MC Mus shall use the Objective-C language and follow the style guidelines in
 [Objective-C Style](objective-c-style.md).
 
+MC Mus shall use Python 3.9 or later for some scripts.
+
+MC Mus shall use the [uv](https://pypi.org/project/uv/) package manager for
+running Python scripts that have package dependencies.
+
 On macOS, MC Mus shall use the AppKit framework for its user interface, rather
 than SwiftUI or Mac Catalyst.
 
@@ -975,6 +980,9 @@ complete before exiting with status 0.
 
 ## Test scripts
 
+
+### Get manifest
+
 The `get-manifest` test script shall be written in Python, shall be executable
 and shall use `/usr/bin/env -S uv run --script` in its shebang line.
 
@@ -997,6 +1005,95 @@ server, send a `GET /manifest` HTTP request, write the returned manifest to
 
 If it encounters an error, the `get-manifest` test script shall write an error
 message to `stderr`.
+
+
+### Full sync
+
+The `full-sync` test script shall be written in Python, shall be executable
+and shall use `/usr/bin/env -S uv run --script` in its shebang line.
+
+The `full-sync` test script shall require Python 3.9 or later.
+
+The `full-sync` test script shall use the
+[`zeroconf`](https://pypi.org/project/zeroconf/) package for Bonjour support
+
+The `full-sync` test script shall specify dependencies using [inline script
+metadata](https://packaging.python.org/en/latest/specifications/inline-script-metadata/).
+
+The `full-sync` test script shall use Python type annotations.
+
+The `full-sync` test script shall be located in the project `scripts/`
+directory.
+
+The `full-sync` test script shall fail by writing error messages to `stderr` and
+exiting with a non-zero status.
+
+The `full-sync` test script shall require one positional command line argument:
+`WORKDIR`, the working directory.
+
+The `full-sync` test script shall have command line options `--extract` and
+`--help`.
+
+If there is an error parsing command line arguments, the `full-sync` test script
+shall write a usage message to `stderr` and fail.
+
+When the `--help` command line option is given, the `full-sync` test script
+shall write a usage message to `stdout` and exit with status zero.
+
+If the working directory is missing or not accessible, the `full-sync` test
+script shall fail.
+
+When it starts, the `full-sync` test script shall locate and connect to the file
+sharing server, send a `GET /manifest` HTTP request and parse the returned
+manifest CSV into an in-memory data structure and write the manifest CSV to the
+working directory.
+
+If it cannot locate the file sharing server, the `full-sync` test script shall
+fail.
+
+If it encounters an error with the `GET /manifest` HTTP request, the `full-sync`
+test script shall fail.
+
+If it cannot parse or write the manifest CSV, the `full-sync` test script shall
+fail.
+
+When it has received the manifest CSV, the `full-sync` test script shall divide
+manifest records into two groups: **large tracks** are tracks equal to or larger
+than 100 MB; **small tracks** are tracks smaller than 100 MB.
+
+The `full-sync` test script shall generate one tarball CSV for each large track.
+
+The `full-sync` test script shall sort the manifest records of small tracks by
+the path field, segment this ordered list into groups smaller than 100 MB and
+generate one tarball CSV for each group.
+
+When it has generated the tarball CSVs, the `full-sync` test script shall write
+each one to the working directory with names `tarball-001.csv`,
+`tarball-002.csv`, etc.
+
+When it has written the tarball CSVs to the working directory, the `full-sync`
+test script shall sequentially make a POST `/files` request to the file sharing
+server for each tarball CSV.
+
+When it begins receiving the response body for the POST `/files` request, the
+`full-sync` test script shall write the response body to the working directory
+with names `tarball-001.tar`, `tarball-002.tar`, etc, matching the corresponding
+tarball CSV name for the request.
+
+When the `--extract` command line option is given, the `full-sync` test script
+shall create the subdirectory `music/` in the working directory.
+
+When the tar file has been received and the `--extract` command line option has
+been given, the `full-sync` test script shall extract the tar file into the
+`music/` subdirectory in the working directory.
+
+If the POST `/files` request fails, the `full-sync` test script shall write an
+error to `stderr`, continue with the next tarball CSV (if any) and set the
+script exit status to non-zero.
+
+When all POST `/files` request have completed and optionally all tar files
+extracted, the `full-sync` shall exit with a zero status if no POST `/files`
+request failed or non-zero otherwise.
 
 
 # Launch behavior

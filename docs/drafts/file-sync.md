@@ -55,6 +55,7 @@ path,size,hash
   + experiment with this size to find optimum
 
 - client segments the sync set into sub-100 MB groups
+  + each single file > 100 MB gets its own group
   + writes a CSV file for each group
   + sequential names
   + "pending" directory in application support

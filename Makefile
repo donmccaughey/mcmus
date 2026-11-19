@@ -49,6 +49,14 @@ format :
 	xcrun clang-format -i --style=file:.clang-format $(objc_files)
 
 
+.PHONY : full-sync
+full-sync : scripts/full-sync | $(TMP)/full-sync-work
+	-rm -rf $(TMP)/full-sync-work/*
+	scripts/full-sync \
+		--extract \
+		$(TMP)/full-sync-work
+
+
 .PHONY : list-simulators
 list-simulators :
 	xcodebuild -project mcmus.xcodeproj -scheme app -showdestinations
@@ -59,8 +67,10 @@ release : $(TMP)/made-disk-image.stamp
 
 
 .PHONY : share-test
-share-test : $(TMP)/built-share-test.stamp
-	$(TMP)/share-test/share-test functional-tests/music --workdir=$(TMP)
+share-test : $(TMP)/built-share-test.stamp | $(TMP)/share-test-work
+	$(TMP)/share-test/share-test \
+		functional-tests/music \
+		--workdir=$(TMP)/share-test-work
 
 
 .PHONY : clean
@@ -78,7 +88,9 @@ clean :
 
 $(TMP)/ \
 $(TMP)/app-release \
-$(TMP)/share-test :
+$(TMP)/full-sync-work \
+$(TMP)/share-test \
+$(TMP)/share-test-work :
 	mkdir -p $@
 
 
