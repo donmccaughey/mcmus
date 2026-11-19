@@ -17,6 +17,7 @@ import os
 import sys
 import tarfile
 import threading
+import time
 from typing import NamedTuple, Optional
 
 from zeroconf import IPVersion, ServiceBrowser, ServiceStateChange, Zeroconf
@@ -68,6 +69,15 @@ def parse_arguments(argv: list[str]) -> Arguments:
     )
     namespace = parser.parse_args(argv)
     return Arguments(workdir=namespace.workdir, extract=namespace.extract)
+
+
+def format_seconds(seconds: float) -> str:
+    tenths = round(seconds * 10)
+    return f"{tenths / 10:.1f}" if tenths > 0 else "0"
+
+
+def seconds_since(start: float) -> str:
+    return format_seconds(time.monotonic() - start)
 
 
 def check_workdir(workdir: str) -> None:
@@ -304,7 +314,12 @@ def sync_tarballs(
     for base_path in base_paths:
         tar_path = base_path + ".tar"
         try:
+            start = time.monotonic()
             post_files(addresses, port, base_path + ".csv", tar_path)
+            print(
+                f"Received {os.path.basename(tar_path)} "
+                f"in {seconds_since(start)} seconds"
+            )
             if music_dir is not None:
                 extract_tarball(tar_path, music_dir)
         except (
@@ -319,8 +334,7 @@ def sync_tarballs(
     return succeeded
 
 
-def main() -> int:
-    arguments = parse_arguments(sys.argv[1:])
+def full_sync(arguments: Arguments) -> int:
     try:
         check_workdir(arguments.workdir)
         addresses, port = locate_server()
@@ -338,6 +352,15 @@ def main() -> int:
         print(f"full-sync: {error}", file=sys.stderr)
         return 1
     return 0 if sync_tarballs(addresses, port, base_paths, music_dir) else 1
+
+
+def main() -> int:
+    start = time.monotonic()
+    arguments = parse_arguments(sys.argv[1:])
+    try:
+        return full_sync(arguments)
+    finally:
+        print(f"Full sync completed in {seconds_since(start)} seconds")
 
 
 if __name__ == "__main__":

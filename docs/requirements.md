@@ -1028,6 +1028,10 @@ directory.
 The `full-sync` test script shall fail by writing error messages to `stderr` and
 exiting with a non-zero status.
 
+The `full-sync` test script shall format elapsed time values in seconds rounded
+to the nearest tenth of a second and format rounded values below one tenth of a
+second as zero.
+
 The `full-sync` test script shall require one positional command line argument:
 `WORKDIR`, the working directory.
 
@@ -1080,12 +1084,21 @@ When it begins receiving the response body for the POST `/files` request, the
 with names `tarball-001.tar`, `tarball-002.tar`, etc, matching the corresponding
 tarball CSV name for the request.
 
+The `full-sync` test script shall time each POST `/files` request and write the
+elapsed time to `stdout` when the complete response is received, with a message
+in the format "Received tarball-001.tar in 0.8 seconds", where "tarball-001.tar"
+is the corresponding CSV and tar file name and "0.8" is the elapsed time.
+
 When the `--extract` command line option is given, the `full-sync` test script
 shall create the subdirectory `music/` in the working directory.
 
 When the tar file has been received and the `--extract` command line option has
 been given, the `full-sync` test script shall extract the tar file into the
 `music/` subdirectory in the working directory.
+
+When the `full-sync` test script exits, it shall write the script running time
+to `stdout` with a message in the format "Full sync completed in 5.1 seconds",
+where "5.1" is the script running time.
 
 If the POST `/files` request fails, the `full-sync` test script shall write an
 error to `stderr`, continue with the next tarball CSV (if any) and set the

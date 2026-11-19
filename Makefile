@@ -76,6 +76,7 @@ share-test : $(TMP)/built-share-test.stamp | $(TMP)/share-test-work
 .PHONY : clean
 clean :
 	rm -rf *.profraw
+	rm -rf scripts/__pycache__
 	rm -rf $(TMP)
 
 
