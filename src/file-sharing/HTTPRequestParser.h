@@ -13,6 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSString *method;
 @property (nonatomic, readonly, copy) NSString *path;
 @property (nonatomic, readonly, copy, nullable) NSString *userAgent;
+@property (nonatomic, readonly, copy, nullable) NSString *contentType;
+// False when the request left out the header, which reads as an empty body.
+@property (nonatomic, readonly) BOOL hasContentLength;
 @property (nonatomic, readonly, copy) NSData *body;
 // True when the client asked for the connection to close after the response.
 @property (nonatomic, readonly) BOOL closesConnection;

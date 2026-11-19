@@ -7,9 +7,13 @@
 
 #import "Clock.h"
 #import "FileSharingConnection.h"
+#import "FileSystem.h"
 #import "HTTPRequestParser.h"
 #import "HTTPResponse.h"
+#import "Manifest.h"
 #import "Network.h"
+#import "TarballRequest.h"
+#import "TarballWriter.h"
 
 
 static NSString *const serviceType = @"_mcmus._tcp";
@@ -46,6 +50,25 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
 }
 
 
+static NSString *_Nullable allowed_method(NSString *path)
+{
+    if ([path isEqual:@"/manifest"]) return @"GET";
+    if ([path isEqual:@"/files"]) return @"POST";
+    return nil;
+}
+
+
+static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
+{
+    NSError *error = nil;
+    NSData *buffer = [writer nextBufferAndReturnError:&error];
+    if (!buffer) {
+        os_log_error(server_log(), "Tarball failed: %{public}@", error);
+    }
+    return buffer;
+}
+
+
 @interface FileSharingServer () <FileSharingConnectionDelegate>
 @end
 
@@ -53,7 +76,8 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
 @implementation FileSharingServer {
     id<Network> _network;
     id<Clock> _clock;
-    NSData *_manifest;
+    id<FileSystem> _fileSystem;
+    Manifest *_manifest;
     id<NetworkListener> _Nullable _listener;
     id<NetworkAdvertisement> _Nullable _advertisement;
     NSMutableArray<FileSharingConnection *> *_connections;
@@ -65,14 +89,16 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
 
 - (instancetype)initWithNetwork:(id<Network>)network
                           clock:(id<Clock>)clock
-                       manifest:(NSData *)manifest;
+                     fileSystem:(id<FileSystem>)fileSystem
+                       manifest:(Manifest *)manifest;
 {
     self = [super init];
     if (!self) return nil;
 
     _network = network;
     _clock = clock;
-    _manifest = [manifest copy];
+    _fileSystem = fileSystem;
+    _manifest = manifest;
     _connections = [NSMutableArray new];
 
     return self;
@@ -270,18 +296,61 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
 }
 
 
-- (NSData *)responseTo:(HTTPRequest *)request;
+- (void)respondTo:(HTTPRequest *)request on:(FileSharingConnection *)connection;
 {
     BOOL closes = request.closesConnection;
-    if (![request.path isEqual:@"/manifest"]) {
-        return makeHTTPTextResponse(HTTPStatusNotFound, @"Not found", closes);
+    NSString *allowedMethod = allowed_method(request.path);
+    if (!allowedMethod) {
+        [connection respond:makeHTTPTextResponse(
+                                HTTPStatusNotFound, @"Not found", closes)
+                    closing:closes];
+    } else if (![request.method isEqual:allowedMethod]) {
+        [connection respond:makeHTTPTextResponse(HTTPStatusMethodNotAllowed,
+                                @"Method not allowed", closes)
+                    closing:closes];
+    } else if ([request.path isEqual:@"/files"]) {
+        [self respondWithFilesTo:request on:connection];
+    } else {
+        [connection
+            respond:makeHTTPResponse(HTTPStatusOK, @"text/csv;charset=UTF-8",
+                        _manifest.csv, closes)
+            closing:closes];
     }
-    if (![request.method isEqual:@"GET"]) {
-        return makeHTTPTextResponse(
-            HTTPStatusMethodNotAllowed, @"Method not allowed", closes);
+}
+
+
+- (void)respondWithFilesTo:(HTTPRequest *)request
+                        on:(FileSharingConnection *)connection;
+{
+    BOOL closes = request.closesConnection;
+    NSError *error = nil;
+    NSArray<TarballEntry *> *entries =
+        parseTarballRequest(request, _manifest, &error);
+    if (!entries) {
+        [connection respond:makeHTTPTextResponse(HTTPStatusBadRequest,
+                                error.localizedDescription, closes)
+                    closing:closes];
+        return;
     }
-    return makeHTTPResponse(
-        HTTPStatusOK, @"text/csv;charset=UTF-8", _manifest, closes);
+
+    TarballWriter *writer = [[TarballWriter alloc]
+        initWithBaseDirectory:_manifest.musicLibraryDirectory
+                      entries:entries
+                   fileSystem:_fileSystem];
+    unsigned long long tarballSize = writer.tarballSize;
+    if (!tarballSize) {
+        os_log_error(server_log(), "Tarball size cannot be calculated");
+        [connection respond:makeHTTPTextResponse(HTTPStatusInternalServerError,
+                                @"Tarball failed", closes)
+                    closing:closes];
+        return;
+    }
+
+    [connection respondWithHeader:makeHTTPResponseHeader(HTTPStatusOK,
+                                      @"application/x-tar", tarballSize, closes)
+                       bodyLength:tarballSize
+                             body:^{ return next_tarball_buffer(writer); }
+                          closing:closes];
 }
 
 
@@ -311,8 +380,7 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
         _deviceName = device_name(request.userAgent);
         [self enterClientConnected];
     }
-    [connection respond:[self responseTo:request]
-                closing:request.closesConnection];
+    [self respondTo:request on:connection];
 }
 
 

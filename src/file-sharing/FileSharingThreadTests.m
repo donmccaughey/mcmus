@@ -8,6 +8,7 @@
 #import "FileSharingThread.h"
 #import "FileSystemFake.h"
 #import "NetworkFake.h"
+#import "TarReading.h"
 
 
 @interface FileSharingClientFake : NSObject <FileSharingClient>
@@ -368,6 +369,39 @@
 
     XCTAssertEqualObjects(_client.serverEvents,
         (@[@"waiting", @"connected: Don's iPhone", @"waiting"]));
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testServerServesATarballOfASnapshotTrack;
+{
+    NSData *contents = [@"12345" dataUsingEncoding:NSUTF8StringEncoding];
+    [_fileSystem addPath:@"/container/AppSupport/snapshot/Song.mp3"
+                contents:contents];
+    [self startAndWait];
+
+    __block NetworkConnectionFake *connection = nil;
+    [self onThread:^{
+        connection = [self->_network connectFrom:@"192.168.1.20"];
+        [connection receive:@"POST /files HTTP/1.1\r\n"
+                            @"User-Agent: Don's iPhone\r\n"
+                            @"Content-Type: text/csv;charset=UTF-8\r\n"
+                            @"Content-Length: 16\r\n"
+                            @"\r\n"
+                            @"path\r\nSong.mp3\r\n"];
+    }];
+
+    NSData *sent = connection.sentData;
+    NSRange blankLine =
+        [sent rangeOfData:[@"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]
+                  options:0
+                    range:NSMakeRange(0, sent.length)];
+    NSData *tarball =
+        [sent subdataWithRange:NSMakeRange(NSMaxRange(blankLine),
+                                   sent.length - NSMaxRange(blankLine))];
+    XCTAssertEqualObjects(readTar(tarball), (@[@[@"Song.mp3", contents]]));
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];

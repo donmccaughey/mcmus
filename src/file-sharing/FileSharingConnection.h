@@ -14,11 +14,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+// Returns the next part of a response body, or nil when it cannot be
+// produced.
+typedef NSData *_Nullable (^ResponseBodySource)(void);
+
+
 @protocol FileSharingConnectionDelegate <NSObject>
 
 - (void)connectionDidBeginRequest:(FileSharingConnection *)connection;
 // The request is nil when it could not be parsed. The delegate must answer
-// with `respond:closing:`.
+// with `respond:closing:` or `respondWithHeader:bodyLength:body:closing:`.
 - (void)connection:(FileSharingConnection *)connection
     didReceiveRequest:(nullable HTTPRequest *)request;
 - (void)connectionDidEndRequest:(FileSharingConnection *)connection;
@@ -50,6 +55,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)respond:(NSData *)response closing:(BOOL)closesConnection;
+// Sends the header, then asks the body source for one part at a time, each
+// only once the part before it has been sent, until `bodyLength` bytes are
+// sent. The connection closes if the body source returns nil, no bytes or
+// more bytes than remain.
+- (void)respondWithHeader:(NSData *)header
+               bodyLength:(unsigned long long)bodyLength
+                     body:(nullable ResponseBodySource)body
+                  closing:(BOOL)closesConnection;
 - (void)close;
 
 @end

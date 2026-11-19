@@ -147,6 +147,53 @@ static NSData *utf8(NSString *text)
 }
 
 
+- (void)testContentTypeIsTheHeaderValue;
+{
+    [self append:@"POST /files HTTP/1.1\r\n"
+                 @"Content-Type: text/csv;charset=UTF-8\r\n"
+                 @"\r\n"];
+
+    XCTAssertEqualObjects(
+        _parser.request.contentType, @"text/csv;charset=UTF-8");
+}
+
+
+- (void)testMissingContentTypeIsNil;
+{
+    [self append:@"POST /files HTTP/1.1\r\n\r\n"];
+
+    XCTAssertEqual(_parser.state, HTTPRequestParserStateComplete);
+    XCTAssertNil(_parser.request.contentType);
+}
+
+
+- (void)testRequestWithoutContentLengthHasNoContentLength;
+{
+    [self append:@"POST /files HTTP/1.1\r\n\r\n"];
+
+    XCTAssertEqual(_parser.state, HTTPRequestParserStateComplete);
+    XCTAssertFalse(_parser.request.hasContentLength);
+}
+
+
+- (void)testRequestWithZeroContentLengthHasContentLength;
+{
+    [self append:@"POST /files HTTP/1.1\r\nContent-Length: 0\r\n\r\n"];
+
+    XCTAssertEqual(_parser.state, HTTPRequestParserStateComplete);
+    XCTAssertTrue(_parser.request.hasContentLength);
+    XCTAssertEqualObjects(_parser.request.body, [NSData data]);
+}
+
+
+- (void)testRequestWithBodyHasContentLength;
+{
+    [self append:@"POST /files HTTP/1.1\r\nContent-Length: 4\r\n\r\npath"];
+
+    XCTAssertTrue(_parser.request.hasContentLength);
+}
+
+
 - (void)testBytesAfterRequestAreExcessData;
 {
     [self append:@"GET /manifest HTTP/1.1\r\n\r\nGET /next"];

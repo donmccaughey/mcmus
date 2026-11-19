@@ -6,12 +6,12 @@
 #import <os/log.h>
 #import <time.h>
 
-#import "CSV.h"
 #import "FileSharingServer.h"
 #import "FileSystem.h"
 #import "LoadMusicLibrary.h"
 #import "LoadResult.h"
 #import "LoadTrackMetadata.h"
+#import "Manifest.h"
 #import "MusicLibrary.h"
 #import "Snapshot.h"
 #import "TrackMetadata.h"
@@ -77,73 +77,31 @@ static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
 }
 
 
-static NSString *path_relative_to_music_library(
-    Track *track, NSURL *musicLibraryDir)
-{
-    NSString *prefix = [musicLibraryDir.path stringByAppendingString:@"/"];
-    if (![track.path hasPrefix:prefix]) return track.path;
-    return [track.path substringFromIndex:prefix.length];
-}
-
-
-// Orders paths by their UTF-8 bytes, so that the order does not depend on
-// the locale or on Unicode normalization.
-static NSComparisonResult compare_records_by_path(
-    NSArray<NSString *> *first, NSArray<NSString *> *second, void *context)
-{
-    int order = strcmp(first[0].UTF8String, second[0].UTF8String);
-    if (order < 0) return NSOrderedAscending;
-    if (order > 0) return NSOrderedDescending;
-    return NSOrderedSame;
-}
-
-
-static NSArray<NSArray<NSString *> *> *manifest_records(
-    NSArray<TrackMetadata *> *metadata, NSURL *musicLibraryDir)
-{
-    NSMutableArray<NSArray<NSString *> *> *records =
-        [NSMutableArray arrayWithCapacity:metadata.count + 1];
-    for (TrackMetadata *trackMetadata in metadata) {
-        [records addObject:@[
-            path_relative_to_music_library(
-                trackMetadata.track, musicLibraryDir),
-            [NSString stringWithFormat:@"%llu", trackMetadata.size],
-            [NSString stringWithFormat:@"%lu", trackMetadata.fileHash],
-        ]];
-    }
-    [records sortUsingFunction:compare_records_by_path context:NULL];
-    [records insertObject:@[@"path", @"size", @"hash"] atIndex:0];
-    return records;
-}
-
-
 static NSURL *get_manifest_url(NSURL *workingDir)
 {
     return [workingDir URLByAppendingPathComponent:@"manifest.csv"];
 }
 
 
-static NSData *_Nullable write_manifest_and_log_time(
-    NSArray<TrackMetadata *> *metadata, NSURL *musicLibraryDir,
-    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
+static BOOL write_manifest_and_log_time(Manifest *manifest, NSURL *workingDir,
+    id<FileSystem> fileSystem, NSError **error)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSURL *manifestURL = get_manifest_url(workingDir);
-    NSData *manifest = generateCSV(manifest_records(metadata, musicLibraryDir));
-    BOOL wroteManifest = [fileSystem writeData:manifest
+    BOOL wroteManifest = [fileSystem writeData:manifest.csv
                                         toFile:manifestURL
                                          error:error];
     if (wroteManifest) {
         os_log(snapshot_log(),
             "Wrote manifest of %lu tracks to %{public}@ in %.1f ms",
-            metadata.count, manifestURL.path, milliseconds_since(start));
+            manifest.trackCount, manifestURL.path, milliseconds_since(start));
     } else {
         os_log(snapshot_log(),
             "Writing manifest of %lu tracks took %.1f ms but failed: "
             "%{public}@",
-            metadata.count, milliseconds_since(start), *error);
+            manifest.trackCount, milliseconds_since(start), *error);
     }
-    return wroteManifest ? manifest : nil;
+    return wroteManifest;
 }
 
 
@@ -277,14 +235,17 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
                     [self->_client didLoadMetadataForTracks:tracksLoaded
                                                     ofTotal:totalTracks];
                 });
-        NSData *manifest = write_manifest_and_log_time(
-            metadata, musicLibraryDir, _workingDir, _fileSystem, &error);
-        FileSharingServer *server = manifest
+        Manifest *manifest =
+            [[Manifest alloc] initWithTrackMetadata:metadata
+                              musicLibraryDirectory:musicLibraryDir];
+        BOOL wroteManifest = write_manifest_and_log_time(
+            manifest, _workingDir, _fileSystem, &error);
+        FileSharingServer *server = wroteManifest
             ? [self startServerWithManifest:manifest error:&error]
             : nil;
         if (!server) {
             NSError *cleanUpError = nil;
-            if (manifest) {
+            if (wroteManifest) {
                 remove_manifest(_workingDir, _fileSystem, &cleanUpError);
             }
             remove_snapshot_and_log_time(
@@ -302,12 +263,13 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
 }
 
 
-- (nullable FileSharingServer *)startServerWithManifest:(NSData *)manifest
+- (nullable FileSharingServer *)startServerWithManifest:(Manifest *)manifest
                                                   error:(NSError **)error;
 {
     FileSharingServer *server =
         [[FileSharingServer alloc] initWithNetwork:_network
                                              clock:_clock
+                                        fileSystem:_fileSystem
                                           manifest:manifest];
     server.onWaitingForClient = ^{ [self->_client serverIsWaitingForClient]; };
     server.onClientConnected = ^(NSString *deviceName) {

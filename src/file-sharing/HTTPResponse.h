@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, HTTPStatus) {
     HTTPStatusNotFound = 404,
     HTTPStatusMethodNotAllowed = 405,
     HTTPStatusTooManyRequests = 429,
+    HTTPStatusInternalServerError = 500,
     HTTPStatusServiceUnavailable = 503,
 };
 
@@ -23,6 +24,11 @@ NSData *makeHTTPResponse(HTTPStatus status, NSString *contentType, NSData *body,
     BOOL closesConnection);
 NSData *makeHTTPTextResponse(
     HTTPStatus status, NSString *text, BOOL closesConnection);
+
+// The status line and header fields of a response whose body is sent
+// separately.
+NSData *makeHTTPResponseHeader(HTTPStatus status, NSString *contentType,
+    unsigned long long contentLength, BOOL closesConnection);
 
 
 NS_ASSUME_NONNULL_END

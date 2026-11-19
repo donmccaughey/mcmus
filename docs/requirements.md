@@ -164,9 +164,9 @@ The MC Mus project shall place code for file sharing in the **file-sharing**
 library, with code and unit tests placed in the `src/file-sharing/`
 subdirectory.
 
-The file-sharing library shall depend on the wrappers, model, snapshot and csv
-libraries; file-sharing unit tests shall also depend on the wrappers-fakes
-library.
+The file-sharing library shall depend on the wrappers, model, snapshot, csv and
+tarball libraries; file-sharing unit tests shall also depend on the
+wrappers-fakes library.
 
 
 ## Executables
@@ -869,10 +869,27 @@ A tarball CSV file shall include a header record with field "path".
 
 A tarball CSV file shall contain track relative paths in the path field.
 
-The file sharing server shall accept POST `/files` containing a tarball CSV.
+The file sharing server shall accept POST `/files` containing a tarball CSV in
+the request body.
 
-If the tarball CSV cannot be parsed, is empty or contains no records other than
-the header, the file sharing server shall respond to POST `/files` with status
+If it receives a request for `/files` with a method other than POST, the file
+sharing server shall respond with status "405 Method Not Allowed".
+
+If the `Content-Length` header is missing or is zero, the file sharing server
+shall respond to POST `/files` with status "400 Bad Request" and the plain text
+response body "Invalid content length".
+
+The file sharing server shall read exactly `Content-Length` bytes as the POST
+`/files` request body: when fewer bytes arrive, the request read time limit
+applies; bytes that follow the body are read as the next request.
+
+If the `Content-Type` header is missing or does not have the value
+`text/csv;charset=UTF-8`, the file sharing server shall return "400 Bad Request"
+and the plain text response body "Invalid content type".
+
+If the tarball CSV in the POST `/files` request body cannot be parsed, is empty,
+does not begin with a header record whose only field is "path" or contains no
+records other than the header, the file sharing server shall respond with status
 "400 Bad Request" and the plain text response body "Invalid CSV".
 
 When it parses the tarball CSV, the file sharing server shall calculate the
@@ -883,9 +900,14 @@ If the tarball contains a track relative path not in the manifest, the file
 sharing server shall respond to POST `/files` with status "400 Bad Request" and
 the plain text response body "Unknown track".
 
-If the requested size is greater than 100 MB, the file sharing server shall
+If the requested size is greater than 100 MB (100 × 1024 × 1024 bytes) and the
+count of requested track files is more than one, the file sharing server shall
 respond to POST `/files` with status "400 Bad Request" and the plain text
 response body "Tarball too big".
+
+If it cannot calculate the size of the generated tarball, the file sharing
+server shall respond to POST `/files` with status "500 Internal Server Error"
+and the plain text response body "Tarball failed".
 
 When the tarball CSV is valid, the file sharing server shall respond with status
 "200 OK", `Content-Type: application/x-tar`, `Content-Length` equal to the
@@ -895,6 +917,9 @@ the tarball CSV.
 
 The generated tarball shall be uncompressed and shall be generated incrementally
 in memory and written directly to the file sharing server connection socket.
+
+If generating the tarball fails after the response has begun, the file sharing
+server shall close the connection.
 
 
 ## Bonjour

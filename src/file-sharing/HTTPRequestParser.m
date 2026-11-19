@@ -16,6 +16,8 @@ static const NSUInteger maxBodyLength = 1024 * 1024;
 - (instancetype)initWithMethod:(NSString *)method
                           path:(NSString *)path
                      userAgent:(nullable NSString *)userAgent
+                   contentType:(nullable NSString *)contentType
+              hasContentLength:(BOOL)hasContentLength
                           body:(NSData *)body
               closesConnection:(BOOL)closesConnection;
 {
@@ -25,6 +27,8 @@ static const NSUInteger maxBodyLength = 1024 * 1024;
     _method = [method copy];
     _path = [path copy];
     _userAgent = [userAgent copy];
+    _contentType = [contentType copy];
+    _hasContentLength = hasContentLength;
     _body = [body copy];
     _closesConnection = closesConnection;
 
@@ -59,6 +63,8 @@ static BOOL is_decimal_number(NSString *text)
     NSString *_method;
     NSString *_path;
     NSString *_userAgent;
+    NSString *_contentType;
+    BOOL _hasContentLength;
     NSUInteger _bodyLength;
     BOOL _closesConnection;
 }
@@ -116,6 +122,8 @@ static BOOL is_decimal_number(NSString *text)
     _request = [[HTTPRequest alloc] initWithMethod:_method
                                               path:_path
                                          userAgent:_userAgent
+                                       contentType:_contentType
+                                  hasContentLength:_hasContentLength
                                               body:body
                                   closesConnection:_closesConnection];
     _state = HTTPRequestParserStateComplete;
@@ -143,6 +151,7 @@ static BOOL is_decimal_number(NSString *text)
 
     NSString *userAgent = header_value(_message, @"User-Agent");
     _userAgent = userAgent.length ? userAgent : nil;
+    _contentType = header_value(_message, @"Content-Type");
 
     NSString *connection = header_value(_message, @"Connection");
     BOOL asksToClose = connection &&
@@ -165,6 +174,7 @@ static BOOL is_decimal_number(NSString *text)
     if (!contentLength) return YES;
     if (!is_decimal_number(contentLength)) return NO;
 
+    _hasContentLength = YES;
     _bodyLength = (NSUInteger)contentLength.longLongValue;
     return _bodyLength <= maxBodyLength;
 }

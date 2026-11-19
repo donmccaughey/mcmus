@@ -5,7 +5,9 @@
 #import <Foundation/Foundation.h>
 
 
+@class Manifest;
 @protocol Clock;
+@protocol FileSystem;
 @protocol Network;
 
 
@@ -32,7 +34,8 @@ typedef NS_ENUM(NSInteger, FileSharingServerState) {
 
 - (instancetype)initWithNetwork:(id<Network>)network
                           clock:(id<Clock>)clock
-                       manifest:(NSData *)manifest NS_DESIGNATED_INITIALIZER;
+                     fileSystem:(id<FileSystem>)fileSystem
+                       manifest:(Manifest *)manifest NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (BOOL)startAndReturnError:(NSError **)error;

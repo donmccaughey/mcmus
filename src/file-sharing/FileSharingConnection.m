@@ -21,7 +21,12 @@ static const NSUInteger maxLengthReceivedWhileResponding = 64 * 1024;
     id<ClockTimer> _Nullable _timeoutTimer;
     HTTPRequestParser *_parser;
     NSMutableData *_receivedWhileResponding;
+    ResponseBodySource _Nullable _bodySource;
+    unsigned long long _bodyLengthRemaining;
+    BOOL _closesAfterResponse;
     BOOL _isResponding;
+    BOOL _isSending;
+    BOOL _isSendingResponseBody;
     BOOL _isClosed;
 }
 
@@ -99,16 +104,85 @@ static const NSUInteger maxLengthReceivedWhileResponding = 64 * 1024;
 
 - (void)respond:(NSData *)response closing:(BOOL)closesConnection;
 {
+    [self respondWithHeader:response
+                 bodyLength:0
+                       body:nil
+                    closing:closesConnection];
+}
+
+
+- (void)respondWithHeader:(NSData *)header
+               bodyLength:(unsigned long long)bodyLength
+                     body:(nullable ResponseBodySource)body
+                  closing:(BOOL)closesConnection;
+{
+    _bodySource = [body copy];
+    _bodyLengthRemaining = bodyLength;
+    _closesAfterResponse = closesConnection;
     [self restartTimeout];
+    [self send:header];
+}
+
+
+- (void)send:(NSData *)data;
+{
+    _isSending = YES;
     __weak typeof(self) weakSelf = self;
-    [_connection send:response
-           completion:^{
-               if (closesConnection) {
-                   [weakSelf close];
-               } else {
-                   [weakSelf readNextRequest];
-               }
-           }];
+    [_connection send:data completion:^{ [weakSelf didSend]; }];
+}
+
+
+- (void)didSend;
+{
+    _isSending = NO;
+    [self sendResponseBody];
+}
+
+
+// A send may complete before it returns, and then `didSend` calls this method
+// while it is already running. The inner call returns at once and the loop
+// sends the next part, so that a long body does not nest a call for every
+// part.
+- (void)sendResponseBody;
+{
+    if (_isSendingResponseBody) return;
+
+    _isSendingResponseBody = YES;
+    while (!_isClosed && !_isSending && _bodyLengthRemaining) {
+        // The parts of a body that is sent without waiting would otherwise
+        // all stay in memory until the run loop next drains its pool.
+        @autoreleasepool {
+            [self sendNextBodyPart];
+        }
+    }
+    _isSendingResponseBody = NO;
+
+    if (!_isClosed && !_isSending) [self finishResponse];
+}
+
+
+// The Content-Length header has already been sent, so the only way to tell
+// the client that the body is not what was promised is to close.
+- (void)sendNextBodyPart;
+{
+    NSData *part = _bodySource ? _bodySource() : nil;
+    if (!part.length || part.length > _bodyLengthRemaining) {
+        [self close];
+        return;
+    }
+    _bodyLengthRemaining -= part.length;
+    [self send:part];
+}
+
+
+- (void)finishResponse;
+{
+    _bodySource = nil;
+    if (_closesAfterResponse) {
+        [self close];
+    } else {
+        [self readNextRequest];
+    }
 }
 
 
@@ -138,6 +212,7 @@ static const NSUInteger maxLengthReceivedWhileResponding = 64 * 1024;
     if (_isClosed) return;
     _isClosed = YES;
     _hasActiveRequest = NO;
+    _bodySource = nil;
     [_timeoutTimer cancel];
     _timeoutTimer = nil;
     [_connection close];

@@ -3,6 +3,8 @@
 #import "archive.h"
 #import "archive_entry.h"
 
+#import "TarReading.h"
+
 @interface TarRoundTripTests : XCTestCase
 @end
 
@@ -47,35 +49,6 @@ static NSData *writeTar(NSDictionary<NSString *, NSData *> *files,
     XCTAssertEqual(archive_write_free(tar), ARCHIVE_OK);
     buffer.length = used;
     return buffer;
-}
-
-static NSData *readEntryData(struct archive *tar, struct archive_entry *entry)
-{
-    NSMutableData *contents =
-        [NSMutableData dataWithLength:(NSUInteger)archive_entry_size(entry)];
-    la_ssize_t read =
-        archive_read_data(tar, contents.mutableBytes, contents.length);
-    XCTAssertEqual(
-        read, (la_ssize_t)contents.length, @"%s", archive_error_string(tar));
-    return contents;
-}
-
-static NSArray<NSArray *> *readTar(NSData *data)
-{
-    NSMutableArray<NSArray *> *entries = [NSMutableArray array];
-    struct archive *tar = archive_read_new();
-    XCTAssertEqual(archive_read_support_format_tar(tar), ARCHIVE_OK);
-    XCTAssertEqual(archive_read_open_memory(tar, data.bytes, data.length),
-        ARCHIVE_OK, @"%s", archive_error_string(tar));
-    struct archive_entry *entry;
-    int status;
-    while (ARCHIVE_OK == (status = archive_read_next_header(tar, &entry))) {
-        NSString *path = @(archive_entry_pathname(entry));
-        [entries addObject:@[path, readEntryData(tar, entry)]];
-    }
-    XCTAssertEqual(status, ARCHIVE_EOF, @"%s", archive_error_string(tar));
-    XCTAssertEqual(archive_read_free(tar), ARCHIVE_OK);
-    return entries;
 }
 
 @implementation TarRoundTripTests {

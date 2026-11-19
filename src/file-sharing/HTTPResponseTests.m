@@ -93,6 +93,34 @@ static NSString *body_text(NSData *response)
 }
 
 
+- (void)testResponseHeaderEndsAfterTheBlankLine;
+{
+    NSData *header = makeHTTPResponseHeader(
+        HTTPStatusOK, @"application/x-tar", 5000000000ULL, NO);
+
+    XCTAssertEqualObjects(status_line(header), @"HTTP/1.1 200 OK");
+    XCTAssertEqualObjects(headers(header), ([NSSet setWithArray:@[
+        @"Content-Type: application/x-tar",
+        @"Content-Length: 5000000000",
+    ]]));
+    XCTAssertTrue([text(header) hasSuffix:@"\r\n\r\n"], @"%@", text(header));
+    XCTAssertEqualObjects(body_text(header), @"");
+}
+
+
+- (void)testClosingResponseHeaderHasConnectionCloseHeader;
+{
+    NSData *header =
+        makeHTTPResponseHeader(HTTPStatusOK, @"application/x-tar", 1024, YES);
+
+    XCTAssertEqualObjects(headers(header), ([NSSet setWithArray:@[
+        @"Content-Type: application/x-tar",
+        @"Content-Length: 1024",
+        @"Connection: close",
+    ]]));
+}
+
+
 - (void)testStatusLines;
 {
     NSDictionary<NSNumber *, NSString *> *statusLines = @{
@@ -101,6 +129,8 @@ static NSString *body_text(NSData *response)
         @(HTTPStatusNotFound): @"HTTP/1.1 404 Not Found\r\n",
         @(HTTPStatusMethodNotAllowed): @"HTTP/1.1 405 Method Not Allowed\r\n",
         @(HTTPStatusTooManyRequests): @"HTTP/1.1 429 Too Many Requests\r\n",
+        @(HTTPStatusInternalServerError):
+            @"HTTP/1.1 500 Internal Server Error\r\n",
         @(HTTPStatusServiceUnavailable):
             @"HTTP/1.1 503 Service Unavailable\r\n",
     };

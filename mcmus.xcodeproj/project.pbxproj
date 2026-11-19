@@ -11,6 +11,8 @@
 		D45A7E0030C1000000000003 /* libfile-sharing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D49BFC4730A26EAF00AED804 /* libfile-sharing.a */; };
 		D45A7E0030C1000000000004 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000001 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
+		D47A2B0030B1000000000041 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
+		D47A2B0030B1000000000042 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D47A2B0030B1000000000020 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000021 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
 		D47A2B0030B1000000000022 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
@@ -72,6 +74,20 @@
 			remoteInfo = wrappers;
 		};
 		D47A2B0030B1000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
+		};
+		D47A2B0030B1000000000043 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
+		};
+		D47A2B0030B1000000000044 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
 			proxyType = 1;
@@ -561,6 +577,10 @@
 				"file-sharing/HTTPRequestParser.m",
 				"file-sharing/HTTPResponse.h",
 				"file-sharing/HTTPResponse.m",
+				"file-sharing/Manifest.h",
+				"file-sharing/Manifest.m",
+				"file-sharing/TarballRequest.h",
+				"file-sharing/TarballRequest.m",
 			);
 			privateHeaders = (
 				"file-sharing/FileSharingConnection.h",
@@ -569,6 +589,8 @@
 				"file-sharing/FileSharingThread.h",
 				"file-sharing/HTTPRequestParser.h",
 				"file-sharing/HTTPResponse.h",
+				"file-sharing/Manifest.h",
+				"file-sharing/TarballRequest.h",
 			);
 			publicHeaders = (
 				"file-sharing/FileSharing.h",
@@ -580,6 +602,7 @@
 			membershipExceptions = (
 				"file-sharing/FileSharing.m",
 				"file-sharing/FileSharingConnection.m",
+				"file-sharing/FileSharingConnectionTests.m",
 				"file-sharing/FileSharingServer.m",
 				"file-sharing/FileSharingServerTests.m",
 				"file-sharing/FileSharingTests.m",
@@ -589,7 +612,12 @@
 				"file-sharing/HTTPRequestParserTests.m",
 				"file-sharing/HTTPResponse.m",
 				"file-sharing/HTTPResponseTests.m",
+				"file-sharing/Manifest.m",
+				"file-sharing/ManifestTests.m",
+				"file-sharing/TarReading.m",
 				"file-sharing/TarRoundTripTests.m",
+				"file-sharing/TarballRequest.m",
+				"file-sharing/TarballRequestTests.m",
 			);
 			target = D49BFC4830A26EBF00AED804 /* file-sharing-tests */;
 		};
@@ -932,6 +960,7 @@
 				D49BFC4330A26EAF00AED804 /* libwrappers.a in Frameworks */,
 				D49BFC6A30A26FFD00AED804 /* libmodel.a in Frameworks */,
 				D4C5A00030A6000000000001 /* libcsv.a in Frameworks */,
+				D47A2B0030B1000000000041 /* libtarball.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -945,6 +974,7 @@
 				D49BFC5230A26EBF00AED804 /* libmodel.a in Frameworks */,
 				D49BFC5330A26EBF00AED804 /* libwrappers-fakes.a in Frameworks */,
 				D4C5A00030A6000000000002 /* libcsv.a in Frameworks */,
+				D47A2B0030B1000000000042 /* libtarball.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1315,6 +1345,7 @@
 				D49BFC3E30A26EAF00AED804 /* PBXTargetDependency */,
 				D49BFC6C30A26FFD00AED804 /* PBXTargetDependency */,
 				D4C5A00030A6000000000005 /* PBXTargetDependency */,
+				D47A2B0030B1000000000045 /* PBXTargetDependency */,
 			);
 			name = "file-sharing";
 			packageProductDependencies = (
@@ -1339,6 +1370,7 @@
 				D49BFC4B30A26EBF00AED804 /* PBXTargetDependency */,
 				D49BFC4D30A26EBF00AED804 /* PBXTargetDependency */,
 				D4C5A00030A6000000000006 /* PBXTargetDependency */,
+				D47A2B0030B1000000000046 /* PBXTargetDependency */,
 			);
 			name = "file-sharing-tests";
 			productName = mcmusBaseTests;
@@ -1751,6 +1783,16 @@
 			isa = PBXTargetDependency;
 			target = D47A2B0030B100000000000A /* tarball */;
 			targetProxy = D47A2B0030B1000000000002 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B1000000000045 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D47A2B0030B1000000000043 /* PBXContainerItemProxy */;
+		};
+		D47A2B0030B1000000000046 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D47A2B0030B1000000000044 /* PBXContainerItemProxy */;
 		};
 		D47A2B0030B1000000000038 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
