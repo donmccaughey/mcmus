@@ -52,15 +52,21 @@ static NSData *rose_contents(void)
 }
 
 
+static NSURL *snapshot_directory(void)
+{
+    return [NSURL fileURLWithPath:@"/snapshot" isDirectory:YES];
+}
+
+
 // The tarball writer opens a track through a file URL, whose path may spell a
 // non-ASCII name with different code points than the manifest does. The real
 // file system finds the file under either spelling; the fake needs the
 // spelling the URL gives.
 static NSString *snapshot_file_path(NSString *relativePath)
 {
-    NSURL *snapshot = [NSURL fileURLWithPath:@"/snapshot" isDirectory:YES];
-    return
-        [snapshot URLByAppendingPathComponent:relativePath isDirectory:NO].path;
+    return [snapshot_directory() URLByAppendingPathComponent:relativePath
+                                                 isDirectory:NO]
+        .path;
 }
 
 
@@ -76,15 +82,12 @@ static TrackMetadata *make_metadata(
 
 static Manifest *make_manifest(void)
 {
-    return [[Manifest alloc]
-        initWithTrackMetadata:@[
-            make_metadata(songPath, 5, 7),
-            make_metadata(rosePath, 70000, 9),
-            make_metadata(bigPath, sixtyMegabytes, 2),
-            make_metadata(biggerPath, sixtyMegabytes, 3),
-        ]
-        musicLibraryDirectory:[NSURL fileURLWithPath:@"/snapshot"
-                                         isDirectory:YES]];
+    return [[Manifest alloc] initWithTrackMetadata:@[
+        make_metadata(songPath, 5, 7),
+        make_metadata(rosePath, 70000, 9),
+        make_metadata(bigPath, sixtyMegabytes, 2),
+        make_metadata(biggerPath, sixtyMegabytes, 3),
+    ]];
 }
 
 
@@ -199,7 +202,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     _server = [[FileSharingServer alloc] initWithNetwork:_network
                                                    clock:_clock
                                               fileSystem:_fileSystem
-                                                manifest:make_manifest()];
+                                                manifest:make_manifest()
+                                   musicLibraryDirectory:snapshot_directory()];
     NSMutableArray<NSString *> *events = [NSMutableArray new];
     _events = events;
     _server.onWaitingForClient = ^{ [events addObject:@"waiting"]; };

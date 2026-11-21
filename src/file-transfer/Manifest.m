@@ -52,13 +52,11 @@ static NSArray<NSArray<NSString *> *> *manifest_records(
 }
 
 
-- (instancetype)initWithTrackMetadata:(NSArray<TrackMetadata *> *)metadata
-                musicLibraryDirectory:(NSURL *)musicLibraryDir;
+- (instancetype)initWithTrackMetadata:(NSArray<TrackMetadata *> *)metadata;
 {
     self = [super init];
     if (!self) return nil;
 
-    _musicLibraryDirectory = musicLibraryDir;
     _metadataByRelativePath = metadata_by_relative_path(metadata);
     _csv = generateCSV(manifest_records(_metadataByRelativePath));
 

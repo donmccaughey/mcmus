@@ -16,10 +16,7 @@ static TrackMetadata *make_metadata(NSString *relativePath,
 
 static Manifest *make_manifest(NSArray<TrackMetadata *> *metadata)
 {
-    return [[Manifest alloc]
-        initWithTrackMetadata:metadata
-        musicLibraryDirectory:[NSURL fileURLWithPath:@"/snapshot"
-                                         isDirectory:YES]];
+    return [[Manifest alloc] initWithTrackMetadata:metadata];
 }
 
 
@@ -43,14 +40,6 @@ static NSString *csv_text(Manifest *manifest)
 
     XCTAssertEqual(manifest.trackCount, 0UL);
     XCTAssertEqualObjects(csv_text(manifest), @"path,size,hash\r\n");
-}
-
-
-- (void)testKeepsTheMusicLibraryDirectory;
-{
-    Manifest *manifest = make_manifest(@[]);
-
-    XCTAssertEqualObjects(manifest.musicLibraryDirectory.path, @"/snapshot");
 }
 
 

@@ -9,12 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Manifest : NSObject
 
-@property (nonatomic, readonly) NSURL *musicLibraryDirectory;
 @property (nonatomic, readonly) NSUInteger trackCount;
 @property (nonatomic, readonly) NSData *csv;
 
 - (instancetype)initWithTrackMetadata:(NSArray<TrackMetadata *> *)metadata
-                musicLibraryDirectory:(NSURL *)musicLibraryDir
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

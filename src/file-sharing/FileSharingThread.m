@@ -235,13 +235,13 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
                 [self->_client didLoadMetadataForTracks:tracksLoaded
                                                 ofTotal:totalTracks];
             });
-        Manifest *manifest =
-            [[Manifest alloc] initWithTrackMetadata:metadata
-                              musicLibraryDirectory:musicLibraryDir];
+        Manifest *manifest = [[Manifest alloc] initWithTrackMetadata:metadata];
         BOOL wroteManifest = write_manifest_and_log_time(
             manifest, _workingDir, _fileSystem, &error);
         FileSharingServer *server = wroteManifest
-            ? [self startServerWithManifest:manifest error:&error]
+            ? [self startServerWithManifest:manifest
+                      musicLibraryDirectory:musicLibraryDir
+                                      error:&error]
             : nil;
         if (!server) {
             NSError *cleanUpError = nil;
@@ -264,13 +264,15 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
 
 
 - (nullable FileSharingServer *)startServerWithManifest:(Manifest *)manifest
+                                  musicLibraryDirectory:(NSURL *)musicLibraryDir
                                                   error:(NSError **)error;
 {
     FileSharingServer *server =
         [[FileSharingServer alloc] initWithNetwork:_network
                                              clock:_clock
                                         fileSystem:_fileSystem
-                                          manifest:manifest];
+                                          manifest:manifest
+                             musicLibraryDirectory:musicLibraryDir];
     server.onWaitingForClient = ^{ [self->_client serverIsWaitingForClient]; };
     server.onClientConnected = ^(NSString *deviceName) {
         [self->_client serverDidConnectClient:deviceName];

@@ -78,6 +78,7 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     id<Clock> _clock;
     id<FileSystem> _fileSystem;
     Manifest *_manifest;
+    NSURL *_musicLibraryDir;
     id<NetworkListener> _Nullable _listener;
     id<NetworkAdvertisement> _Nullable _advertisement;
     NSMutableArray<FileSharingConnection *> *_connections;
@@ -90,7 +91,8 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
 - (instancetype)initWithNetwork:(id<Network>)network
                           clock:(id<Clock>)clock
                      fileSystem:(id<FileSystem>)fileSystem
-                       manifest:(Manifest *)manifest;
+                       manifest:(Manifest *)manifest
+          musicLibraryDirectory:(NSURL *)musicLibraryDir;
 {
     self = [super init];
     if (!self) return nil;
@@ -99,6 +101,7 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     _clock = clock;
     _fileSystem = fileSystem;
     _manifest = manifest;
+    _musicLibraryDir = musicLibraryDir;
     _connections = [NSMutableArray new];
 
     return self;
@@ -333,10 +336,10 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
         return;
     }
 
-    TarballWriter *writer = [[TarballWriter alloc]
-        initWithBaseDirectory:_manifest.musicLibraryDirectory
-                      entries:entries
-                   fileSystem:_fileSystem];
+    TarballWriter *writer =
+        [[TarballWriter alloc] initWithBaseDirectory:_musicLibraryDir
+                                             entries:entries
+                                          fileSystem:_fileSystem];
     unsigned long long tarballSize = writer.tarballSize;
     if (!tarballSize) {
         os_log_error(server_log(), "Tarball size cannot be calculated");

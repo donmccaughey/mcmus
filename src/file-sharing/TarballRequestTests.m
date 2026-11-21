@@ -62,19 +62,16 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
 {
     [super setUp];
     self.continueAfterFailure = NO;
-    _manifest = [[Manifest alloc]
-        initWithTrackMetadata:@[
-            make_metadata(@"Artist/Album/One.mp3", 100, 1700000001),
-            make_metadata(@"Artist/Album/Two.m4a", 200, 1700000002),
-            make_metadata(@"Piaf, Edith/La Vie en rose (slow chanté).mp3", 300,
-                1700000003),
-            make_metadata(@"Big/Fifty.mp3", fiftyMegabytes, 0),
-            make_metadata(@"Big/Fifty More.mp3", fiftyMegabytes, 0),
-            make_metadata(@"Big/One Byte.mp3", 1, 0),
-            make_metadata(@"Big/Huge.mp3", 3 * fiftyMegabytes, 0),
-        ]
-        musicLibraryDirectory:[NSURL fileURLWithPath:@"/snapshot"
-                                         isDirectory:YES]];
+    _manifest = [[Manifest alloc] initWithTrackMetadata:@[
+        make_metadata(@"Artist/Album/One.mp3", 100, 1700000001),
+        make_metadata(@"Artist/Album/Two.m4a", 200, 1700000002),
+        make_metadata(
+            @"Piaf, Edith/La Vie en rose (slow chanté).mp3", 300, 1700000003),
+        make_metadata(@"Big/Fifty.mp3", fiftyMegabytes, 0),
+        make_metadata(@"Big/Fifty More.mp3", fiftyMegabytes, 0),
+        make_metadata(@"Big/One Byte.mp3", 1, 0),
+        make_metadata(@"Big/Huge.mp3", 3 * fiftyMegabytes, 0),
+    ]];
 }
 
 
