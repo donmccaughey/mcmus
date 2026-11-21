@@ -53,7 +53,8 @@ static BOOL equalOrBothNil(id _Nullable a, id _Nullable b)
     Folder *other = object;
     if (!equalOrBothNil(_path, other.path)
         || ![_name isEqualToString:other.name]
-        || _children.count != other.children.count) {
+        || _children.count != other.children.count)
+    {
         return NO;
     }
     for (NSUInteger i = 0; i < _children.count; i++) {

@@ -194,7 +194,8 @@ static NSError *error_from_csv(NSString *csv)
              @"path,size,mtime\r\nSong.mp3,5,7\r\n",
              @"Song.mp3,5,7\r\n",
              @"path,size,hash,extra\r\n",
-         ]) {
+         ])
+    {
         NSError *error = error_from_csv(csv);
 
         XCTAssertEqualObjects(error.domain, ManifestErrorDomain, @"%@", csv);
@@ -217,7 +218,8 @@ static NSError *error_from_csv(NSString *csv)
     for (NSString *size in @[
              @"", @"abc", @"-5", @"+5", @" 5", @"5 ", @"5.0", @"0x5",
              @"18446744073709551616"
-         ]) {
+         ])
+    {
         NSError *error = error_from_csv([NSString
             stringWithFormat:@"path,size,hash\r\nSong.mp3,%@,7\r\n", size]);
 
@@ -232,7 +234,8 @@ static NSError *error_from_csv(NSString *csv)
     for (NSString *hash in @[
              @"", @"abc", @"-7", @"+7", @" 7", @"7 ", @"7.0", @"0x7",
              @"18446744073709551616"
-         ]) {
+         ])
+    {
         NSError *error = error_from_csv([NSString
             stringWithFormat:@"path,size,hash\r\nSong.mp3,5,%@\r\n", hash]);
 

@@ -70,7 +70,8 @@ static struct archive *_Nullable new_archive(
     if (ARCHIVE_OK == archive_write_set_format_gnutar(archive)
         && ARCHIVE_OK == archive_write_set_bytes_per_block(archive, 0)
         && ARCHIVE_OK
-            == archive_write_open(archive, client_data, NULL, write, NULL)) {
+            == archive_write_open(archive, client_data, NULL, write, NULL))
+    {
         return archive;
     }
     archive_write_free(archive);
@@ -252,7 +253,8 @@ static unsigned long long calculate_tarball_size(
     } else if (0 == count) {
         _failure = file_too_short_error(_entries[_entryIndex]);
     } else if (count
-        != archive_write_data(_archive, _readBuffer.bytes, (size_t)count)) {
+        != archive_write_data(_archive, _readBuffer.bytes, (size_t)count))
+    {
         _failure = archive_error(_archive);
     }
     if (!_failure) _entryRemaining -= (unsigned long long)count;

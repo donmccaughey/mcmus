@@ -324,7 +324,8 @@ static NSArray<TarEntry *> *read_tar(NSData *data)
 
     XCTAssertGreaterThan(_buffers.count, 32UL);
     for (NSData *buffer in
-        [_buffers subarrayWithRange:NSMakeRange(0, _buffers.count - 1)]) {
+        [_buffers subarrayWithRange:NSMakeRange(0, _buffers.count - 1)])
+    {
         XCTAssertEqual(buffer.length, 64UL * 1024);
     }
     XCTAssertGreaterThan(_buffers.lastObject.length, 0UL);

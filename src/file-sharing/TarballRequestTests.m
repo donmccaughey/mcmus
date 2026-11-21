@@ -213,7 +213,8 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
              @"text/csv;charset=ISO-8859-1",
              @"text/csv; charset=UTF-8",
              @"text/csv;charset=utf-8",
-         ]) {
+         ])
+    {
         [self assertRequest:post_files(contentType, csv)
               failsWithCode:TarballRequestErrorCodeInvalidContentType
                 description:@"Invalid content type"];
@@ -256,7 +257,8 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
              @"Artist/Album/One.mp3\r\nArtist/Album/Two.m4a\r\n",
              @"Path\r\nArtist/Album/One.mp3\r\n",
              @"path,size\r\nArtist/Album/One.mp3,100\r\n",
-         ]) {
+         ])
+    {
         [self assertCSV:csv
             failsWithCode:TarballRequestErrorCodeInvalidCSV
               description:@"Invalid CSV"];

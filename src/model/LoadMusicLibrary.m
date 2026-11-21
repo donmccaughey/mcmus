@@ -48,7 +48,8 @@ static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
                                                   children:grandchildren]];
             }
         } else if (info.isRegularFile &&
-            [Track isMusicFileExtension:url.pathExtension]) {
+            [Track isMusicFileExtension:url.pathExtension])
+        {
             [children
                 addObject:[[Track alloc] initWithDisplayName:name
                                                pathExtension:url.pathExtension

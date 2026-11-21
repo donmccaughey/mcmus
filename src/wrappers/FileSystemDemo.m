@@ -16,7 +16,8 @@ static NSDictionary *_Nullable first_directory_entry(id json)
     if (![json isKindOfClass:[NSArray class]]) return nil;
     for (id entry in json) {
         if ([entry isKindOfClass:[NSDictionary class]] &&
-            [string_value(entry, @"type") isEqualToString:@"directory"]) {
+            [string_value(entry, @"type") isEqualToString:@"directory"])
+        {
             return entry;
         }
     }

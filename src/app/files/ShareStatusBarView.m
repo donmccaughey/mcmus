@@ -59,7 +59,8 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
         [_shareSwitch setAccessibilityLabel:@"File Sharing"];
 
         for (NSView *subview in
-            @[titleLabel, _statusLabel, _spinner, _shareSwitch]) {
+            @[titleLabel, _statusLabel, _spinner, _shareSwitch])
+        {
             subview.translatesAutoresizingMaskIntoConstraints = NO;
             [self addSubview:subview];
         }

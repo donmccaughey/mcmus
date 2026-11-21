@@ -5,7 +5,8 @@
 NSString *_Nullable fileSystemFakeErrorPath(NSError *error)
 {
     if (![error.domain isEqualToString:FileSystemFakeErrorDomain]
-        || error.code != FileSystemFakeErrorCodeOperationFailed) {
+        || error.code != FileSystemFakeErrorCodeOperationFailed)
+    {
         return nil;
     }
     return error.userInfo[NSFilePathErrorKey];

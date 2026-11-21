@@ -13,8 +13,8 @@
         // view from stretching the line's thickness whichever way it runs.
         UILayoutConstraintAxis layoutAxes[] = {
             UILayoutConstraintAxisHorizontal, UILayoutConstraintAxisVertical};
-        for (size_t i = 0; i < sizeof(layoutAxes) / sizeof(layoutAxes[0]);
-            i++) {
+        for (size_t i = 0; i < sizeof(layoutAxes) / sizeof(layoutAxes[0]); i++)
+        {
             [self setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:layoutAxes[i]];
             [self

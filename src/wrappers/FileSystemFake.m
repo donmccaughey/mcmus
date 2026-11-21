@@ -291,7 +291,8 @@ static void fail(NSString *path, NSError **error)
     NSMutableArray<NSURL *> *urls = [NSMutableArray array];
     for (FileSystemFakeEntry *entry in _entries) {
         if (![entry.path.stringByDeletingLastPathComponent
-                isEqualToString:directory.path]) {
+                isEqualToString:directory.path])
+        {
             continue;
         }
         BOOL isDirectory = entry.kind == FileSystemFakeKindDirectory
@@ -347,8 +348,8 @@ static void fail(NSString *path, NSError **error)
     }
     NSData *contents = entry.contents ?: [NSData data];
     const uint8_t *bytes = contents.bytes;
-    for (NSUInteger offset = 0; offset < contents.length;
-        offset += chunkLength) {
+    for (NSUInteger offset = 0; offset < contents.length; offset += chunkLength)
+    {
         chunk(bytes + offset, MIN(chunkLength, contents.length - offset));
     }
     return YES;

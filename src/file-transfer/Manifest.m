@@ -47,7 +47,8 @@ static NSArray<NSArray<NSString *> *> *manifest_records(
         [NSMutableArray arrayWithCapacity:metadataByRelativePath.count + 1];
     [records addObject:@[@"path", @"size", @"hash"]];
     for (NSString *relativePath in sorted_relative_paths(
-             metadataByRelativePath)) {
+             metadataByRelativePath))
+    {
         TrackMetadata *trackMetadata = metadataByRelativePath[relativePath];
         [records addObject:@[
             relativePath,
@@ -181,7 +182,8 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 {
     NSMutableArray<TrackMetadata *> *missing = [NSMutableArray array];
     for (NSString *relativePath in sorted_relative_paths(
-             _metadataByRelativePath)) {
+             _metadataByRelativePath))
+    {
         if (![other metadataForRelativePath:relativePath]) {
             [missing addObject:_metadataByRelativePath[relativePath]];
         }
@@ -194,7 +196,8 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 {
     NSMutableArray<TrackMetadata *> *changed = [NSMutableArray array];
     for (NSString *relativePath in sorted_relative_paths(
-             _metadataByRelativePath)) {
+             _metadataByRelativePath))
+    {
         TrackMetadata *trackMetadata = _metadataByRelativePath[relativePath];
         TrackMetadata *otherMetadata =
             [other metadataForRelativePath:relativePath];
