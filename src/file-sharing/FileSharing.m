@@ -3,10 +3,7 @@
 #if TARGET_OS_OSX
 
 
-#import "ClockReal.h"
 #import "FileSharingThread.h"
-#import "FileSystemReal.h"
-#import "NetworkReal.h"
 
 
 static NSErrorDomain const FileSharingErrorDomain = @"FileSharingErrorDomain";
@@ -76,18 +73,6 @@ static NSError *no_working_directory_error(void)
     _clock = clock;
 
     return self;
-}
-
-
-- (instancetype)
-    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
-              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL;
-{
-    return [self initWithMusicRootDirectoryURL:musicRootDirectoryURL
-                           workingDirectoryURL:workingDirectoryURL
-                                    fileSystem:[FileSystemReal new]
-                                       network:[NetworkReal new]
-                                         clock:[ClockReal new]];
 }
 
 

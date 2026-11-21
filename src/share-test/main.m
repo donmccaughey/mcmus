@@ -4,8 +4,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ClockReal.h"
 #import "FileSharing.h"
 #import "FileSystemReal.h"
+#import "NetworkReal.h"
 #import "ShareTestOptions.h"
 #import "ShareTestStatus.h"
 
@@ -37,10 +39,10 @@ static ShareTestOptions *parse_options_or_exit(void)
 }
 
 
-static void exit_unless_listable(NSURL *directoryURL)
+static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
 {
     NSError *error = nil;
-    if ([[FileSystemReal new] listDirectory:directoryURL error:&error]) return;
+    if ([fileSystem listDirectory:directoryURL error:&error]) return;
 
     fprintf(stderr, "share-test: %s: %s\n", directoryURL.path.UTF8String,
         error.localizedDescription.UTF8String);
@@ -145,15 +147,19 @@ int main(int argc, const char *argv[])
 {
     @autoreleasepool {
         ShareTestOptions *options = parse_options_or_exit();
-        exit_unless_listable(options.musicDirectoryURL);
-        exit_unless_listable(options.workingDirectoryURL);
+        id<FileSystem> fileSystem = [FileSystemReal new];
+        exit_unless_listable(options.musicDirectoryURL, fileSystem);
+        exit_unless_listable(options.workingDirectoryURL, fileSystem);
 
         // A pipe would otherwise hold status lines back until the buffer fills.
         setlinebuf(stdout);
 
         FileSharing *fileSharing = [[FileSharing alloc]
             initWithMusicRootDirectoryURL:options.musicDirectoryURL
-                      workingDirectoryURL:options.workingDirectoryURL];
+                      workingDirectoryURL:options.workingDirectoryURL
+                               fileSystem:fileSystem
+                                  network:[NetworkReal new]
+                                    clock:[ClockReal new]];
         print_changes_as_they_happen(fileSharing);
         stop_on_interrupt(fileSharing);
         start(fileSharing);

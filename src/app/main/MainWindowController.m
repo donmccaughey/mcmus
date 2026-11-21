@@ -5,7 +5,11 @@
 
 @implementation MainWindowController
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store player:(Player *)player
+- (instancetype)initWithStore:(MusicLibraryStore *)store
+                       player:(Player *)player
+                   fileSystem:(id<FileSystem>)fileSystem
+                      network:(id<Network>)network
+                        clock:(id<Clock>)clock
 {
     NSWindowStyleMask styleMask = NSWindowStyleMaskTitled
         | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
@@ -21,7 +25,11 @@
     // Setting the content view controller resizes the window, so it goes
     // before centering and before the autosaved frame is restored.
     window.contentViewController =
-        [[MainViewController alloc] initWithStore:store player:player];
+        [[MainViewController alloc] initWithStore:store
+                                           player:player
+                                       fileSystem:fileSystem
+                                          network:network
+                                            clock:clock];
     [window center];
     self = [super initWithWindow:window];
     if (self) {

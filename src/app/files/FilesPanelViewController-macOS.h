@@ -5,12 +5,18 @@
 
 #import "MusicLibraryStore.h"
 
+@protocol Clock;
+@protocol FileSystem;
+@protocol Network;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FilesPanelViewController : NSViewController
 
 - (instancetype)initWithStore:(MusicLibraryStore *)store
-    NS_DESIGNATED_INITIALIZER;
+                   fileSystem:(id<FileSystem>)fileSystem
+                      network:(id<Network>)network
+                        clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(nullable NSNibName)nibNameOrNil
                          bundle:(nullable NSBundle *)nibBundleOrNil
     NS_UNAVAILABLE;

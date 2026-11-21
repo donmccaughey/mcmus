@@ -2,11 +2,13 @@
 
 #if TARGET_OS_OSX
 #import "AudioReal.h"
+#import "ClockReal.h"
 #import "DemoMode.h"
 #import "FileSystemReal.h"
 #import "MainMenu.h"
 #import "MainWindowController.h"
 #import "MusicLibraryStore.h"
+#import "NetworkReal.h"
 #import "Player.h"
 #import "PreferencesReal.h"
 #import "RootOption.h"
@@ -14,7 +16,9 @@
 
 @implementation AppDelegate {
     id<Audio> _audio;
+    id<Clock> _clock;
     id<FileSystem> _fileSystem;
+    id<Network> _network;
     id<Preferences> _preferences;
 
     MusicLibraryStore *_store;
@@ -29,7 +33,9 @@
     if (!self) return nil;
 
     _audio = [AudioReal new];
+    _clock = [ClockReal new];
     _fileSystem = [FileSystemReal new];
+    _network = [NetworkReal new];
     if (isDemoMode()) {
         _audio = demoAudioWrapping(_audio);
         _fileSystem = demoFileSystemWrapping(_fileSystem);
@@ -48,7 +54,11 @@
 {
     if (!_mainWindowController) {
         _mainWindowController =
-            [[MainWindowController alloc] initWithStore:_store player:_player];
+            [[MainWindowController alloc] initWithStore:_store
+                                                 player:_player
+                                             fileSystem:_fileSystem
+                                                network:_network
+                                                  clock:_clock];
     }
     return _mainWindowController;
 }

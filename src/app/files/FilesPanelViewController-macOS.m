@@ -3,7 +3,7 @@
 #if TARGET_OS_OSX
 #import "EmptyStateView-macOS.h"
 #import "FileSharing.h"
-#import "FileSystemReal.h"
+#import "FileSystem.h"
 #import "FilesTreeView.h"
 #import "NSStackView+SeparatedRows.h"
 #import "NSView+FillingSubview.h"
@@ -12,6 +12,9 @@
 
 @implementation FilesPanelViewController {
     MusicLibraryStore *_store;
+    id<FileSystem> _fileSystem;
+    id<Network> _network;
+    id<Clock> _clock;
     FileSharing *_fileSharing;
     NSButton *_findButton;
     EmptyStateView *_emptyFilesView;
@@ -21,10 +24,16 @@
 }
 
 - (instancetype)initWithStore:(MusicLibraryStore *)store
+                   fileSystem:(id<FileSystem>)fileSystem
+                      network:(id<Network>)network
+                        clock:(id<Clock>)clock
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _store = store;
+        _fileSystem = fileSystem;
+        _network = network;
+        _clock = clock;
         _fileSharing = [self makeFileSharing];
         _findButton = [NSButton buttonWithTitle:@"Find" target:nil action:nil];
         _emptyFilesView = [[EmptyStateView alloc] initWithTitle:@"No music"
@@ -54,11 +63,14 @@
 // reports as an error when the share is started.
 - (FileSharing *)makeFileSharing
 {
-    NSURL *workingDirectoryURL = [[FileSystemReal new]
-        getApplicationSupportDirectoryURLAndReturnError:NULL];
+    NSURL *workingDirectoryURL =
+        [_fileSystem getApplicationSupportDirectoryURLAndReturnError:NULL];
     return [[FileSharing alloc]
         initWithMusicRootDirectoryURL:_store.musicRootDirectory.url
-                  workingDirectoryURL:workingDirectoryURL];
+                  workingDirectoryURL:workingDirectoryURL
+                           fileSystem:_fileSystem
+                              network:_network
+                                clock:_clock];
 }
 
 // A share that is still starting ignores stop, so a root change during

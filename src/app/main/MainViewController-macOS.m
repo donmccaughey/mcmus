@@ -7,14 +7,24 @@
 @implementation MainViewController {
     MusicLibraryStore *_store;
     Player *_player;
+    id<FileSystem> _fileSystem;
+    id<Network> _network;
+    id<Clock> _clock;
 }
 
-- (instancetype)initWithStore:(MusicLibraryStore *)store player:(Player *)player
+- (instancetype)initWithStore:(MusicLibraryStore *)store
+                       player:(Player *)player
+                   fileSystem:(id<FileSystem>)fileSystem
+                      network:(id<Network>)network
+                        clock:(id<Clock>)clock
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _store = store;
         _player = player;
+        _fileSystem = fileSystem;
+        _network = network;
+        _clock = clock;
     }
     return self;
 }
@@ -24,7 +34,10 @@
     NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 900, 600)];
     self.view = view;
     FilesPanelViewController *filesPanel =
-        [[FilesPanelViewController alloc] initWithStore:_store];
+        [[FilesPanelViewController alloc] initWithStore:_store
+                                             fileSystem:_fileSystem
+                                                network:_network
+                                                  clock:_clock];
     [self addChildViewController:filesPanel];
     NSBox *separator = [[NSBox alloc] init];
     separator.boxType = NSBoxSeparator;

@@ -50,9 +50,6 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
                        fileSystem:(id<FileSystem>)fileSystem
                           network:(id<Network>)network
                             clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
-- (instancetype)
-    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
-              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)start;
