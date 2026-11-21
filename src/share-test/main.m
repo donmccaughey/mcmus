@@ -15,6 +15,7 @@ static const int usageExitStatus = 2;
 static id changeObserver;
 static dispatch_source_t interruptSource;
 static BOOL isInterrupted;
+static BOOL isProgressLineOpen;
 
 
 static ShareTestOptions *parse_options_or_exit(void)
@@ -47,18 +48,51 @@ static void exit_unless_listable(NSURL *directoryURL)
 }
 
 
+// A pipe or file gets one line per status, since a carriage return would
+// leave every progress update in a single unterminated line.
+static BOOL overwrites_progress(FileSharing *fileSharing)
+{
+    return fileSharing.state == FileSharingStateStarting
+        && isatty(STDOUT_FILENO);
+}
+
+
+static void print_progress(NSString *status)
+{
+    printf("\r%s", status.UTF8String);
+    fflush(stdout);
+    isProgressLineOpen = YES;
+}
+
+
+static void end_progress_line(void)
+{
+    if (!isProgressLineOpen) return;
+    printf("\n");
+    isProgressLineOpen = NO;
+}
+
+
 static void print_changes(FileSharing *fileSharing)
 {
     static uint16_t printedPort;
     static NSString *printedStatus;
 
     uint16_t port = fileSharing.port;
-    if (port && port != printedPort) printf("Listening on port %d\n", port);
+    if (port && port != printedPort) {
+        end_progress_line();
+        printf("Listening on port %d\n", port);
+    }
     printedPort = port;
 
     NSString *status = share_test_status_text(fileSharing);
     if ([status isEqual:printedStatus]) return;
     printedStatus = status;
+    if (overwrites_progress(fileSharing)) {
+        print_progress(status);
+        return;
+    }
+    end_progress_line();
     fprintf(fileSharing.error ? stderr : stdout, "%s\n", status.UTF8String);
 }
 
