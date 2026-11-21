@@ -7,6 +7,15 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+extern NSErrorDomain const ManifestErrorDomain;
+
+typedef NS_ENUM(NSInteger, ManifestErrorCode) {
+    ManifestErrorCodeInvalidHeader = 1,
+    ManifestErrorCodeInvalidSize,
+    ManifestErrorCodeInvalidHash,
+};
+
+
 @interface Manifest : NSObject
 
 @property (nonatomic, readonly) NSUInteger trackCount;
@@ -16,7 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// The manifest CSV has no mtime field, so every track metadata has an mtime
+// of zero.
+- (nullable instancetype)initWithCSV:(NSData *)csv error:(NSError **)error;
+
 - (nullable TrackMetadata *)metadataForRelativePath:(NSString *)relativePath;
+
+// Both return this manifest's track metadata, sorted by path.
+- (NSArray<TrackMetadata *> *)tracksMissingFrom:(Manifest *)other;
+- (NSArray<TrackMetadata *> *)tracksChangedIn:(Manifest *)other;
 
 @end
 

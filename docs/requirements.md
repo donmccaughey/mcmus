@@ -712,8 +712,9 @@ that track with a file hash of zero.
 
 ## Manifest
 
-The **manifest** is an in-memory data structure with fast key lookup where keys
-are track relative paths and values are the corresponding track metadata.
+The **manifest** data structure is an in-memory data structure with fast key
+lookup where keys are track relative paths and values are the corresponding
+track metadata.
 
 The **manifest CSV** file shall contain a header record and one record for each
 track in the manifest sorted by the path field. An example manifest CSV is
@@ -738,6 +739,23 @@ The manifest CSV file shall put the file hash digest of the track, calculated
 using the XXH3 64-bit hash algorithm, in the hash field as a decimal integer;
 the file hash digest shall be stored in the XXH3 hash preferred digest integer
 format, which is big endian.
+
+The manifest data structure shall have an initializer that accepts an array of
+track metadata objects.
+
+The manifest data structure shall have an initializer that accepts a manifest
+CSV stored in a data object.
+
+The manifest data structure shall have a "tracks missing from" method that
+accepts another manifest data structure as the "missing from" parameter and
+returns the array of track metadata objects that are pressent in the method's
+target manifest data structure but missing from the "mising from" parameter
+manifest data structure.
+
+The manifest data structure shall have a "tracks changed in" method that accepts
+another manifest data structure as the "changed in" parameter and returns the
+array of track metadata objects that have the same track relative path values in
+both manifests but different file hash values.
 
 
 # File sharing
