@@ -17,7 +17,8 @@ typedef void (^LoadTrackMetadataProgress)(
 
 // Calls progress after every 100 tracks, counting tracks that failed to load.
 NSArray<TrackMetadata *> *loadTrackMetadata(NSArray<Track *> *tracks,
-    id<FileSystem> fileSystem, LoadTrackMetadataProgress _Nullable progress,
+    NSURL *musicLibraryDir, id<FileSystem> fileSystem,
+    LoadTrackMetadataProgress _Nullable progress,
     NSArray<NSError *> *_Nullable *_Nullable errors);
 
 NS_ASSUME_NONNULL_END

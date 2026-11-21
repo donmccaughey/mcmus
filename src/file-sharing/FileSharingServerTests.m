@@ -52,12 +52,6 @@ static NSData *rose_contents(void)
 }
 
 
-static NSString *snapshot_path(NSString *relativePath)
-{
-    return [@"/snapshot" stringByAppendingPathComponent:relativePath];
-}
-
-
 // The tarball writer opens a track through a file URL, whose path may spell a
 // non-ASCII name with different code points than the manifest does. The real
 // file system finds the file under either spelling; the fake needs the
@@ -73,15 +67,10 @@ static NSString *snapshot_file_path(NSString *relativePath)
 static TrackMetadata *make_metadata(
     NSString *relativePath, unsigned long long size, NSUInteger fileHash)
 {
-    Track *track =
-        [[Track alloc] initWithTrackName:@"Track"
-                               albumName:@"Album"
-                              artistName:@"Artist"
-                                    path:snapshot_path(relativePath)];
-    return [[TrackMetadata alloc] initWithTrack:track
-                                           size:size
-                                          mtime:1700000000
-                                       fileHash:fileHash];
+    return [[TrackMetadata alloc] initWithRelativePath:relativePath
+                                                  size:size
+                                                 mtime:1700000000
+                                              fileHash:fileHash];
 }
 
 

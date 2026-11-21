@@ -58,13 +58,13 @@ static NSArray<Track *> *load_tracks_and_log_time(
 
 
 static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
-    NSArray<Track *> *tracks, id<FileSystem> fileSystem,
+    NSArray<Track *> *tracks, NSURL *musicLibraryDir, id<FileSystem> fileSystem,
     LoadTrackMetadataProgress progress)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSArray<NSError *> *errors = nil;
-    NSArray<TrackMetadata *> *metadata =
-        loadTrackMetadata(tracks, fileSystem, progress, &errors);
+    NSArray<TrackMetadata *> *metadata = loadTrackMetadata(
+        tracks, musicLibraryDir, fileSystem, progress, &errors);
     if (errors.count) {
         os_log(snapshot_log(),
             "Loaded metadata for %lu tracks in %.1f ms with %lu errors",
@@ -229,12 +229,12 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
 
         NSArray<Track *> *tracks =
             load_tracks_and_log_time(musicLibraryDir, _fileSystem);
-        NSArray<TrackMetadata *> *metadata =
-            load_track_metadata_and_log_time(tracks, _fileSystem,
-                ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
-                    [self->_client didLoadMetadataForTracks:tracksLoaded
-                                                    ofTotal:totalTracks];
-                });
+        NSArray<TrackMetadata *> *metadata = load_track_metadata_and_log_time(
+            tracks, musicLibraryDir, _fileSystem,
+            ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
+                [self->_client didLoadMetadataForTracks:tracksLoaded
+                                                ofTotal:totalTracks];
+            });
         Manifest *manifest =
             [[Manifest alloc] initWithTrackMetadata:metadata
                               musicLibraryDirectory:musicLibraryDir];

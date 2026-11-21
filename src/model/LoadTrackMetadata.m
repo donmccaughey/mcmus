@@ -62,9 +62,17 @@ static NSUInteger readTrackHash(NSURL *trackURL, id<FileSystem> fileSystem,
     return fileHash;
 }
 
+static NSString *pathRelativeToMusicLibrary(
+    Track *track, NSURL *musicLibraryDir)
+{
+    NSString *prefix = [musicLibraryDir.path stringByAppendingString:@"/"];
+    if (![track.path hasPrefix:prefix]) return track.path;
+    return [track.path substringFromIndex:prefix.length];
+}
+
 static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
-    id<FileSystem> fileSystem, XXH3_state_t *_Nullable state,
-    NSMutableArray<NSError *> *errors)
+    NSURL *musicLibraryDir, id<FileSystem> fileSystem,
+    XXH3_state_t *_Nullable state, NSMutableArray<NSError *> *errors)
 {
     NSURL *trackURL = track.url;
     unsigned long long size = 0;
@@ -75,14 +83,16 @@ static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
         return nil;
     }
     NSUInteger fileHash = readTrackHash(trackURL, fileSystem, state, errors);
-    return [[TrackMetadata alloc] initWithTrack:track
-                                           size:size
-                                          mtime:mtime
-                                       fileHash:fileHash];
+    return [[TrackMetadata alloc]
+        initWithRelativePath:pathRelativeToMusicLibrary(track, musicLibraryDir)
+                        size:size
+                       mtime:mtime
+                    fileHash:fileHash];
 }
 
 NSArray<TrackMetadata *> *loadTrackMetadata(NSArray<Track *> *tracks,
-    id<FileSystem> fileSystem, LoadTrackMetadataProgress _Nullable progress,
+    NSURL *musicLibraryDir, id<FileSystem> fileSystem,
+    LoadTrackMetadataProgress _Nullable progress,
     NSArray<NSError *> *_Nullable *_Nullable errors)
 {
     NSMutableArray<TrackMetadata *> *metadata =
@@ -91,8 +101,8 @@ NSArray<TrackMetadata *> *loadTrackMetadata(NSArray<Track *> *tracks,
     XXH3_state_t *state = XXH3_createState();
     NSUInteger tracksLoaded = 0;
     for (Track *track in tracks) {
-        TrackMetadata *trackMetadata =
-            loadOneTrackMetadata(track, fileSystem, state, loadErrors);
+        TrackMetadata *trackMetadata = loadOneTrackMetadata(
+            track, musicLibraryDir, fileSystem, state, loadErrors);
         if (trackMetadata) [metadata addObject:trackMetadata];
         ++tracksLoaded;
         if (progress && 0 == tracksLoaded % progressInterval) {

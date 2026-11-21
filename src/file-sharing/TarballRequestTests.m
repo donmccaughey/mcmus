@@ -18,15 +18,10 @@ static const unsigned long long fiftyMegabytes = 50ULL * 1024 * 1024;
 static TrackMetadata *make_metadata(
     NSString *relativePath, unsigned long long size, time_t mtime)
 {
-    NSString *path = [@"/snapshot" stringByAppendingPathComponent:relativePath];
-    Track *track = [[Track alloc] initWithTrackName:@"Track"
-                                          albumName:@"Album"
-                                         artistName:@"Artist"
-                                               path:path];
-    return [[TrackMetadata alloc] initWithTrack:track
-                                           size:size
-                                          mtime:mtime
-                                       fileHash:1];
+    return [[TrackMetadata alloc] initWithRelativePath:relativePath
+                                                  size:size
+                                                 mtime:mtime
+                                              fileHash:1];
 }
 
 

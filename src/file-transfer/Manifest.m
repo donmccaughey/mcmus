@@ -4,24 +4,13 @@
 #import "TrackMetadata.h"
 
 
-static NSString *path_relative_to_music_library(
-    Track *track, NSURL *musicLibraryDir)
-{
-    NSString *prefix = [musicLibraryDir.path stringByAppendingString:@"/"];
-    if (![track.path hasPrefix:prefix]) return track.path;
-    return [track.path substringFromIndex:prefix.length];
-}
-
-
 static NSDictionary<NSString *, TrackMetadata *> *metadata_by_relative_path(
-    NSArray<TrackMetadata *> *metadata, NSURL *musicLibraryDir)
+    NSArray<TrackMetadata *> *metadata)
 {
     NSMutableDictionary<NSString *, TrackMetadata *> *metadataByRelativePath =
         [NSMutableDictionary dictionaryWithCapacity:metadata.count];
     for (TrackMetadata *trackMetadata in metadata) {
-        NSString *relativePath = path_relative_to_music_library(
-            trackMetadata.track, musicLibraryDir);
-        metadataByRelativePath[relativePath] = trackMetadata;
+        metadataByRelativePath[trackMetadata.relativePath] = trackMetadata;
     }
     return metadataByRelativePath;
 }
@@ -70,8 +59,7 @@ static NSArray<NSArray<NSString *> *> *manifest_records(
     if (!self) return nil;
 
     _musicLibraryDirectory = musicLibraryDir;
-    _metadataByRelativePath =
-        metadata_by_relative_path(metadata, musicLibraryDir);
+    _metadataByRelativePath = metadata_by_relative_path(metadata);
     _csv = generateCSV(manifest_records(_metadataByRelativePath));
 
     return self;

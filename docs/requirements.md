@@ -399,9 +399,10 @@ If it encounters an error while walking a subdirectory or file, the load music
 library function shall add the error to the load result and continue walking.
 
 MC Mus shall have a **load track metadata** function that is called with a list
-of tracks and returns a list of track metadata, in the order of the given
-tracks, along with the list of errors encountered, which is empty when loading
-succeeded completely.
+of tracks and the root directory of the music library the tracks were loaded
+from, and returns a list of track metadata, in the order of the given tracks,
+along with the list of errors encountered, which is empty when loading succeeded
+completely.
 
 If it cannot read the size of a track's music file, the load track metadata
 function shall add the error to the list of errors, omit that track from the
@@ -440,10 +441,15 @@ file. A track exposes these properties:
 
 ## Track metadata
 
+The **track relative path** is the track path relative to the root folder of a
+given music library, where the music library may be loaded from the music root
+directory or the snapshot inside the working directory.
+
 A **track metadata** holds the facts about a track's music file that are
 gathered by reading the file. A track metadata has these properties:
 
-    - **track** is the track the metadata describes
+    - **relative path** is the track relative path of the track the metadata
+      describes
     - **size** is the music file size in bytes, as given by `stat.st_size` or
       equivalent library call
     - **mtime** is the music file last modified time in `time_t` format as given
@@ -705,10 +711,6 @@ file syncing modules.
 
 
 ## Manifest
-
-The **track relative path** is the track path relative to the root folder of a
-given music library, where the music library may be loaded from the music root
-directory or the snapshot inside the working directory.
 
 The **manifest** is an in-memory data structure with fast key lookup where keys
 are track relative paths and values are the corresponding track metadata.
