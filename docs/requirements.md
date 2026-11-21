@@ -260,6 +260,9 @@ resolution and access.
 
 The **preferences wrapper** shall wrap user defaults and other settings.
 
+The **clock wrapper** shall wrap timers and the current time, which it reports
+as a `time_t` value.
+
 
 ## Audio wrapper
 
@@ -690,8 +693,6 @@ gathered by reading the file. A track metadata has these properties:
       describes
     - **size** is the music file size in bytes, as given by `stat.st_size` or
       equivalent library call
-    - **mtime** is the music file last modified time in `time_t` format as given
-      by `stat.mtime` or equivalent library call
     - **file hash** is the XXH3 64-bit hash of the contents of the music file,
       or zero if the hash could not be calculated
 
@@ -784,6 +785,10 @@ When started, the file sharing thread shall take a snapshot of the music
 directory inside the working directory, load tracks and track metadata from the
 snapshot, build the manifest, write the manifest CSV to the working directory
 and start the file sharing server.
+
+Immediately after the snapshot completes, the file sharing thread shall record
+the current time from the clock wrapper as the **snapshot time**, a `time_t`
+value, and give it to the file sharing server.
 
 The manifest CSV file shall be saved to the file sharing working directory with
 the filename `manifest.csv`.
@@ -961,6 +966,9 @@ When the tarball CSV is valid, the file sharing server shall respond with status
 generated tarball size and a response body containing the generated tarball of
 the requested track files from the snapshot music library in the order given in
 the tarball CSV.
+
+The file sharing server shall use the snapshot time as the mtime of every
+tarball entry in the generated tarball.
 
 The generated tarball shall be uncompressed and shall be generated incrementally
 in memory and written directly to the file sharing server connection socket.

@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 // timer is cancelled first.
 - (id<ClockTimer>)after:(NSTimeInterval)delay run:(void (^)(void))block;
 
+- (time_t)currentTime;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -109,7 +109,6 @@ static TrackMetadata *_Nullable metadata_for_record(
 
     return [[TrackMetadata alloc] initWithRelativePath:record[0]
                                                   size:size
-                                                 mtime:0
                                               fileHash:(NSUInteger)fileHash];
 }
 

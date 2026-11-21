@@ -50,17 +50,17 @@ static NSArray<NSString *> *_Nullable requested_paths(NSData *tarballCSV)
 
 
 static NSArray<TarballEntry *> *_Nullable entries_for_paths(
-    NSArray<NSString *> *paths, Manifest *manifest)
+    NSArray<NSString *> *paths, Manifest *manifest, time_t snapshotTime)
 {
     NSMutableArray<TarballEntry *> *entries =
         [NSMutableArray arrayWithCapacity:paths.count];
     for (NSString *path in paths) {
         TrackMetadata *metadata = [manifest metadataForRelativePath:path];
         if (!metadata) return nil;
-        [entries addObject:[[TarballEntry alloc]
-                               initWithRelativePath:path
-                                               size:metadata.size
-                                              mtime:metadata.mtime]];
+        [entries
+            addObject:[[TarballEntry alloc] initWithRelativePath:path
+                                                            size:metadata.size
+                                                           mtime:snapshotTime]];
     }
     return entries;
 }
@@ -77,8 +77,8 @@ static BOOL is_too_big(NSArray<TarballEntry *> *entries)
 }
 
 
-NSArray<TarballEntry *> *_Nullable parseTarballRequest(
-    HTTPRequest *request, Manifest *manifest, NSError **error)
+NSArray<TarballEntry *> *_Nullable parseTarballRequest(HTTPRequest *request,
+    Manifest *manifest, time_t snapshotTime, NSError **error)
 {
     NSError *failure = nil;
     NSArray<TarballEntry *> *entries = nil;
@@ -94,7 +94,7 @@ NSArray<TarballEntry *> *_Nullable parseTarballRequest(
     } else if (!(paths = requested_paths(request.body))) {
         failure = tarball_request_error(
             TarballRequestErrorCodeInvalidCSV, @"Invalid CSV");
-    } else if (!(entries = entries_for_paths(paths, manifest))) {
+    } else if (!(entries = entries_for_paths(paths, manifest, snapshotTime))) {
         failure = tarball_request_error(
             TarballRequestErrorCodeUnknownTrack, @"Unknown track");
     } else if (is_too_big(entries)) {

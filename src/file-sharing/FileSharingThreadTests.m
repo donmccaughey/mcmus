@@ -51,6 +51,18 @@
 @end
 
 
+static NSData *tarball_in(NSData *response)
+{
+    NSRange blankLine = [response
+        rangeOfData:[@"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]
+            options:0
+              range:NSMakeRange(0, response.length)];
+    NSUInteger start = NSMaxRange(blankLine);
+    return
+        [response subdataWithRange:NSMakeRange(start, response.length - start)];
+}
+
+
 @interface FileSharingThreadTests : XCTestCase
 @end
 
@@ -393,15 +405,36 @@
                             @"path\r\nSong.mp3\r\n"];
     }];
 
-    NSData *sent = connection.sentData;
-    NSRange blankLine =
-        [sent rangeOfData:[@"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]
-                  options:0
-                    range:NSMakeRange(0, sent.length)];
-    NSData *tarball =
-        [sent subdataWithRange:NSMakeRange(NSMaxRange(blankLine),
-                                   sent.length - NSMaxRange(blankLine))];
-    XCTAssertEqualObjects(readTar(tarball), (@[@[@"Song.mp3", contents]]));
+    XCTAssertEqualObjects(readTar(tarball_in(connection.sentData)),
+        (@[@[@"Song.mp3", contents]]));
+
+    [self stopAndWait];
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testTarballEntriesHaveTheTimeTheSnapshotCompletedAsTheirMtime;
+{
+    [_fileSystem addPath:@"/container/AppSupport/snapshot/Song.mp3"
+                contents:[@"12345" dataUsingEncoding:NSUTF8StringEncoding]];
+    _clock.startTime = 1700000000;
+    [self startAndWait];
+
+    __block NetworkConnectionFake *connection = nil;
+    [self onThread:^{
+        [self->_clock advance:60];
+        connection = [self->_network connectFrom:@"192.168.1.20"];
+        [connection receive:@"POST /files HTTP/1.1\r\n"
+                            @"User-Agent: Don's iPhone\r\n"
+                            @"Content-Type: text/csv;charset=UTF-8\r\n"
+                            @"Content-Length: 16\r\n"
+                            @"\r\n"
+                            @"path\r\nSong.mp3\r\n"];
+    }];
+
+    XCTAssertEqualObjects(
+        readTarModificationTimes(tarball_in(connection.sentData)),
+        (@[@1700000000]));
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];

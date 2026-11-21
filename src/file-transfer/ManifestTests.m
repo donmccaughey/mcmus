@@ -5,12 +5,11 @@
 #import "TrackMetadata.h"
 
 
-static TrackMetadata *make_metadata(NSString *relativePath,
-    unsigned long long size, time_t mtime, NSUInteger fileHash)
+static TrackMetadata *make_metadata(
+    NSString *relativePath, unsigned long long size, NSUInteger fileHash)
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
-                                                 mtime:mtime
                                               fileHash:fileHash];
 }
 
@@ -67,9 +66,8 @@ static NSError *error_from_csv(NSString *csv)
 
 - (void)testFindsMetadataByTrackRelativePath;
 {
-    TrackMetadata *song =
-        make_metadata(@"Artist/Album/Song.mp3", 5, 1700000000, 7);
-    TrackMetadata *tune = make_metadata(@"Tune.m4a", 9, 0, 11);
+    TrackMetadata *song = make_metadata(@"Artist/Album/Song.mp3", 5, 7);
+    TrackMetadata *tune = make_metadata(@"Tune.m4a", 9, 11);
 
     Manifest *manifest = make_manifest(@[song, tune]);
 
@@ -83,7 +81,7 @@ static NSError *error_from_csv(NSString *csv)
 - (void)testFindsNothingForUnknownOrAbsolutePaths;
 {
     Manifest *manifest =
-        make_manifest(@[make_metadata(@"Artist/Album/Song.mp3", 5, 0, 7)]);
+        make_manifest(@[make_metadata(@"Artist/Album/Song.mp3", 5, 7)]);
 
     XCTAssertNil([manifest metadataForRelativePath:@"Artist/Album/Other.mp3"]);
     XCTAssertNil(
@@ -95,9 +93,9 @@ static NSError *error_from_csv(NSString *csv)
 - (void)testCSVHasOneRecordPerTrackSortedByPathBytes;
 {
     Manifest *manifest = make_manifest(@[
-        make_metadata(@"b/Song.mp3", 2, 0, 20),
-        make_metadata(@"é/Song.mp3", 3, 0, 30),
-        make_metadata(@"B/Song.mp3", 1, 0, 10),
+        make_metadata(@"b/Song.mp3", 2, 20),
+        make_metadata(@"é/Song.mp3", 3, 30),
+        make_metadata(@"B/Song.mp3", 1, 10),
     ]);
 
     XCTAssertEqualObjects(csv_text(manifest),
@@ -111,7 +109,7 @@ static NSError *error_from_csv(NSString *csv)
 - (void)testCSVQuotesPathsThatContainCommas;
 {
     Manifest *manifest =
-        make_manifest(@[make_metadata(@"Piaf, Edith/Song.mp3", 5, 0, 7)]);
+        make_manifest(@[make_metadata(@"Piaf, Edith/Song.mp3", 5, 7)]);
 
     XCTAssertEqualObjects(csv_text(manifest),
         @"path,size,hash\r\n\"Piaf, Edith/Song.mp3\",5,7\r\n");
@@ -121,8 +119,8 @@ static NSError *error_from_csv(NSString *csv)
 - (void)testCSVRoundTripKeepsPathsSizesAndHashes;
 {
     Manifest *original = make_manifest(@[
-        make_metadata(@"Artist/Album/Song.mp3", 5, 1700000000, 7),
-        make_metadata(@"Tune.m4a", 9, 0, 11),
+        make_metadata(@"Artist/Album/Song.mp3", 5, 7),
+        make_metadata(@"Tune.m4a", 9, 11),
     ]);
 
     Manifest *manifest = [[Manifest alloc] initWithCSV:original.csv error:NULL];
@@ -135,15 +133,6 @@ static NSError *error_from_csv(NSString *csv)
     XCTAssertEqual(song.fileHash, 7UL);
     XCTAssertEqual([manifest metadataForRelativePath:@"Tune.m4a"].size, 9ULL);
     XCTAssertEqualObjects(manifest.csv, original.csv);
-}
-
-
-- (void)testManifestFromCSVHasZeroMtimes;
-{
-    Manifest *manifest =
-        manifest_from_csv(@"path,size,hash\r\nSong.mp3,5,7\r\n");
-
-    XCTAssertEqual([manifest metadataForRelativePath:@"Song.mp3"].mtime, 0L);
 }
 
 
@@ -257,13 +246,13 @@ static NSError *error_from_csv(NSString *csv)
 
 - (void)testTracksMissingFromReturnsTracksOnlyInTheReceiver;
 {
-    TrackMetadata *shared = make_metadata(@"shared.mp3", 1, 0, 10);
-    TrackMetadata *onlyB = make_metadata(@"b.mp3", 2, 0, 20);
-    TrackMetadata *onlyUpperB = make_metadata(@"B.mp3", 3, 0, 30);
+    TrackMetadata *shared = make_metadata(@"shared.mp3", 1, 10);
+    TrackMetadata *onlyB = make_metadata(@"b.mp3", 2, 20);
+    TrackMetadata *onlyUpperB = make_metadata(@"B.mp3", 3, 30);
     Manifest *manifest = make_manifest(@[shared, onlyB, onlyUpperB]);
     Manifest *other = make_manifest(@[
-        make_metadata(@"shared.mp3", 1, 0, 99),
-        make_metadata(@"other.mp3", 4, 0, 40),
+        make_metadata(@"shared.mp3", 1, 99),
+        make_metadata(@"other.mp3", 4, 40),
     ]);
 
     NSArray<TrackMetadata *> *missing = [manifest tracksMissingFrom:other];
@@ -276,8 +265,8 @@ static NSError *error_from_csv(NSString *csv)
 
 - (void)testNoTracksAreMissingFromAnIdenticalManifest;
 {
-    Manifest *manifest = make_manifest(@[make_metadata(@"a.mp3", 1, 0, 10)]);
-    Manifest *other = make_manifest(@[make_metadata(@"a.mp3", 1, 0, 10)]);
+    Manifest *manifest = make_manifest(@[make_metadata(@"a.mp3", 1, 10)]);
+    Manifest *other = make_manifest(@[make_metadata(@"a.mp3", 1, 10)]);
 
     XCTAssertEqualObjects([manifest tracksMissingFrom:other], @[]);
 }
@@ -285,7 +274,7 @@ static NSError *error_from_csv(NSString *csv)
 
 - (void)testAllTracksAreMissingFromAnEmptyManifest;
 {
-    TrackMetadata *track = make_metadata(@"a.mp3", 1, 0, 10);
+    TrackMetadata *track = make_metadata(@"a.mp3", 1, 10);
     Manifest *manifest = make_manifest(@[track]);
 
     XCTAssertEqualObjects(
@@ -296,21 +285,21 @@ static NSError *error_from_csv(NSString *csv)
 
 - (void)testTracksChangedInReturnsSharedTracksWithDifferentHashes;
 {
-    TrackMetadata *changedB = make_metadata(@"b.mp3", 2, 0, 20);
-    TrackMetadata *changedA = make_metadata(@"a.mp3", 1, 0, 10);
+    TrackMetadata *changedB = make_metadata(@"b.mp3", 2, 20);
+    TrackMetadata *changedA = make_metadata(@"a.mp3", 1, 10);
     Manifest *manifest = make_manifest(@[
         changedB,
         changedA,
-        make_metadata(@"same.mp3", 3, 0, 30),
-        make_metadata(@"resized.mp3", 4, 0, 40),
-        make_metadata(@"only-here.mp3", 5, 0, 50),
+        make_metadata(@"same.mp3", 3, 30),
+        make_metadata(@"resized.mp3", 4, 40),
+        make_metadata(@"only-here.mp3", 5, 50),
     ]);
     Manifest *other = make_manifest(@[
-        make_metadata(@"a.mp3", 1, 0, 11),
-        make_metadata(@"b.mp3", 2, 0, 21),
-        make_metadata(@"same.mp3", 3, 0, 30),
-        make_metadata(@"resized.mp3", 44, 0, 40),
-        make_metadata(@"only-there.mp3", 6, 0, 60),
+        make_metadata(@"a.mp3", 1, 11),
+        make_metadata(@"b.mp3", 2, 21),
+        make_metadata(@"same.mp3", 3, 30),
+        make_metadata(@"resized.mp3", 44, 40),
+        make_metadata(@"only-there.mp3", 6, 60),
     ]);
 
     NSArray<TrackMetadata *> *changed = [manifest tracksChangedIn:other];
@@ -323,8 +312,8 @@ static NSError *error_from_csv(NSString *csv)
 
 - (void)testTracksChangedInReturnsTheReceiversMetadata;
 {
-    TrackMetadata *mine = make_metadata(@"a.mp3", 1, 0, 10);
-    TrackMetadata *theirs = make_metadata(@"a.mp3", 2, 0, 11);
+    TrackMetadata *mine = make_metadata(@"a.mp3", 1, 10);
+    TrackMetadata *theirs = make_metadata(@"a.mp3", 2, 11);
     Manifest *manifest = make_manifest(@[mine]);
     Manifest *other = make_manifest(@[theirs]);
 
@@ -336,12 +325,12 @@ static NSError *error_from_csv(NSString *csv)
 - (void)testZeroHashesAreComparedLikeAnyOtherHash;
 {
     Manifest *manifest = make_manifest(@[
-        make_metadata(@"both-zero.mp3", 1, 0, 0),
-        make_metadata(@"one-zero.mp3", 2, 0, 0),
+        make_metadata(@"both-zero.mp3", 1, 0),
+        make_metadata(@"one-zero.mp3", 2, 0),
     ]);
     Manifest *other = make_manifest(@[
-        make_metadata(@"both-zero.mp3", 1, 0, 0),
-        make_metadata(@"one-zero.mp3", 2, 0, 20),
+        make_metadata(@"both-zero.mp3", 1, 0),
+        make_metadata(@"one-zero.mp3", 2, 20),
     ]);
 
     NSArray<TrackMetadata *> *changed = [manifest tracksChangedIn:other];

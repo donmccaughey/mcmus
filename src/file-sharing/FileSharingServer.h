@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, FileSharingServerState) {
                      fileSystem:(id<FileSystem>)fileSystem
                        manifest:(Manifest *)manifest
           musicLibraryDirectory:(NSURL *)musicLibraryDir
-    NS_DESIGNATED_INITIALIZER;
+                   snapshotTime:(time_t)snapshotTime NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (BOOL)startAndReturnError:(NSError **)error;

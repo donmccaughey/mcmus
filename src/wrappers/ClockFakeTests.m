@@ -104,4 +104,22 @@
 }
 
 
+- (void)testCurrentTimeIsTheStartTimeBeforeAdvancing;
+{
+    _clock.startTime = 1700000000;
+
+    XCTAssertEqual([_clock currentTime], (time_t)1700000000);
+}
+
+
+- (void)testCurrentTimeMovesForwardWithAdvance;
+{
+    _clock.startTime = 1700000000;
+
+    [_clock advance:90];
+
+    XCTAssertEqual([_clock currentTime], (time_t)1700000090);
+}
+
+
 @end

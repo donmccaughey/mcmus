@@ -25,8 +25,6 @@ typedef NS_ENUM(NSInteger, ManifestErrorCode) {
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// The manifest CSV has no mtime field, so every track metadata has an mtime
-// of zero.
 - (nullable instancetype)initWithCSV:(NSData *)csv error:(NSError **)error;
 
 - (nullable TrackMetadata *)metadataForRelativePath:(NSString *)relativePath;

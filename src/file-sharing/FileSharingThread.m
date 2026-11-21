@@ -6,6 +6,7 @@
 #import <os/log.h>
 #import <time.h>
 
+#import "Clock.h"
 #import "FileSharingServer.h"
 #import "FileSystem.h"
 #import "LoadMusicLibrary.h"
@@ -226,6 +227,7 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
             [self replyToStartWithPort:0 error:error];
             return;
         }
+        time_t snapshotTime = [_clock currentTime];
 
         NSArray<Track *> *tracks =
             load_tracks_and_log_time(musicLibraryDir, _fileSystem);
@@ -241,6 +243,7 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
         FileSharingServer *server = wroteManifest
             ? [self startServerWithManifest:manifest
                       musicLibraryDirectory:musicLibraryDir
+                               snapshotTime:snapshotTime
                                       error:&error]
             : nil;
         if (!server) {
@@ -265,6 +268,7 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
 
 - (nullable FileSharingServer *)startServerWithManifest:(Manifest *)manifest
                                   musicLibraryDirectory:(NSURL *)musicLibraryDir
+                                           snapshotTime:(time_t)snapshotTime
                                                   error:(NSError **)error;
 {
     FileSharingServer *server =
@@ -272,7 +276,8 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
                                              clock:_clock
                                         fileSystem:_fileSystem
                                           manifest:manifest
-                             musicLibraryDirectory:musicLibraryDir];
+                             musicLibraryDirectory:musicLibraryDir
+                                      snapshotTime:snapshotTime];
     server.onWaitingForClient = ^{ [self->_client serverIsWaitingForClient]; };
     server.onClientConnected = ^(NSString *deviceName) {
         [self->_client serverDidConnectClient:deviceName];

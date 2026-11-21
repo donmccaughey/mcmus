@@ -68,6 +68,12 @@
 }
 
 
+- (time_t)currentTime;
+{
+    return _startTime + (time_t)_now;
+}
+
+
 - (void)advance:(NSTimeInterval)interval;
 {
     NSTimeInterval end = _now + interval;

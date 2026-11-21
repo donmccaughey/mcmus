@@ -86,7 +86,6 @@ static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
     return [[TrackMetadata alloc]
         initWithRelativePath:pathRelativeToMusicLibrary(track, musicLibraryDir)
                         size:size
-                       mtime:mtime
                     fileHash:fileHash];
 }
 

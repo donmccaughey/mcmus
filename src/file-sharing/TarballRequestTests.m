@@ -13,14 +13,14 @@
 
 static NSString *const csvContentType = @"text/csv;charset=UTF-8";
 static const unsigned long long fiftyMegabytes = 50ULL * 1024 * 1024;
+static const time_t snapshotTime = 1700000000;
 
 
 static TrackMetadata *make_metadata(
-    NSString *relativePath, unsigned long long size, time_t mtime)
+    NSString *relativePath, unsigned long long size)
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
-                                                 mtime:mtime
                                               fileHash:1];
 }
 
@@ -63,14 +63,13 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
     [super setUp];
     self.continueAfterFailure = NO;
     _manifest = [[Manifest alloc] initWithTrackMetadata:@[
-        make_metadata(@"Artist/Album/One.mp3", 100, 1700000001),
-        make_metadata(@"Artist/Album/Two.m4a", 200, 1700000002),
-        make_metadata(
-            @"Piaf, Edith/La Vie en rose (slow chanté).mp3", 300, 1700000003),
-        make_metadata(@"Big/Fifty.mp3", fiftyMegabytes, 0),
-        make_metadata(@"Big/Fifty More.mp3", fiftyMegabytes, 0),
-        make_metadata(@"Big/One Byte.mp3", 1, 0),
-        make_metadata(@"Big/Huge.mp3", 3 * fiftyMegabytes, 0),
+        make_metadata(@"Artist/Album/One.mp3", 100),
+        make_metadata(@"Artist/Album/Two.m4a", 200),
+        make_metadata(@"Piaf, Edith/La Vie en rose (slow chanté).mp3", 300),
+        make_metadata(@"Big/Fifty.mp3", fiftyMegabytes),
+        make_metadata(@"Big/Fifty More.mp3", fiftyMegabytes),
+        make_metadata(@"Big/One Byte.mp3", 1),
+        make_metadata(@"Big/Huge.mp3", 3 * fiftyMegabytes),
     ]];
 }
 
@@ -78,8 +77,8 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
 - (NSArray<TarballEntry *> *)entriesForCSV:(NSString *)csv;
 {
     NSError *error = nil;
-    NSArray<TarballEntry *> *entries =
-        parseTarballRequest(post_files(csvContentType, csv), _manifest, &error);
+    NSArray<TarballEntry *> *entries = parseTarballRequest(
+        post_files(csvContentType, csv), _manifest, snapshotTime, &error);
     XCTAssertNotNil(entries, @"%@", error);
     return entries;
 }
@@ -90,7 +89,7 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
           description:(NSString *)description;
 {
     NSError *error = nil;
-    XCTAssertNil(parseTarballRequest(request, _manifest, &error));
+    XCTAssertNil(parseTarballRequest(request, _manifest, snapshotTime, &error));
     XCTAssertEqualObjects(error.domain, TarballRequestErrorDomain);
     XCTAssertEqual(error.code, code);
     XCTAssertEqualObjects(error.localizedDescription, description);
@@ -122,14 +121,25 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
 }
 
 
-- (void)testEntriesTakeSizeAndMtimeFromTheManifest;
+- (void)testEntriesTakeSizeFromTheManifest;
 {
     NSArray<TarballEntry *> *entries =
         [self entriesForCSV:@"path\r\nArtist/Album/Two.m4a\r\n"];
 
     XCTAssertEqual(entries.count, 1UL);
     XCTAssertEqual(entries[0].size, 200ULL);
-    XCTAssertEqual(entries[0].mtime, 1700000002);
+}
+
+
+- (void)testEveryEntryHasTheSnapshotTimeAsItsMtime;
+{
+    NSArray<TarballEntry *> *entries =
+        [self entriesForCSV:@"path\r\n"
+                            @"Artist/Album/Two.m4a\r\n"
+                            @"Artist/Album/One.mp3\r\n"];
+
+    XCTAssertEqualObjects(
+        [entries valueForKey:@"mtime"], (@[@(snapshotTime), @(snapshotTime)]));
 }
 
 

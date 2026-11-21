@@ -79,6 +79,7 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     id<FileSystem> _fileSystem;
     Manifest *_manifest;
     NSURL *_musicLibraryDir;
+    time_t _snapshotTime;
     id<NetworkListener> _Nullable _listener;
     id<NetworkAdvertisement> _Nullable _advertisement;
     NSMutableArray<FileSharingConnection *> *_connections;
@@ -92,7 +93,8 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
                           clock:(id<Clock>)clock
                      fileSystem:(id<FileSystem>)fileSystem
                        manifest:(Manifest *)manifest
-          musicLibraryDirectory:(NSURL *)musicLibraryDir;
+          musicLibraryDirectory:(NSURL *)musicLibraryDir
+                   snapshotTime:(time_t)snapshotTime;
 {
     self = [super init];
     if (!self) return nil;
@@ -102,6 +104,7 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     _fileSystem = fileSystem;
     _manifest = manifest;
     _musicLibraryDir = musicLibraryDir;
+    _snapshotTime = snapshotTime;
     _connections = [NSMutableArray new];
 
     return self;
@@ -328,7 +331,7 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     BOOL closes = request.closesConnection;
     NSError *error = nil;
     NSArray<TarballEntry *> *entries =
-        parseTarballRequest(request, _manifest, &error);
+        parseTarballRequest(request, _manifest, _snapshotTime, &error);
     if (!entries) {
         [connection respond:makeHTTPTextResponse(HTTPStatusBadRequest,
                                 error.localizedDescription, closes)

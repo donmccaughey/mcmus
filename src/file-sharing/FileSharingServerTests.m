@@ -52,6 +52,9 @@ static NSData *rose_contents(void)
 }
 
 
+static const time_t snapshotTime = 1700000000;
+
+
 static NSURL *snapshot_directory(void)
 {
     return [NSURL fileURLWithPath:@"/snapshot" isDirectory:YES];
@@ -75,7 +78,6 @@ static TrackMetadata *make_metadata(
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
-                                                 mtime:1700000000
                                               fileHash:fileHash];
 }
 
@@ -203,7 +205,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
                                                    clock:_clock
                                               fileSystem:_fileSystem
                                                 manifest:make_manifest()
-                                   musicLibraryDirectory:snapshot_directory()];
+                                   musicLibraryDirectory:snapshot_directory()
+                                            snapshotTime:snapshotTime];
     NSMutableArray<NSString *> *events = [NSMutableArray new];
     _events = events;
     _server.onWaitingForClient = ^{ [events addObject:@"waiting"]; };
@@ -503,6 +506,19 @@ static NSUInteger count_of(NSString *part, NSString *text)
         @[songPath, song_contents()],
     ]));
     XCTAssertFalse(connection.isClosed);
+}
+
+
+- (void)testPostFilesGivesEveryTarballEntryTheSnapshotTimeAsItsMtime;
+{
+    [self start];
+
+    NetworkConnectionFake *connection =
+        [self connectAndPostFiles:tarball_csv(@[rosePath, songPath])];
+
+    XCTAssertEqualObjects(
+        readTarModificationTimes(body_of(connection.sentData)),
+        (@[@(snapshotTime), @(snapshotTime)]));
 }
 
 

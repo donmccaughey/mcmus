@@ -43,4 +43,10 @@
 }
 
 
+- (time_t)currentTime;
+{
+    return time(NULL);
+}
+
+
 @end
