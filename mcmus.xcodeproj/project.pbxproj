@@ -504,8 +504,6 @@
 				model/LoadMusicLibrary.m,
 				model/LoadResult.h,
 				model/LoadResult.m,
-				model/LoadTrackMetadata.h,
-				model/LoadTrackMetadata.m,
 				model/MusicLibrary.h,
 				model/MusicLibrary.m,
 				model/MusicRootDirectory.h,
@@ -518,22 +516,18 @@
 				model/QueuedTrack.m,
 				model/Track.h,
 				model/Track.m,
-				model/TrackMetadata.h,
-				model/TrackMetadata.m,
 			);
 			publicHeaders = (
 				model/Folder.h,
 				model/FolderChild.h,
 				model/LoadMusicLibrary.h,
 				model/LoadResult.h,
-				model/LoadTrackMetadata.h,
 				model/MusicLibrary.h,
 				model/MusicRootDirectory.h,
 				model/Player.h,
 				model/Queue.h,
 				model/QueuedTrack.h,
 				model/Track.h,
-				model/TrackMetadata.h,
 			);
 			target = D4DEF141309FB00900B3F3CB /* model */;
 		};
@@ -542,7 +536,6 @@
 			membershipExceptions = (
 				model/FolderTests.m,
 				model/LoadMusicLibraryTests.m,
-				model/LoadTrackMetadataTests.m,
 				model/MusicLibraryTests.m,
 				model/MusicRootDirectoryTests.m,
 				model/PlayerTests.m,
@@ -862,17 +855,24 @@
 		D4F7A00030D1000000000003 /* Exceptions for "src" folder in "file-transfer" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"file-transfer/LoadTrackMetadata.h",
+				"file-transfer/LoadTrackMetadata.m",
 				"file-transfer/Manifest.h",
 				"file-transfer/Manifest.m",
+				"file-transfer/TrackMetadata.h",
+				"file-transfer/TrackMetadata.m",
 			);
 			publicHeaders = (
+				"file-transfer/LoadTrackMetadata.h",
 				"file-transfer/Manifest.h",
+				"file-transfer/TrackMetadata.h",
 			);
 			target = D4F7A00030D100000000000A /* file-transfer */;
 		};
 		D4F7A00030D1000000000004 /* Exceptions for "src" folder in "file-transfer-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"file-transfer/LoadTrackMetadataTests.m",
 				"file-transfer/ManifestTests.m",
 			);
 			target = D4F7A00030D100000000000B /* file-transfer-tests */;
@@ -1147,7 +1147,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4DEF162309FB05B00B3F3CB /* libwrappers.a in Frameworks */,
-				D4D092B030A5000000000001 /* libxxHash.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1174,6 +1173,7 @@
 				D4F7A00030D1000000000021 /* libmodel.a in Frameworks */,
 				D4F7A00030D1000000000022 /* libcsv.a in Frameworks */,
 				D4F7A00030D1000000000023 /* libtarball.a in Frameworks */,
+				D4D092B030A5000000000001 /* libxxHash.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1651,7 +1651,6 @@
 			);
 			dependencies = (
 				D4DEF164309FB05B00B3F3CB /* PBXTargetDependency */,
-				D4D092B030A5000000000003 /* PBXTargetDependency */,
 			);
 			name = model;
 			packageProductDependencies = (
@@ -1714,6 +1713,7 @@
 				D4F7A00030D1000000000221 /* PBXTargetDependency */,
 				D4F7A00030D1000000000222 /* PBXTargetDependency */,
 				D4F7A00030D1000000000223 /* PBXTargetDependency */,
+				D4D092B030A5000000000003 /* PBXTargetDependency */,
 			);
 			name = "file-transfer";
 			packageProductDependencies = (

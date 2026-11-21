@@ -170,8 +170,8 @@ the **file-transfer** library, with code and unit tests placed in the
 `src/file-transfer/` subdirectory.
 
 The file-transfer library shall depend on the wrappers, model, csv and tarball
-libraries; file-transfer unit tests shall also depend on the wrappers-fakes
-library.
+libraries and the `xxHash` library; file-transfer unit tests shall also depend
+on the wrappers-fakes library.
 
 The MC Mus project shall place code for file sharing in the **file-sharing**
 library, with code and unit tests placed in the `src/file-sharing/`
@@ -398,20 +398,6 @@ shall return a load result containing an empty music library and the error.
 If it encounters an error while walking a subdirectory or file, the load music
 library function shall add the error to the load result and continue walking.
 
-MC Mus shall have a **load track metadata** function that is called with a list
-of tracks and the root directory of the music library the tracks were loaded
-from, and returns a list of track metadata, in the order of the given tracks,
-along with the list of errors encountered, which is empty when loading succeeded
-completely.
-
-If it cannot read the size of a track's music file, the load track metadata
-function shall add the error to the list of errors, omit that track from the
-returned track metadata and continue with the next track.
-
-If it cannot calculate the hash of a track's music file, the load track metadata
-function shall add the error to the list of errors and return track metadata for
-that track with a file hash of zero.
-
 
 ## Folder
 
@@ -437,25 +423,6 @@ file. A track exposes these properties:
     - **artist name** is the localized display name of the grandparent folder or
       "(no artist)" if the track is a child or grandchild of the root folder
     - **path** is the absolute path to the music file
-
-
-## Track metadata
-
-The **track relative path** is the track path relative to the root folder of a
-given music library, where the music library may be loaded from the music root
-directory or the snapshot inside the working directory.
-
-A **track metadata** holds the facts about a track's music file that are
-gathered by reading the file. A track metadata has these properties:
-
-    - **relative path** is the track relative path of the track the metadata
-      describes
-    - **size** is the music file size in bytes, as given by `stat.st_size` or
-      equivalent library call
-    - **mtime** is the music file last modified time in `time_t` format as given
-      by `stat.mtime` or equivalent library call
-    - **file hash** is the XXH3 64-bit hash of the contents of the music file,
-      or zero if the hash could not be calculated
 
 
 ## Queue
@@ -708,6 +675,39 @@ wrapper and a 1 MB buffer for reading file data.
 
 The file transfer module shall contain code shared between the file sharing and
 file syncing modules.
+
+
+## Track metadata
+
+The **track relative path** is the track path relative to the root folder of a
+given music library, where the music library may be loaded from the music root
+directory or the snapshot inside the working directory.
+
+A **track metadata** holds the facts about a track's music file that are
+gathered by reading the file. A track metadata has these properties:
+
+    - **relative path** is the track relative path of the track the metadata
+      describes
+    - **size** is the music file size in bytes, as given by `stat.st_size` or
+      equivalent library call
+    - **mtime** is the music file last modified time in `time_t` format as given
+      by `stat.mtime` or equivalent library call
+    - **file hash** is the XXH3 64-bit hash of the contents of the music file,
+      or zero if the hash could not be calculated
+
+MC Mus shall have a **load track metadata** function that is called with a list
+of tracks and the root directory of the music library the tracks were loaded
+from, and returns a list of track metadata, in the order of the given tracks,
+along with the list of errors encountered, which is empty when loading succeeded
+completely.
+
+If it cannot read the size of a track's music file, the load track metadata
+function shall add the error to the list of errors, omit that track from the
+returned track metadata and continue with the next track.
+
+If it cannot calculate the hash of a track's music file, the load track metadata
+function shall add the error to the list of errors and return track metadata for
+that track with a file hash of zero.
 
 
 ## Manifest
