@@ -1,7 +1,3 @@
-#import <TargetConditionals.h>
-#if TARGET_OS_OSX
-
-
 #import <XCTest/XCTest.h>
 
 #import "Manifest.h"
@@ -116,6 +112,3 @@ static NSString *csv_text(Manifest *manifest)
 
 
 @end
-
-
-#endif

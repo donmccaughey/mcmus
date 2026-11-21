@@ -1,8 +1,5 @@
 #import "Manifest.h"
 
-#if TARGET_OS_OSX
-
-
 #import "CSV.h"
 #import "TrackMetadata.h"
 
@@ -94,6 +91,3 @@ static NSArray<NSArray<NSString *> *> *manifest_records(
 
 
 @end
-
-
-#endif

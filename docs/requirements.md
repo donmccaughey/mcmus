@@ -165,12 +165,28 @@ subdirectory.
 The tarball library shall depend on the wrappers library and the `libarchive`
 library; tarball unit tests shall also depend on the wrappers-fakes library.
 
+The MC Mus project shall place common code for file sharing and file syncing in
+the **file-transfer** library, with code and unit tests placed in the
+`src/file-transfer/` subdirectory.
+
+The file-transfer library shall depend on the wrappers, model, csv and tarball
+libraries; file-transfer unit tests shall also depend on the wrappers-fakes
+library.
+
 The MC Mus project shall place code for file sharing in the **file-sharing**
 library, with code and unit tests placed in the `src/file-sharing/`
 subdirectory.
 
-The file-sharing library shall depend on the wrappers, model, snapshot, csv and
-tarball libraries; file-sharing unit tests shall also depend on the
+The file-sharing library shall depend on the wrappers, model, snapshot, csv,
+tarball and file-transfer libraries; file-sharing unit tests shall also depend
+on the wrappers-fakes library.
+
+The MC Mus project shall place code for file syncing in the **file-syncing**
+library, with code and unit tests placed in the `src/file-syncing/`
+subdirectory.
+
+The file-syncing library shall depend on the wrappers, model, csv, tarball and
+file-transfer libraries; file-syncing unit tests shall also depend on the
 wrappers-fakes library.
 
 
@@ -682,35 +698,10 @@ The next buffer method shall use a file reader obtained from the file system
 wrapper and a 1 MB buffer for reading file data.
 
 
-# File sharing
+# File transfer
 
-The file sharing module shall consist of the file sharing object and the file
-sharing thread.
-
-The **file sharing object** shall define the high level interface between the
-app and the file sharing thread.
-
-The file sharing object shall run on the app's main thread.
-
-The file sharing object shall be given the music root directory and the working
-directory when it is created.
-
-If it has no music root directory or no working directory when started, the file
-sharing object shall report an error and remain off.
-
-While sharing, the file sharing object shall expose the port the file sharing
-server is listening on.
-
-The **file sharing thread** shall manage the background thread and run loop
-where file sharing operations run.
-
-When started, the file sharing thread shall take a snapshot of the music
-directory inside the working directory, load tracks and track metadata from the
-snapshot, build the manifest, write the manifest CSV to the working directory
-and start the file sharing server.
-
-When stopped, the file sharing thread shall stop the file sharing server, remove
-the manifest CSV and remove the snapshot.
+The file transfer module shall contain code shared between the file sharing and
+file syncing modules.
 
 
 ## Manifest
@@ -746,11 +737,42 @@ using the XXH3 64-bit hash algorithm, in the hash field as a decimal integer;
 the file hash digest shall be stored in the XXH3 hash preferred digest integer
 format, which is big endian.
 
+
+# File sharing
+
+The file sharing module shall consist of the file sharing object and the file
+sharing thread.
+
+The **file sharing object** shall define the high level interface between the
+app and the file sharing thread.
+
+The file sharing object shall run on the app's main thread.
+
+The file sharing object shall be given the music root directory and the working
+directory when it is created.
+
+If it has no music root directory or no working directory when started, the file
+sharing object shall report an error and remain off.
+
+While sharing, the file sharing object shall expose the port the file sharing
+server is listening on.
+
+The **file sharing thread** shall manage the background thread and run loop
+where file sharing operations run.
+
+When started, the file sharing thread shall take a snapshot of the music
+directory inside the working directory, load tracks and track metadata from the
+snapshot, build the manifest, write the manifest CSV to the working directory
+and start the file sharing server.
+
 The manifest CSV file shall be saved to the file sharing working directory with
 the filename `manifest.csv`.
 
 If a previous manifest CSV exists in the file sharing working directory, the
 file sharing thread shall overwrite it.
+
+When stopped, the file sharing thread shall stop the file sharing server, remove
+the manifest CSV and remove the snapshot.
 
 
 ## File sharing server
@@ -1107,6 +1129,32 @@ script exit status to non-zero.
 When all POST `/files` request have completed and optionally all tar files
 extracted, the `full-sync` shall exit with a zero status if no POST `/files`
 request failed or non-zero otherwise.
+
+
+# File syncing
+
+The file syncing module shall synchronize the local music library with the file
+sharing server.
+
+The **file syncing object** shall define the high level interface between the
+app and file syncing operations.
+
+The file syncing object shall run on the app's main thread.
+
+The file syncing object shall run operations asynchronously on a dispatch queue
+with background priority.
+
+The file syncing object shall be given the music root directory and the working
+directory when it is created.
+
+The **old manifest** is a manifest initialized from the manifest CSV file saved
+after the client's previous file sync.
+
+When there is no manifest CSV present, the file syncing object shall create an
+empty old manifest.
+
+
+
 
 
 # Launch behavior

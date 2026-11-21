@@ -29,6 +29,13 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D4F7A00030D100000000000B",
+        "name" : "file-transfer-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
         "identifier" : "D3A5000000000000000000F2",
         "name" : "app-tests"
       }
