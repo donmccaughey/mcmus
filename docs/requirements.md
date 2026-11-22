@@ -1172,17 +1172,112 @@ The file syncing object shall run on the app's main thread.
 The file syncing object shall run operations asynchronously on a dispatch queue
 with background priority.
 
-The file syncing object shall be given the music root directory and the working
-directory when it is created.
+The file syncing object shall be given the music root directory, the manifest
+CSV file path and the working directory when it is initialized.
 
-The **old manifest** is a manifest initialized from the manifest CSV file saved
-after the client's previous file sync.
+On iOS, the working directory shall be a subdirectory of the standard
+application support directory named `sync/`.
 
-When there is no manifest CSV present, the file syncing object shall create an
+When the file syncing object is initialized, it shall remove all files from the
+working directory.
+
+The **old manifest** is a manifest initialized from the file at the manifest CSV
+file path.
+
+When the manifest CSV file is missing, the file syncing object shall create an
 empty old manifest.
 
+The file syncing object shall have a "sync" method.
 
+On iOS, in debug builds, when the sync method is called, the file syncing object
+shall log the absolute path of the working directory.
 
+When the sync method is called, the file syncing object shall locate the file
+sharing server using Bonjour.
+
+If locating the file sharing server fails, the file syncing object shall return
+an error.
+
+The **new manifest** is a manifest initialized from the manifest CSV returned by
+the file sharing server.
+
+When it has located the file sharing server, the file syncing object shall get
+the manifest CSV from the file sharing server, write it to the working directory
+with the name `new-manifest.csv` and use it to create the new manifest.
+
+If getting the manifest CSV fails, the file syncing object shall stop syncing
+and return an error.
+
+The **removed tracks list** is an array of track metadata objects for tracks
+that are present in the old manifest but missing from the new manifest.
+
+The **new tracks list** is an array of track metadata objects for tracks that
+are present in the new manifest but missing from the old manifest.
+
+The **changed tracks list** is an array of track metadata objects for tracks
+that are present in both the old manifest and the new manifest but have
+different file hashes.
+
+When it has created the new manifest, the file syncing object shall use the old
+manifest and the new manifest to create the removed tracks list, the new tracks
+list and the changed tracks list.
+
+When it has calculated the removed tracks list, the file syncing object shall
+delete each track in the list from the music library.
+
+If deletion of a track fails, the file syncing object shall log the error and
+continue.
+
+The **full files list** is an array of track metadata objects created by joining
+the new tracks list and the changed tracks list and sorting it by track relative
+path in lexographic order.
+
+When it has finished deleting tracks, the file syncing object shall create the
+full files list.
+
+A **tarball list** is an array of track metadata objects that either: contains
+one track metadata object with a size equal to or exceeding 100 MB; or contains
+one or more track metadata objects with sizes adding up to less than 100 MB.
+
+When it has created the full files list, the file syncing object shall create
+tarball lists by breaking the full files list into ordered segments that meet
+the tarball list criteria.
+
+When it has created the tarball lists, the file syncing object shall write each
+tarball list to a tarball CSV in the working directory with sequential names
+`files-001.csv`, `files-002.csv`, etc.
+
+The **sync files operation** consists of these steps: read a tarball CSV into
+memory, delete the tarball CSV from the working directory, post the tarball CSV
+to the file sharing server at the `/files` endpoint and extract track files from
+the tar file in the response body into the music library.
+
+The sync files operation shall use a task in a background URL session to post
+the tarball CSV to the file sharing server's `/files` endpoint so that these
+requests continue in the background when the app is suspended or shut down.
+
+The file syncing object shall perform up to six sync files operations
+simultaneously.
+
+The file syncing object shall ensure that sync files operations are created in a
+manner that prevents a race condition when choose the next tarball CSV file from
+the working directory.
+
+If a sync files operation fails, the file syncing object shall log an error,
+append the error log message to the `sync-errors.txt` file in the working
+directory (creating it if it doesn't exist) and continue.
+
+When a sync files operation completes and there are remaining tarball CSV files
+in the working directory, the file syncing object shall create a new sync files
+operation for the next tarball CSV file in order.
+
+When it has completed syncing and the `sync-errors.txt` file is not present in
+the working directory, the file syncing object shall copy the `new-manifest.csv`
+file to the manifest CSV path, overwriting that file if it exists.
+
+When it has completed syncing and the `sync-errors.txt` file is present in the
+working directory, the file syncing object shall delete the file at the manifest
+CSV path if it exists to force a full resync on the next sync.
 
 
 # Launch behavior
