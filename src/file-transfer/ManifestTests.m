@@ -340,4 +340,106 @@ static NSError *error_from_csv(NSString *csv)
 }
 
 
+- (void)testAddOrReplaceTrackAddsATrackWithANewPath;
+{
+    TrackMetadata *existing = make_metadata(@"a.mp3", 1, 10);
+    TrackMetadata *added = make_metadata(@"b.mp3", 2, 20);
+    Manifest *manifest = make_manifest(@[existing]);
+
+    [manifest addOrReplaceTrack:added];
+
+    XCTAssertEqual(manifest.trackCount, 2UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"a.mp3"], existing);
+    XCTAssertEqual([manifest metadataForRelativePath:@"b.mp3"], added);
+}
+
+
+- (void)testAddOrReplaceTrackReplacesATrackWithTheSamePath;
+{
+    TrackMetadata *replacement = make_metadata(@"a.mp3", 2, 20);
+    Manifest *manifest = make_manifest(@[make_metadata(@"a.mp3", 1, 10)]);
+
+    [manifest addOrReplaceTrack:replacement];
+
+    XCTAssertEqual(manifest.trackCount, 1UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"a.mp3"], replacement);
+}
+
+
+- (void)testCSVReflectsTracksAddedAndReplacedAfterItWasRead;
+{
+    Manifest *manifest = make_manifest(@[make_metadata(@"b.mp3", 2, 20)]);
+    XCTAssertEqualObjects(
+        csv_text(manifest), @"path,size,hash\r\nb.mp3,2,20\r\n");
+
+    [manifest addOrReplaceTrack:make_metadata(@"a.mp3", 1, 10)];
+    [manifest addOrReplaceTrack:make_metadata(@"b.mp3", 22, 21)];
+
+    XCTAssertEqualObjects(
+        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,22,21\r\n");
+}
+
+
+- (void)testAddOrReplaceTracksFromArrayAddsAndReplaces;
+{
+    TrackMetadata *kept = make_metadata(@"kept.mp3", 1, 10);
+    TrackMetadata *replacement = make_metadata(@"replaced.mp3", 3, 30);
+    TrackMetadata *added = make_metadata(@"added.mp3", 4, 40);
+    Manifest *manifest =
+        make_manifest(@[kept, make_metadata(@"replaced.mp3", 2, 20)]);
+
+    [manifest addOrReplaceTracksFromArray:@[replacement, added]];
+
+    XCTAssertEqual(manifest.trackCount, 3UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"kept.mp3"], kept);
+    XCTAssertEqual(
+        [manifest metadataForRelativePath:@"replaced.mp3"], replacement);
+    XCTAssertEqual([manifest metadataForRelativePath:@"added.mp3"], added);
+}
+
+
+- (void)testAddOrReplaceTracksFromArrayKeepsTheLastOfDuplicatePaths;
+{
+    TrackMetadata *last = make_metadata(@"a.mp3", 2, 20);
+    Manifest *manifest = make_manifest(@[]);
+
+    [manifest
+        addOrReplaceTracksFromArray:@[make_metadata(@"a.mp3", 1, 10), last]];
+
+    XCTAssertEqual(manifest.trackCount, 1UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"a.mp3"], last);
+}
+
+
+- (void)testAddOrReplaceTracksFromEmptyArrayChangesNothing;
+{
+    TrackMetadata *track = make_metadata(@"a.mp3", 1, 10);
+    Manifest *manifest = make_manifest(@[track]);
+
+    [manifest addOrReplaceTracksFromArray:@[]];
+
+    XCTAssertEqual(manifest.trackCount, 1UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"a.mp3"], track);
+}
+
+
+- (void)testTracksMissingFromAndChangedInSeeAddedAndReplacedTracks;
+{
+    TrackMetadata *added = make_metadata(@"added.mp3", 1, 10);
+    TrackMetadata *replacement = make_metadata(@"shared.mp3", 2, 21);
+    Manifest *manifest = make_manifest(@[make_metadata(@"shared.mp3", 2, 20)]);
+    Manifest *other = make_manifest(@[make_metadata(@"shared.mp3", 2, 20)]);
+
+    [manifest addOrReplaceTracksFromArray:@[added, replacement]];
+
+    XCTAssertEqualObjects([manifest tracksMissingFrom:other], @[added]);
+    XCTAssertEqualObjects([manifest tracksChangedIn:other], @[replacement]);
+
+    [other addOrReplaceTracksFromArray:@[added, replacement]];
+
+    XCTAssertEqualObjects([manifest tracksMissingFrom:other], @[]);
+    XCTAssertEqualObjects([manifest tracksChangedIn:other], @[]);
+}
+
+
 @end

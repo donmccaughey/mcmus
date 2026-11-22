@@ -7,18 +7,6 @@
 NSErrorDomain const ManifestErrorDomain = @"ManifestErrorDomain";
 
 
-static NSDictionary<NSString *, TrackMetadata *> *metadata_by_relative_path(
-    NSArray<TrackMetadata *> *metadata)
-{
-    NSMutableDictionary<NSString *, TrackMetadata *> *metadataByRelativePath =
-        [NSMutableDictionary dictionaryWithCapacity:metadata.count];
-    for (TrackMetadata *trackMetadata in metadata) {
-        metadataByRelativePath[trackMetadata.relativePath] = trackMetadata;
-    }
-    return metadataByRelativePath;
-}
-
-
 // Orders paths by their UTF-8 bytes, so that the order does not depend on
 // the locale or on Unicode normalization.
 static NSComparisonResult compare_paths_by_bytes(
@@ -140,7 +128,8 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 
 
 @implementation Manifest {
-    NSDictionary<NSString *, TrackMetadata *> *_metadataByRelativePath;
+    NSMutableDictionary<NSString *, TrackMetadata *> *_metadataByRelativePath;
+    NSData *_Nullable _cachedCSV;
 }
 
 
@@ -149,8 +138,9 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
     self = [super init];
     if (!self) return nil;
 
-    _metadataByRelativePath = metadata_by_relative_path(metadata);
-    _csv = generateCSV(manifest_records(_metadataByRelativePath));
+    _metadataByRelativePath =
+        [NSMutableDictionary dictionaryWithCapacity:metadata.count];
+    [self addOrReplaceTracksFromArray:metadata];
 
     return self;
 }
@@ -174,6 +164,33 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 - (nullable TrackMetadata *)metadataForRelativePath:(NSString *)relativePath;
 {
     return _metadataByRelativePath[relativePath];
+}
+
+
+// The file sharing server reads the CSV on every manifest request, while
+// file syncing adds tracks one at a time, so the CSV is generated on demand
+// and kept until the next change.
+- (NSData *)csv;
+{
+    if (!_cachedCSV) {
+        _cachedCSV = generateCSV(manifest_records(_metadataByRelativePath));
+    }
+    return _cachedCSV;
+}
+
+
+- (void)addOrReplaceTrack:(TrackMetadata *)trackMetadata;
+{
+    _metadataByRelativePath[trackMetadata.relativePath] = trackMetadata;
+    _cachedCSV = nil;
+}
+
+
+- (void)addOrReplaceTracksFromArray:(NSArray<TrackMetadata *> *)metadata;
+{
+    for (TrackMetadata *trackMetadata in metadata) {
+        [self addOrReplaceTrack:trackMetadata];
+    }
 }
 
 

@@ -747,6 +747,14 @@ track metadata objects.
 The manifest data structure shall have an initializer that accepts a manifest
 CSV stored in a data object.
 
+The manifest data structure shall have an "add or replace track" method that
+takes a track metadata object and replaces an existing object with the same
+track relative path or adds it if no object has the same track relative path.
+
+The manifest data structure shall have an "add or replace tracks from array"
+method that takes an array of track metadata objects and has the same effect as
+calling the "add or replace track" method on each item in the array sequentially.
+
 The manifest data structure shall have a "tracks missing from" method that
 accepts another manifest data structure as the "missing from" parameter and
 returns the array of track metadata objects that are pressent in the method's
@@ -1161,45 +1169,73 @@ request failed or non-zero otherwise.
 
 # File syncing
 
-The file syncing module shall synchronize the local music library with the file
-sharing server.
+TODO: redesign to support background URL sessions on iOS.
 
-The **file syncing object** shall define the high level interface between the
-app and file syncing operations.
+The file syncing module shall consist of the file syncing and supporting code.
 
-The file syncing object shall run on the app's main thread.
+The **file syncing client** shall define the high level interface between the
+app and the rest of the file syncing module.
 
-The file syncing object shall run operations asynchronously on a dispatch queue
-with background priority.
+The **file syncing delegate** shall define the set of methods that the file
+syncing client calls to inform the app of status changes.
 
-The file syncing object shall be given the music root directory, the manifest
-CSV file path and the working directory when it is initialized.
+The **old manifest** is a manifest that represents the state of the client music
+library at the start of file syncing.
 
-On iOS, the working directory shall be a subdirectory of the standard
-application support directory named `sync/`.
+The **server manifest** is a manifest created from the manifest CSV returned by
+the file sharing server.
 
-When the file syncing object is initialized, it shall remove all files from the
-working directory.
+The **new manifest** is a manifest that is built incrementally during the
+syncing process.
 
-The **old manifest** is a manifest initialized from the file at the manifest CSV
-file path.
+The **removed tracks list** is an array of track metadata objects for tracks
+that are present in the old manifest but missing from the server manifest.
+
+The **new tracks list** is an array of track metadata objects for tracks that
+are present in the server manifest but missing from the old manifest.
+
+The **changed tracks list** is an array of track metadata objects for tracks
+that are present in both the old manifest and the server manifest but have
+different file hashes.
+
+The **new files list** is an array of track metadata objects created by joining
+the new tracks list and the changed tracks list and sorting it by track relative
+path in lexographic order.
+
+A **tarball list** is an array of track metadata objects that either: contains
+one track metadata object with a size equal to or exceeding 100 MB; or contains
+one or more track metadata objects with sizes adding up to less than 100 MB.
+
+The **sync state** is one of: ready, finding server, getting manifest,
+removing tracks, fetching files, done or error.
+
+
+
+The file sync client shall have an initializer that takes the music root
+directory, the manifest CSV file path and the working directory.
+
+
+
+When initializing, the file sync client shall read the old manifest from the
+manifest CSV file path.
 
 When the manifest CSV file is missing, the file syncing object shall create an
 empty old manifest.
 
-The file syncing object shall have a "sync" method.
+When initializing, the file sync client shall delete all files from the working
+directory.
 
-On iOS, in debug builds, when the sync method is called, the file syncing object
-shall log the absolute path of the working directory.
+On iOS, in debug builds, when initializing, the file sync client shall log the
+absolute path of the working directory.
 
 When the sync method is called, the file syncing object shall locate the file
-sharing server using Bonjour.
+sharing server using Bonjour and the service name `_mcmus._tcp`.
 
-If locating the file sharing server fails, the file syncing object shall return
-an error.
+If locating the file sharing server fails, the file syncing object shall stop
+syncing and return an error.
 
-The **new manifest** is a manifest initialized from the manifest CSV returned by
-the file sharing server.
+If locating the file sharing server takes longer than five seconds, the file
+syncing object shall stop syncing and return an error.
 
 When it has located the file sharing server, the file syncing object shall get
 the manifest CSV from the file sharing server, write it to the working directory
@@ -1207,16 +1243,6 @@ with the name `new-manifest.csv` and use it to create the new manifest.
 
 If getting the manifest CSV fails, the file syncing object shall stop syncing
 and return an error.
-
-The **removed tracks list** is an array of track metadata objects for tracks
-that are present in the old manifest but missing from the new manifest.
-
-The **new tracks list** is an array of track metadata objects for tracks that
-are present in the new manifest but missing from the old manifest.
-
-The **changed tracks list** is an array of track metadata objects for tracks
-that are present in both the old manifest and the new manifest but have
-different file hashes.
 
 When it has created the new manifest, the file syncing object shall use the old
 manifest and the new manifest to create the removed tracks list, the new tracks
@@ -1228,16 +1254,8 @@ delete each track in the list from the music library.
 If deletion of a track fails, the file syncing object shall log the error and
 continue.
 
-The **full files list** is an array of track metadata objects created by joining
-the new tracks list and the changed tracks list and sorting it by track relative
-path in lexographic order.
-
 When it has finished deleting tracks, the file syncing object shall create the
 full files list.
-
-A **tarball list** is an array of track metadata objects that either: contains
-one track metadata object with a size equal to or exceeding 100 MB; or contains
-one or more track metadata objects with sizes adding up to less than 100 MB.
 
 When it has created the full files list, the file syncing object shall create
 tarball lists by breaking the full files list into ordered segments that meet
