@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		D41B86DD309FB23700136AE5 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
+		D43DC18A30B3C78F00C6052F /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
+		D43DC18B30B3C78F00C6052F /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D43DC18C30B3C78F00C6052F /* libmodel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF148309FB00900B3F3CB /* libmodel.a */; };
+		D43DC18D30B3C78F00C6052F /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
+		D43DC18E30B3C78F00C6052F /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
+		D43DC18F30B3C78F00C6052F /* libfile-transfer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7A00030D1000000000001 /* libfile-transfer.a */; };
 		D45A7E0030C1000000000003 /* libfile-sharing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D49BFC4730A26EAF00AED804 /* libfile-sharing.a */; };
 		D45A7E0030C1000000000004 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000001 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
@@ -70,6 +76,48 @@
 			proxyType = 1;
 			remoteGlobalIDString = D4DEF0BC309FA6D800B3F3CB;
 			remoteInfo = wrappersfakes;
+		};
+		D43DC17B30B3C78F00C6052F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4E7A10030B0000000000001;
+			remoteInfo = libarchive;
+		};
+		D43DC17D30B3C78F00C6052F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D43DC17F30B3C78F00C6052F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4DEF141309FB00900B3F3CB;
+			remoteInfo = model;
+		};
+		D43DC18130B3C78F00C6052F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4C5A00030A400000000000A;
+			remoteInfo = csv;
+		};
+		D43DC18330B3C78F00C6052F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
+		};
+		D43DC18530B3C78F00C6052F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4F7A00030D100000000000A;
+			remoteInfo = "file-transfer";
 		};
 		D45A7E0030C1000000000005 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -437,6 +485,7 @@
 		D41DFEB0308C305900FEA684 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D41DFEB1308C305900FEA684 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D43B75F430A58FE900B14D7B /* .clang-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
+		D43DC19330B3C78F00C6052F /* libfile-syncing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfile-syncing.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4566B11309F9ECF0013DCF4 /* libwrappers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwrappers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45A7E0030C1000000000001 /* share-test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "share-test"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45A7E0030C1000000000002 /* share-test-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "share-test-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -594,6 +643,19 @@
 				app/settings/SettingsWindowController.m,
 			);
 			target = D3A5000000000000000000C0 /* app */;
+		};
+		D43DC19B30B3C7E500C6052F /* Exceptions for "src" folder in "file-syncing" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"file-syncing/FileSyncing.h",
+				"file-syncing/FileSyncing.m",
+				"file-syncing/FileSyncingClient.h",
+				"file-syncing/FileSyncingClient.m",
+				"file-syncing/FileSyncingDelegate.h",
+				"file-syncing/FileSyncingState.h",
+				"file-syncing/FileSyncingState.m",
+			);
+			target = D43DC17730B3C78F00C6052F /* file-syncing */;
 		};
 		D45A7E0030C1000000000009 /* Exceptions for "src" folder in "share-test" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -971,6 +1033,7 @@
 				D47A2B0030B1000000000006 /* Exceptions for "src" folder in "tarball-tests" target */,
 				D49BFC5A30A26F0600AED804 /* Exceptions for "src" folder in "file-sharing" target */,
 				D49BFC6030A26F3700AED804 /* Exceptions for "src" folder in "file-sharing-tests" target */,
+				D43DC19B30B3C7E500C6052F /* Exceptions for "src" folder in "file-syncing" target */,
 				D4F7A00030D1000000000003 /* Exceptions for "src" folder in "file-transfer" target */,
 				D4F7A00030D1000000000004 /* Exceptions for "src" folder in "file-transfer-tests" target */,
 				D41B8727309FB45700136AE5 /* Exceptions for "src" folder in "model" target */,
@@ -1008,6 +1071,19 @@
 				D4DEF168309FB0E700B3F3CB /* libmodel.a in Frameworks */,
 				D41B86DD309FB23700136AE5 /* libwrappers-fakes.a in Frameworks */,
 				D49BFC6730A26FD000AED804 /* libfile-sharing.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D43DC18830B3C78F00C6052F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D43DC18A30B3C78F00C6052F /* libarchive.a in Frameworks */,
+				D43DC18B30B3C78F00C6052F /* libwrappers.a in Frameworks */,
+				D43DC18C30B3C78F00C6052F /* libmodel.a in Frameworks */,
+				D43DC18D30B3C78F00C6052F /* libcsv.a in Frameworks */,
+				D43DC18E30B3C78F00C6052F /* libtarball.a in Frameworks */,
+				D43DC18F30B3C78F00C6052F /* libfile-transfer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1237,6 +1313,7 @@
 				D4E7A10030B0000000000002 /* libarchive.a */,
 				D45A7E0030C1000000000001 /* share-test */,
 				D45A7E0030C1000000000002 /* share-test-tests.xctest */,
+				D43DC19330B3C78F00C6052F /* libfile-syncing.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1251,6 +1328,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		D43DC18630B3C78F00C6052F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4566B0D309F9ECF0013DCF4 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1365,6 +1449,31 @@
 			productName = mcmusTests;
 			productReference = D3A5000000000000000000F1 /* app-tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D43DC17730B3C78F00C6052F /* file-syncing */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D43DC19030B3C78F00C6052F /* Build configuration list for PBXNativeTarget "file-syncing" */;
+			buildPhases = (
+				D43DC18630B3C78F00C6052F /* Headers */,
+				D43DC18730B3C78F00C6052F /* Sources */,
+				D43DC18830B3C78F00C6052F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D43DC17A30B3C78F00C6052F /* PBXTargetDependency */,
+				D43DC17C30B3C78F00C6052F /* PBXTargetDependency */,
+				D43DC17E30B3C78F00C6052F /* PBXTargetDependency */,
+				D43DC18030B3C78F00C6052F /* PBXTargetDependency */,
+				D43DC18230B3C78F00C6052F /* PBXTargetDependency */,
+				D43DC18430B3C78F00C6052F /* PBXTargetDependency */,
+			);
+			name = "file-syncing";
+			packageProductDependencies = (
+			);
+			productName = wrappers;
+			productReference = D43DC19330B3C78F00C6052F /* libfile-syncing.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 		D4566B10309F9ECF0013DCF4 /* wrappers */ = {
 			isa = PBXNativeTarget;
@@ -1790,6 +1899,7 @@
 				D47A2B0030B100000000000B /* tarball-tests */,
 				D49BFC3D30A26EAF00AED804 /* file-sharing */,
 				D49BFC4830A26EBF00AED804 /* file-sharing-tests */,
+				D43DC17730B3C78F00C6052F /* file-syncing */,
 				D4F7A00030D100000000000A /* file-transfer */,
 				D4F7A00030D100000000000B /* file-transfer-tests */,
 				D4E7A10030B0000000000001 /* libarchive */,
@@ -1833,6 +1943,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D3A5000000000000000000F3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D43DC18730B3C78F00C6052F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1979,6 +2096,36 @@
 			isa = PBXTargetDependency;
 			target = D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */;
 			targetProxy = D41B86DE309FB23700136AE5 /* PBXContainerItemProxy */;
+		};
+		D43DC17A30B3C78F00C6052F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4E7A10030B0000000000001 /* libarchive */;
+			targetProxy = D43DC17B30B3C78F00C6052F /* PBXContainerItemProxy */;
+		};
+		D43DC17C30B3C78F00C6052F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D43DC17D30B3C78F00C6052F /* PBXContainerItemProxy */;
+		};
+		D43DC17E30B3C78F00C6052F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4DEF141309FB00900B3F3CB /* model */;
+			targetProxy = D43DC17F30B3C78F00C6052F /* PBXContainerItemProxy */;
+		};
+		D43DC18030B3C78F00C6052F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4C5A00030A400000000000A /* csv */;
+			targetProxy = D43DC18130B3C78F00C6052F /* PBXContainerItemProxy */;
+		};
+		D43DC18230B3C78F00C6052F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D43DC18330B3C78F00C6052F /* PBXContainerItemProxy */;
+		};
+		D43DC18430B3C78F00C6052F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4F7A00030D100000000000A /* file-transfer */;
+			targetProxy = D43DC18530B3C78F00C6052F /* PBXContainerItemProxy */;
 		};
 		D45A7E0030C1000000000007 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2471,6 +2618,39 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D43DC19130B3C78F00C6052F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D43DC19230B3C78F00C6052F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -3306,6 +3486,15 @@
 			buildConfigurations = (
 				D3A5000000000000000000F7 /* Debug */,
 				D3A5000000000000000000F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D43DC19030B3C78F00C6052F /* Build configuration list for PBXNativeTarget "file-syncing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D43DC19130B3C78F00C6052F /* Debug */,
+				D43DC19230B3C78F00C6052F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -769,16 +769,17 @@ both manifests but different file hash values.
 
 # File sharing
 
-The file sharing module shall consist of the file sharing object and the file
-sharing thread.
+The file sharing module shall consist of the file sharing object and supporting
+code.
 
 The **file sharing object** shall define the high level interface between the
-app and the file sharing thread.
+app and code running on the file sharing thread.
 
 The file sharing object shall run on the app's main thread.
 
-The file sharing object shall be given the music root directory and the working
-directory when it is created.
+The file sharing object shall have an initializer that takes the music root
+directory and the working directory and returns a file sharing object in the off
+state.
 
 If it has no music root directory or no working directory when started, the file
 sharing object shall report an error and remain off.
@@ -1171,10 +1172,33 @@ request failed or non-zero otherwise.
 
 TODO: redesign to support background URL sessions on iOS.
 
-The file syncing module shall consist of the file syncing and supporting code.
+The file syncing module shall consist of the file syncing object and supporting
+code.
 
-The **file syncing client** shall define the high level interface between the
-app and the rest of the file syncing module.
+The **file syncing object** shall define the high level interface between the
+app and code running on the file syncing queue.
+
+The file syncing object shall run on the app's main thread.
+
+The file syncing object shall have an initializer that takes the music root
+directory, the manifest CSV file path and the working directory and returns a
+file syncing client in the ready state.
+
+The **file syncing client**
+
+When initializing, the file syncing object shall read the old manifest from the
+manifest CSV file path or create an empty old manifest if the file is missing.
+
+The **file syncing queue** is a serial dispatch queue that runs file syncing
+operations separately from the app's main thread.
+
+The **file syncing operation queue** is an [`NSOperationQueue`][] where the
+`underlyingQueue` property is set to the file syncing queue.
+
+[`NSOperationQueue`]: https://developer.apple.com/documentation/foundation/operationqueue?language=objc
+
+When initializing, the file syncing object shall create the file syncing queue
+and the file syncing operation queue.
 
 The **file syncing delegate** shall define the set of methods that the file
 syncing client calls to inform the app of status changes.
@@ -1209,29 +1233,28 @@ one or more track metadata objects with sizes adding up to less than 100 MB.
 The **sync state** is one of: ready, finding server, getting manifest,
 removing tracks, fetching files, done or error.
 
+The file syncing client shall have an initializer that takes the music root
+directory, the manifest CSV file path and the working directory and returns a
+file syncing client in the ready state. This initializer shall read the old
+manifest from the manifest CSV file path or create an empty old manifest if the
+file is missing.
 
+The file syncing client shall implement the [`NSCoding`][] interface so that it
+can be persisted to and recreated from a file.
 
-The file sync client shall have an initializer that takes the music root
-directory, the manifest CSV file path and the working directory.
-
-
-
-When initializing, the file sync client shall read the old manifest from the
-manifest CSV file path.
-
-When the manifest CSV file is missing, the file syncing object shall create an
-empty old manifest.
-
-When initializing, the file sync client shall delete all files from the working
-directory.
+[`NSCoding`]: https://developer.apple.com/documentation/foundation/nscoding?language=objc
 
 On iOS, in debug builds, when initializing, the file sync client shall log the
 absolute path of the working directory.
 
-When the sync method is called, the file syncing object shall locate the file
-sharing server using Bonjour and the service name `_mcmus._tcp`.
+When the sync method is called, the file syncing client shall enter the "finding
+server" sync state and begin locating the file sharing server using Bonjour with
+the service name `_mcmus._tcp`.
 
-If locating the file sharing server fails, the file syncing object shall stop
+When it enters the "finding server" sync state, the file syncing client shall
+call the "did begin finding server" method on the file syncing delegate.
+
+If locating the file sharing server fails, the file syncing object shall enter the error state, stop
 syncing and return an error.
 
 If locating the file sharing server takes longer than five seconds, the file
