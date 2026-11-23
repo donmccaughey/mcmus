@@ -442,4 +442,43 @@ static NSError *error_from_csv(NSString *csv)
 }
 
 
+- (void)testRemoveTrackWithRelativePathRemovesOnlyThatTrack;
+{
+    TrackMetadata *kept = make_metadata(@"a.mp3", 1, 10);
+    Manifest *manifest = make_manifest(@[kept, make_metadata(@"b.mp3", 2, 20)]);
+
+    [manifest removeTrackWithRelativePath:@"b.mp3"];
+
+    XCTAssertEqual(manifest.trackCount, 1UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"a.mp3"], kept);
+    XCTAssertNil([manifest metadataForRelativePath:@"b.mp3"]);
+}
+
+
+- (void)testRemoveTrackWithUnknownRelativePathChangesNothing;
+{
+    TrackMetadata *track = make_metadata(@"a.mp3", 1, 10);
+    Manifest *manifest = make_manifest(@[track]);
+
+    [manifest removeTrackWithRelativePath:@"missing.mp3"];
+
+    XCTAssertEqual(manifest.trackCount, 1UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"a.mp3"], track);
+}
+
+
+- (void)testCSVReflectsTracksRemovedAfterItWasRead;
+{
+    Manifest *manifest = make_manifest(
+        @[make_metadata(@"a.mp3", 1, 10), make_metadata(@"b.mp3", 2, 20)]);
+    XCTAssertEqualObjects(
+        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,2,20\r\n");
+
+    [manifest removeTrackWithRelativePath:@"a.mp3"];
+
+    XCTAssertEqualObjects(
+        csv_text(manifest), @"path,size,hash\r\nb.mp3,2,20\r\n");
+}
+
+
 @end

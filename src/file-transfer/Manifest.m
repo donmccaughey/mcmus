@@ -194,6 +194,13 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 }
 
 
+- (void)removeTrackWithRelativePath:(NSString *)relativePath;
+{
+    [_metadataByRelativePath removeObjectForKey:relativePath];
+    _cachedCSV = nil;
+}
+
+
 - (NSArray<TrackMetadata *> *)tracksMissingFrom:(Manifest *)other;
 {
     NSMutableArray<TrackMetadata *> *missing = [NSMutableArray array];

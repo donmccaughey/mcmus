@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, ManifestErrorCode) {
 
 - (void)addOrReplaceTrack:(TrackMetadata *)trackMetadata;
 - (void)addOrReplaceTracksFromArray:(NSArray<TrackMetadata *> *)metadata;
+- (void)removeTrackWithRelativePath:(NSString *)relativePath;
 
 // Both return this manifest's track metadata, sorted by path.
 - (NSArray<TrackMetadata *> *)tracksMissingFrom:(Manifest *)other;
