@@ -1,23 +1,47 @@
 #import "FileSyncingClient.h"
 #import "FileSyncingDelegate.h"
+#import "FileSystem.h"
+#import "Manifest.h"
 
 NSString *const FileSyncingID = @"FileSyncing";
+
+static BOOL is_no_such_file_error(NSError *error)
+{
+    return [error.domain isEqualToString:NSPOSIXErrorDomain]
+        && ENOENT == error.code;
+}
+
+static Manifest *readManifest(
+    NSURL *manifestPath, id<FileSystem> fileSystem, NSError **error)
+{
+    NSCAssert(error, @"expected non-nil error");
+    Manifest *manifest = [Manifest newWithCSVPath:manifestPath
+                                       fileSystem:fileSystem
+                                            error:error];
+    if (manifest) return manifest;
+    if (is_no_such_file_error(*error)) return [Manifest new];
+    return nil;
+}
 
 @implementation FileSyncingClient {
     NSURL *_musicDir;
     NSURL *_workingDir;
     NSURL *_manifestPath;
     id<FileSyncingDelegate> _delegate;
+    id<FileSystem> _fileSystem;
 
     dispatch_queue_t _queue;
     NSOperationQueue *_operationQueue;
     NSURLSession *_session;
+
+    Manifest *_localManifest;
 }
 
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
-                        delegate:(nullable id<FileSyncingDelegate>)delegate;
+                        delegate:(nullable id<FileSyncingDelegate>)delegate
+                      fileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
     if (!self) return nil;
@@ -26,6 +50,7 @@ NSString *const FileSyncingID = @"FileSyncing";
     _workingDir = workingDir;
     _manifestPath = manifestPath;
     _delegate = delegate;
+    _fileSystem = fileSystem;
 
     _queue =
         dispatch_queue_create(FileSyncingID.UTF8String, DISPATCH_QUEUE_SERIAL);
@@ -57,7 +82,14 @@ NSString *const FileSyncingID = @"FileSyncing";
     dispatch_async(
         dispatch_get_main_queue(), ^{ [self->_delegate syncDidStart]; });
 
-    // read local manifest or create empty
+    NSError *error = nil;
+    _localManifest = readManifest(_manifestPath, _fileSystem, &error);
+    if (!_localManifest) {
+        dispatch_async(dispatch_get_main_queue(),
+            ^{ [self->_delegate syncDidFailWithError:error]; });
+        return;
+    }
+
     // find server
     // get server manifest
     // calculate diff between local manifest and server manifest

@@ -8,7 +8,8 @@
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
-                        delegate:(nullable id<FileSyncingDelegate>)delegate;
+                        delegate:(nullable id<FileSyncingDelegate>)delegate
+                      fileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
     if (!self) return nil;
@@ -16,7 +17,8 @@
     _client = [[FileSyncingClient alloc] initWithMusicDir:musicDir
                                                workingDir:workingDir
                                              manifestPath:manifestPath
-                                                 delegate:delegate];
+                                                 delegate:delegate
+                                               fileSystem:fileSystem];
 
     return self;
 }

@@ -1,6 +1,7 @@
 #import <XCTest/XCTest.h>
 
 #import "CSV.h"
+#import "FileSystemFake.h"
 #import "Manifest.h"
 #import "TrackMetadata.h"
 
@@ -44,6 +45,30 @@ static NSError *error_from_csv(NSString *csv)
     NSError *error = nil;
     Manifest *manifest = [[Manifest alloc] initWithCSV:csv_data(csv)
                                                  error:&error];
+    return manifest ? nil : error;
+}
+
+
+static NSURL *manifest_path(void)
+{
+    return [NSURL fileURLWithPath:@"/Working/manifest.csv"];
+}
+
+
+static FileSystemFake *file_system_with_manifest(NSString *csv)
+{
+    FileSystemFake *fileSystem = [FileSystemFake new];
+    [fileSystem addPath:manifest_path().path contents:csv_data(csv)];
+    return fileSystem;
+}
+
+
+static NSError *error_from_csv_path(FileSystemFake *fileSystem)
+{
+    NSError *error = nil;
+    Manifest *manifest = [Manifest newWithCSVPath:manifest_path()
+                                       fileSystem:fileSystem
+                                            error:&error];
     return manifest ? nil : error;
 }
 
@@ -133,6 +158,109 @@ static NSError *error_from_csv(NSString *csv)
     XCTAssertEqual(song.fileHash, 7UL);
     XCTAssertEqual([manifest metadataForRelativePath:@"Tune.m4a"].size, 9ULL);
     XCTAssertEqualObjects(manifest.csv, original.csv);
+}
+
+
+- (void)testInitGivesAnEmptyManifest;
+{
+    Manifest *manifest = [Manifest new];
+
+    XCTAssertEqual(manifest.trackCount, 0UL);
+    XCTAssertEqualObjects(csv_text(manifest), @"path,size,hash\r\n");
+}
+
+
+// The fake delivers a file four bytes at a time, so this manifest arrives in
+// many chunks.
+- (void)testNewWithCSVPathReadsAManifestFile;
+{
+    FileSystemFake *fileSystem = file_system_with_manifest(
+        @"path,size,hash\r\nArtist/Album/Song.mp3,5,7\r\nTune.m4a,9,11\r\n");
+    NSError *error = nil;
+
+    Manifest *manifest = [Manifest newWithCSVPath:manifest_path()
+                                       fileSystem:fileSystem
+                                            error:&error];
+
+    XCTAssertNil(error);
+    XCTAssertEqual(manifest.trackCount, 2UL);
+    TrackMetadata *song =
+        [manifest metadataForRelativePath:@"Artist/Album/Song.mp3"];
+    XCTAssertEqual(song.size, 5ULL);
+    XCTAssertEqual(song.fileHash, 7UL);
+    XCTAssertEqual([manifest metadataForRelativePath:@"Tune.m4a"].size, 9ULL);
+}
+
+
+- (void)testNewWithCSVPathReadsAFileWrittenFromAManifest;
+{
+    Manifest *original = make_manifest(@[
+        make_metadata(@"Piaf, Edith/Song.mp3", 5, 7),
+        make_metadata(@"Tune.m4a", 9, 11),
+    ]);
+    FileSystemFake *fileSystem = [FileSystemFake new];
+    [fileSystem addPath:manifest_path().path contents:original.csv];
+
+    Manifest *manifest = [Manifest newWithCSVPath:manifest_path()
+                                       fileSystem:fileSystem
+                                            error:NULL];
+
+    XCTAssertEqualObjects(manifest.csv, original.csv);
+}
+
+
+- (void)testNewWithCSVPathPassesOnTheErrorForAMissingFile;
+{
+    NSError *error = error_from_csv_path([FileSystemFake new]);
+
+    XCTAssertEqualObjects(error.domain, FileSystemFakeErrorDomain);
+    XCTAssertEqual(error.code, FileSystemFakeErrorCodeOperationFailed);
+    XCTAssertEqualObjects(
+        error.userInfo[NSFilePathErrorKey], manifest_path().path);
+}
+
+
+- (void)testNewWithCSVPathPassesOnTheErrorForAnUnreadableFile;
+{
+    FileSystemFake *fileSystem =
+        file_system_with_manifest(@"path,size,hash\r\nSong.mp3,5,7\r\n");
+    fileSystem.unreadableFiles = [NSSet setWithObject:manifest_path().path];
+
+    NSError *error = error_from_csv_path(fileSystem);
+
+    XCTAssertEqualObjects(error.domain, FileSystemFakeErrorDomain);
+    XCTAssertEqual(error.code, FileSystemFakeErrorCodeOperationFailed);
+}
+
+
+- (void)testNewWithCSVPathRejectsAnEmptyFile;
+{
+    NSError *error = error_from_csv_path(file_system_with_manifest(@""));
+
+    XCTAssertEqualObjects(error.domain, ManifestErrorDomain);
+    XCTAssertEqual(error.code, ManifestErrorCodeInvalidHeader);
+}
+
+
+- (void)testNewWithCSVPathPassesOnManifestErrors;
+{
+    NSError *error = error_from_csv_path(
+        file_system_with_manifest(@"path,size,hash\r\nSong.mp3,oops,7\r\n"));
+
+    XCTAssertEqualObjects(error.domain, ManifestErrorDomain);
+    XCTAssertEqual(error.code, ManifestErrorCodeInvalidSize);
+}
+
+
+- (void)testNewWithCSVPathFailsWithoutAnErrorPointer;
+{
+    XCTAssertNil([Manifest newWithCSVPath:manifest_path()
+                               fileSystem:[FileSystemFake new]
+                                    error:NULL]);
+    XCTAssertNil([Manifest
+        newWithCSVPath:manifest_path()
+            fileSystem:file_system_with_manifest(@"not a manifest\r\n")
+                 error:NULL]);
 }
 
 

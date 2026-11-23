@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 
+@protocol FileSystem;
 @class TrackMetadata;
 
 
@@ -21,9 +22,14 @@ typedef NS_ENUM(NSInteger, ManifestErrorCode) {
 @property (nonatomic, readonly) NSUInteger trackCount;
 @property (nonatomic, readonly) NSData *csv;
 
++ (nullable instancetype)newWithCSVPath:(NSURL *)csvPath
+                             fileSystem:(id<FileSystem>)fileSystem
+                                  error:(NSError **)error;
+
 - (instancetype)initWithTrackMetadata:(NSArray<TrackMetadata *> *)metadata
     NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)init;
 
 - (nullable instancetype)initWithCSV:(NSData *)csv error:(NSError **)error;
 

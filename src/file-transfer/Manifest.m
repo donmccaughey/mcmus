@@ -1,6 +1,7 @@
 #import "Manifest.h"
 
 #import "CSV.h"
+#import "FileSystem.h"
 #import "TrackMetadata.h"
 
 
@@ -133,6 +134,22 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 }
 
 
++ (nullable instancetype)newWithCSVPath:(NSURL *)csvPath
+                             fileSystem:(id<FileSystem>)fileSystem
+                                  error:(NSError **)error;
+{
+    NSMutableData *csv = [NSMutableData data];
+    BOOL read = [fileSystem readFile:csvPath
+                              chunks:^(const void *bytes, size_t length) {
+                                  [csv appendBytes:bytes length:length];
+                              }
+                               error:error];
+    if (!read) return nil;
+
+    return [[self alloc] initWithCSV:csv error:error];
+}
+
+
 - (instancetype)initWithTrackMetadata:(NSArray<TrackMetadata *> *)metadata;
 {
     self = [super init];
@@ -152,6 +169,12 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
     if (!metadata) return nil;
 
     return [self initWithTrackMetadata:metadata];
+}
+
+
+- (instancetype)init;
+{
+    return [self initWithTrackMetadata:@[]];
 }
 
 
