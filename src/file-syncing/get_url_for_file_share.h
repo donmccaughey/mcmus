@@ -2,7 +2,7 @@
 #import <dns_sd.h>
 
 
-struct file_share;
+@class FileShare;
 
 
 typedef void(get_url_for_file_share_callback)(
@@ -12,7 +12,7 @@ typedef void(get_url_for_file_share_callback)(
 
 void get_url_for_file_share(
     dispatch_queue_t serial_queue,
-    struct file_share const *file_share,
+    FileShare *file_share,
     get_url_for_file_share_callback callback,
     dispatch_queue_t callback_queue,
     int timeout_secs

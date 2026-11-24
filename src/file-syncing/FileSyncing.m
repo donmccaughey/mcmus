@@ -28,30 +28,22 @@
 }
 
 
-- (void)findFileShares:(struct file_share *)fileShares
-          withCapacity:(NSUInteger)capacity
-           andCallback:(find_file_shares_callback)callback
-               onQueue:(dispatch_queue_t)callbackQueue
-         withinSeconds:(NSUInteger)timeoutSeconds;
+- (void)findFileSharesWithCallback:(find_file_shares_callback)callback
+                           onQueue:(dispatch_queue_t)callbackQueue
+                     withinSeconds:(NSUInteger)timeoutSeconds;
 {
-    NSAssert(capacity < INT_MAX, @"Expected capacity less than INT_MAX");
     NSAssert(
         timeoutSeconds < INT_MAX, @"Expected timeoutSeconds less than INT_MAX"
     );
     dispatch_async(_serial_queue, ^{
         find_file_shares(
-            self->_serial_queue,
-            fileShares,
-            (int)capacity,
-            callback,
-            callbackQueue,
-            (int)timeoutSeconds
+            self->_serial_queue, callback, callbackQueue, (int)timeoutSeconds
         );
     });
 }
 
 
-- (void)getURLForFileShare:(struct file_share const *)fileShare
+- (void)getURLForFileShare:(FileShare *)fileShare
               withCallback:(get_url_for_file_share_callback)callback
                    onQueue:(dispatch_queue_t)callbackQueue
              withinSeconds:(NSUInteger)timeoutSeconds;

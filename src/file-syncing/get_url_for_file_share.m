@@ -1,11 +1,11 @@
 #import "get_url_for_file_share.h"
 
-#import "file_share.h"
+#import "FileShare.h"
 
 
 // alloc with `alloc_url_context()` and free with `free_url_context()`
 struct url_context {
-    struct file_share const *file_share;
+    FileShare *file_share;
     get_url_for_file_share_callback *callback;
     dispatch_queue_t callback_queue;
     DNSServiceRef service_ref;
@@ -30,7 +30,7 @@ static void resolve_reply(
 
 
 static struct url_context *alloc_url_context(
-    struct file_share const *file_share,
+    FileShare *file_share,
     get_url_for_file_share_callback *callback,
     dispatch_queue_t callback_queue
 )
@@ -62,6 +62,7 @@ static struct url_context *alloc_url_context(
 
 static void free_url_context(struct url_context *url_context)
 {
+    url_context->file_share = nil;
     url_context->callback_queue = nil;
 
     if (url_context->service_ref) {
@@ -79,7 +80,7 @@ static void free_url_context(struct url_context *url_context)
 
 void get_url_for_file_share(
     dispatch_queue_t serial_queue,
-    struct file_share const *file_share,
+    FileShare *file_share,
     get_url_for_file_share_callback callback,
     dispatch_queue_t callback_queue,
     int timeout_secs
@@ -103,10 +104,10 @@ void get_url_for_file_share(
     error_code = DNSServiceResolve(
         &url_context->service_ref,
         flags,
-        file_share->interface_index,
-        file_share->service_name,
-        file_share->service_type,
-        file_share->domain,
+        (uint32_t)file_share.interfaceIndex,
+        file_share.serviceName.UTF8String,
+        file_share.serviceType.UTF8String,
+        file_share.domain.UTF8String,
         resolve_reply,
         url_context
     );

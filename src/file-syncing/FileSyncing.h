@@ -21,13 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 // The caller owns `fileShares` memory
-- (void)findFileShares:(struct file_share *)fileShares
-          withCapacity:(NSUInteger)capacity
-           andCallback:(find_file_shares_callback)callback
-               onQueue:(dispatch_queue_t)callbackQueue
-         withinSeconds:(NSUInteger)timeoutSeconds;
+- (void)findFileSharesWithCallback:(find_file_shares_callback)callback
+                           onQueue:(dispatch_queue_t)callbackQueue
+                     withinSeconds:(NSUInteger)timeoutSeconds;
 
-- (void)getURLForFileShare:(struct file_share const *)fileShare
+- (void)getURLForFileShare:(FileShare *)fileShare
               withCallback:(get_url_for_file_share_callback)callback
                    onQueue:(dispatch_queue_t)callbackQueue
              withinSeconds:(NSUInteger)timeoutSeconds;
