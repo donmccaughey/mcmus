@@ -42,46 +42,26 @@
 #endif
 
     NSAssert(serviceName, @"Expected non-NULL serviceName");
+    NSAssert(serviceName[0], @"Expected non-empty serviceName");
     NSAssert(regtype, @"Expected non-NULL regtype");
+    NSAssert(regtype[0], @"Expected non-empty regtype");
     NSAssert(replyDomain, @"Expected non-NULL replyDomain");
+    NSAssert(replyDomain[0], @"Expected non-empty replyDomain");
 
-    return [self
-        initWithInterfaceIndex:(NSUInteger)interfaceIndex
-                   serviceName:[NSString stringWithUTF8String:serviceName]
-                   serviceType:[NSString stringWithUTF8String:regtype]
-                        domain:[NSString stringWithUTF8String:replyDomain]];
-}
+    NSString *serviceNameString = [NSString stringWithUTF8String:serviceName];
+    NSAssert(serviceNameString, @"Expected serviceName to be UTF-8");
 
+    NSString *serviceType = [NSString stringWithUTF8String:regtype];
+    NSAssert(serviceType, @"Expected regtype to be UTF-8");
 
-- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder;
-{
+    NSString *domain = [NSString stringWithUTF8String:replyDomain];
+    NSAssert(domain, @"Expected replyDomain to be UTF-8");
 
-    if (![coder containsValueForKey:@"interfaceIndex"]) return nil;
-    int64_t interfaceIndex = [coder decodeInt64ForKey:@"interfaceIndex"];
-    if (interfaceIndex < 0 || interfaceIndex > NSUIntegerMax) return nil;
-
-    NSString *serviceName = [coder decodeObjectForKey:@"serviceName"];
-    if (![serviceName isKindOfClass:[NSString class]]) return nil;
-
-    NSString *serviceType = [coder decodeObjectForKey:@"serviceType"];
-    if (![serviceType isKindOfClass:[NSString class]]) return nil;
-
-    NSString *domain = [coder decodeObjectForKey:@"domain"];
-    if (![domain isKindOfClass:[NSString class]]) return nil;
 
     return [self initWithInterfaceIndex:(NSUInteger)interfaceIndex
-                            serviceName:serviceName
+                            serviceName:serviceNameString
                             serviceType:serviceType
                                  domain:domain];
-}
-
-
-- (void)encodeWithCoder:(nonnull NSCoder *)coder;
-{
-    [coder encodeInt64:_interfaceIndex forKey:@"interfaceIndex"];
-    [coder encodeObject:_serviceName forKey:@"serviceName"];
-    [coder encodeObject:_serviceType forKey:@"serviceType"];
-    [coder encodeObject:_domain forKey:@"domain"];
 }
 
 

@@ -4,7 +4,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-@interface FileShare : NSObject <NSCoding>
+@interface FileShare : NSObject
 
 @property (nonatomic, readonly) NSUInteger interfaceIndex;
 @property (nonatomic, readonly, copy) NSString *serviceName;
