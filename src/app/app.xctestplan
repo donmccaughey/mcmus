@@ -64,6 +64,13 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D45C7E0030C2000000000010",
+        "name" : "sync-test-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
         "identifier" : "D47A2B0030B100000000000B",
         "name" : "tarball-tests"
       }

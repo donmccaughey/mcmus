@@ -207,6 +207,11 @@ The MC Mus project shall place code for the **share test server** in the
 
 The share test tool shall depend on the file-sharing library.
 
+The MC Mus project shall place code for the **sync test client** in the
+`src/sync-test/` subdirectory.
+
+The sync test tool shall depend on the file-syncing library.
+
 
 ## Third-party code
 
@@ -1035,6 +1040,58 @@ startup.
 Share test shall shut down gracefully when it receives `SIGINT` by calling the
 appropriate stop method of the file sharing object and waiting for it to
 complete before exiting with status 0.
+
+
+## Test client
+
+**Sync test** is a stand-alone command line tool for macOS only that creates a
+file syncing object for testing.
+
+Sync test shall link to the file-syncing and wrappers libraries.
+
+Sync test shall accept one required positional command line arguments:
+`MUSIC_DIR` specifies the location of the music root directory.
+
+If the `MUSIC_DIR` command line argument is missing, sync test shall exit with
+an error and a usage message.
+
+If the `MUSIC_DIR` command line argument is a relative path, sync test shall
+resolve it against the current working directory.
+
+If the music root directory is missing or unreadable, sync test shall exit with
+an error.
+
+Sync test shall accept the command line option: `--workdir=DIR`, where the `DIR`
+value is required, specifies the working directory.
+
+If the `DIR` value of the `--workdir` option is a relative path, sync test shall
+resolve it against the current working directory.
+
+When the `--workdir=DIR` option is not given, sync test shall use the current
+working directory as the working directory.
+
+If the working directory is missing or unreadable, sync test shall exit with an
+error.
+
+Sync test shall accept the command line option: `--manifest=MANIFEST_PATH`,
+where the `MANIFEST_PATH` value is required, specifies the manifest CSV file
+path.
+
+If the `MANIFEST_PATH` value of the `--manifest` option is a relative path, sync
+test shall resolve it against the current working directory.
+
+When the `--manifest=MANIFEST_PATH` option is not given, sync test shall use
+`manifest.csv` in the working directory as the manifest CSV file path.
+
+When it starts, sync test shall ask the file syncing object to find file shares,
+with room for 8 file shares and a timeout of 5 seconds.
+
+If finding file shares fails, sync test shall write the error code to `stderr`
+and exit with a non-zero status.
+
+When finding file shares succeeds, sync test shall write each file share found
+to `stdout` on a separate line, or the message "No file sharing servers found."
+if there are none, and exit with status 0.
 
 
 ## Test scripts

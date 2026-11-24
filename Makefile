@@ -29,6 +29,7 @@ check : \
 		$(TMP)/analyzed-iOS.stamp \
 		$(TMP)/analyzed-macOS.stamp \
 		$(TMP)/built-share-test.stamp \
+		$(TMP)/built-sync-test.stamp \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp
@@ -73,6 +74,15 @@ share-test : $(TMP)/built-share-test.stamp | $(TMP)/share-test-work
 		--workdir=$(TMP)/share-test-work
 
 
+.PHONY : sync-test
+sync-test : \
+		$(TMP)/built-sync-test.stamp \
+		| $(TMP)/sync-test-music $(TMP)/sync-test-work
+	$(TMP)/sync-test/sync-test \
+		$(TMP)/sync-test-music \
+		--workdir=$(TMP)/sync-test-work
+
+
 .PHONY : clean
 clean :
 	rm -rf *.profraw
@@ -91,7 +101,10 @@ $(TMP)/ \
 $(TMP)/app-release \
 $(TMP)/full-sync-work \
 $(TMP)/share-test \
-$(TMP)/share-test-work :
+$(TMP)/share-test-work \
+$(TMP)/sync-test \
+$(TMP)/sync-test-music \
+$(TMP)/sync-test-work :
 	mkdir -p $@
 
 
@@ -124,6 +137,7 @@ $(TMP)/built-release.stamp : \
 		$(TMP)/analyzed-iOS.stamp \
 		$(TMP)/analyzed-macOS.stamp \
 		$(TMP)/built-share-test.stamp \
+		$(TMP)/built-sync-test.stamp \
 		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
 		$(TMP)/checked-macOS.stamp \
@@ -149,6 +163,19 @@ $(TMP)/built-share-test.stamp : $(src_files) | $(TMP)/share-test
 		-destination 'platform=macOS,arch=$(arch)' \
 		-derivedDataPath $(TMP)/build-share-test \
 		CONFIGURATION_BUILD_DIR=$(TMP)/share-test \
+		$(BUILD_FLAGS)
+	touch $@
+
+
+$(TMP)/built-sync-test.stamp : $(src_files) | $(TMP)/sync-test
+	rm -rf $(TMP)/sync-test
+	xcodebuild build \
+		-project mcmus.xcodeproj \
+		-scheme sync-test \
+		-configuration Debug \
+		-destination 'platform=macOS,arch=$(arch)' \
+		-derivedDataPath $(TMP)/build-sync-test \
+		CONFIGURATION_BUILD_DIR=$(TMP)/sync-test \
 		$(BUILD_FLAGS)
 	touch $@
 
