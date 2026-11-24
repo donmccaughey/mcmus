@@ -127,7 +127,9 @@
 - (void)testAbsoluteManifestIsUsedAsGiven;
 {
     SyncTestOptions *options = [self parse:@[
-        @"--workdir=/Work/Dir", @"--manifest=/Some/old.csv", @"/Some/Music"
+        @"--workdir=/Work/Dir",
+        @"--manifest=/Some/old.csv",
+        @"/Some/Music"
     ]
                                      error:NULL];
 
@@ -139,7 +141,9 @@
 - (void)testRelativeManifestIsResolvedAgainstCurrentDirectory;
 {
     SyncTestOptions *options = [self parse:@[
-        @"--workdir=/Work/Dir", @"--manifest=some/old.csv", @"/Some/Music"
+        @"--workdir=/Work/Dir",
+        @"--manifest=some/old.csv",
+        @"/Some/Music"
     ]
                                      error:NULL];
 

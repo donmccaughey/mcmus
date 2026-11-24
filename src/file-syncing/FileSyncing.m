@@ -40,7 +40,11 @@
     );
     dispatch_async(_queue, ^{
         find_file_shares(
-            self->_queue, fileShares, (int)capacity, callback, callbackQueue,
+            self->_queue,
+            fileShares,
+            (int)capacity,
+            callback,
+            callbackQueue,
             (int)timeoutSeconds
         );
     });

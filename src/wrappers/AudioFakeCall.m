@@ -85,7 +85,8 @@ static BOOL equalOrBothNil(id _Nullable a, id _Nullable b)
     switch (_kind) {
     case AudioFakeCallKindPlay:
         return [NSString stringWithFormat:@"play(%@, from: %g, thenPlay: %@)",
-                                          _trackURL.path, _timeIndex,
+                                          _trackURL.path,
+                                          _timeIndex,
                                           _nextTrackURL.path ?: @"nil"];
     case AudioFakeCallKindReplaceNextTrack:
         return [NSString stringWithFormat:@"replaceNextTrack(%@)",

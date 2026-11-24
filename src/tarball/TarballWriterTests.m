@@ -86,8 +86,10 @@ static NSArray<TarEntry *> *read_tar(NSData *data)
     struct archive *tar = archive_read_new();
     XCTAssertEqual(archive_read_support_format_tar(tar), ARCHIVE_OK);
     XCTAssertEqual(
-        archive_read_open_memory(tar, data.bytes, data.length), ARCHIVE_OK,
-        @"%s", archive_error_string(tar)
+        archive_read_open_memory(tar, data.bytes, data.length),
+        ARCHIVE_OK,
+        @"%s",
+        archive_error_string(tar)
     );
     struct archive_entry *header;
     int status;

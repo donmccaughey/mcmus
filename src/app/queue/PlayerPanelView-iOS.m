@@ -66,7 +66,9 @@ static UIButton *makeButton(NSString *systemImage, NSString *accessibilityLabel)
               forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[
-            _backButton, _playStopButton, _nextButton
+            _backButton,
+            _playStopButton,
+            _nextButton
         ]];
         stack.spacing = buttonSpacing;
         stack.translatesAutoresizingMaskIntoConstraints = NO;

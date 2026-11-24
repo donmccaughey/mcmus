@@ -238,8 +238,23 @@ static NSData *utf8(NSString *text)
 
 - (void)testBinaryDataIsInvalid;
 {
-    uint8_t bytes[] = {0x16, 0x03, 0x01, 0x02, 0x00, 0x01, 0x00, 0x01,
-                       0xfc, 0x03, 0x03, '\r', '\n', '\r', '\n'};
+    uint8_t bytes[] = {
+        0x16,
+        0x03,
+        0x01,
+        0x02,
+        0x00,
+        0x01,
+        0x00,
+        0x01,
+        0xfc,
+        0x03,
+        0x03,
+        '\r',
+        '\n',
+        '\r',
+        '\n'
+    };
 
     [_parser append:[NSData dataWithBytes:bytes length:sizeof bytes]];
 

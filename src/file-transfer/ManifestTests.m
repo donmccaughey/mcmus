@@ -348,7 +348,14 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 - (void)testRejectsSizesThatAreNotUnsignedDecimalIntegers;
 {
     for (NSString *size in @[
-             @"", @"abc", @"-5", @"+5", @" 5", @"5 ", @"5.0", @"0x5",
+             @"",
+             @"abc",
+             @"-5",
+             @"+5",
+             @" 5",
+             @"5 ",
+             @"5.0",
+             @"0x5",
              @"18446744073709551616"
          ])
     {
@@ -364,7 +371,14 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 - (void)testRejectsHashesThatAreNotUnsignedDecimalIntegers;
 {
     for (NSString *hash in @[
-             @"", @"abc", @"-7", @"+7", @" 7", @"7 ", @"7.0", @"0x7",
+             @"",
+             @"abc",
+             @"-7",
+             @"+7",
+             @" 7",
+             @"7 ",
+             @"7.0",
+             @"0x7",
              @"18446744073709551616"
          ])
     {

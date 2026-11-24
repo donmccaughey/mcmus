@@ -70,7 +70,9 @@
     PlayerPanelView *playerPanel =
         [[PlayerPanelView alloc] initWithPlayer:_player];
     UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[
-        playerPanel, [[HairlineView alloc] init], queueBody
+        playerPanel,
+        [[HairlineView alloc] init],
+        queueBody
     ]];
     stack.axis = UILayoutConstraintAxisVertical;
     return stack;

@@ -43,7 +43,8 @@ static NSError *file_too_short_error(TarballEntry *entry)
     return tarball_error(
         TarballErrorCodeFileTooShort,
         [NSString stringWithFormat:@"%@ is shorter than %llu bytes.",
-                                   entry.relativePath, entry.size]
+                                   entry.relativePath,
+                                   entry.size]
     );
 }
 

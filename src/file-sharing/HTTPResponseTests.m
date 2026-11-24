@@ -140,7 +140,8 @@ static NSString *body_text(NSData *response)
         NSData *response = makeHTTPTextResponse(status.integerValue, @"", NO);
 
         XCTAssertTrue(
-            [text(response) hasPrefix:statusLines[status]], @"%@",
+            [text(response) hasPrefix:statusLines[status]],
+            @"%@",
             text(response)
         );
     }

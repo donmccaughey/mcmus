@@ -109,7 +109,9 @@ static NSString *request(NSString *method, NSString *path, NSString *userAgent)
                                       @"Host: mac.local\r\n"
                                       @"User-Agent: %@\r\n"
                                       @"\r\n",
-                                      method, path, userAgent];
+                                      method,
+                                      path,
+                                      userAgent];
 }
 
 
@@ -126,7 +128,8 @@ static NSString *post_files_with_headers(NSString *headers, NSString *csv)
                                       @"%@"
                                       @"\r\n"
                                       @"%@",
-                                      headers, csv];
+                                      headers,
+                                      csv];
 }
 
 
@@ -251,7 +254,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     XCTAssertTrue([response hasPrefix:statusLine], @"%@", response);
     XCTAssertTrue(
         [response containsString:@"Content-Type: text/plain;charset=UTF-8\r\n"],
-        @"%@", response
+        @"%@",
+        response
     );
     XCTAssertTrue(
         [response containsString:@"Connection: close\r\n"], @"%@", response
@@ -363,7 +367,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     XCTAssertTrue([response hasPrefix:@"HTTP/1.1 200 OK\r\n"], @"%@", response);
     XCTAssertTrue(
         [response containsString:@"Content-Type: text/csv;charset=UTF-8\r\n"],
-        @"%@", response
+        @"%@",
+        response
     );
     NSString *contentLength = [NSString
         stringWithFormat:@"Content-Length: %lu\r\n", utf8(manifest).length];
@@ -468,7 +473,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     NSString *response = connection.sentText;
     XCTAssertTrue(
-        [response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"], @"%@",
+        [response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"],
+        @"%@",
         response
     );
     XCTAssertFalse(connection.isClosed);
@@ -495,7 +501,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     );
     XCTAssertTrue(
         [response containsString:@"Content-Type: text/plain;charset=UTF-8\r\n"],
-        @"%@", response
+        @"%@",
+        response
     );
     NSString *end = [@"\r\n\r\n" stringByAppendingString:body];
     XCTAssertTrue([response hasSuffix:end], @"%@", response);
@@ -542,7 +549,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     NSString *head = head_of(connection.sentData);
     XCTAssertTrue([head hasPrefix:@"HTTP/1.1 200 OK\r\n"], @"%@", head);
     XCTAssertTrue(
-        [head containsString:@"Content-Type: application/x-tar\r\n"], @"%@",
+        [head containsString:@"Content-Type: application/x-tar\r\n"],
+        @"%@",
         head
     );
     NSString *contentLength =
@@ -647,7 +655,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     NSString *response = connection.sentText;
     XCTAssertTrue(
-        [response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"], @"%@",
+        [response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"],
+        @"%@",
         response
     );
     XCTAssertFalse(connection.isClosed);

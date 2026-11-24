@@ -100,8 +100,11 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension)
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@)", _trackName,
-                                      _albumName, _artistName, _path];
+    return [NSString stringWithFormat:@"Track(%@, %@, %@, %@)",
+                                      _trackName,
+                                      _albumName,
+                                      _artistName,
+                                      _path];
 }
 
 @end

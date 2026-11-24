@@ -44,8 +44,9 @@ static struct find_context *alloc_find_context(
     dispatch_block_flags_t block_flags = 0;
     find_context->timeout_block = dispatch_block_create(block_flags, ^{
         callback(
-            find_context->file_shares, find_context->count,
-            kDNSServiceErr_NoError
+            find_context->file_shares,
+            find_context->count,
+            kDNSServiceErr_Timeout
         );
         free_find_context(find_context);
     });
@@ -84,15 +85,18 @@ static void browse_reply(
 
             find_context->file_shares[i].interface_index = interface_index;
             strlcpy(
-                find_context->file_shares[i].service_name, service_name,
+                find_context->file_shares[i].service_name,
+                service_name,
                 sizeof find_context->file_shares[i].service_name
             );
             strlcpy(
-                find_context->file_shares[i].service_type, service_type,
+                find_context->file_shares[i].service_type,
+                service_type,
                 sizeof find_context->file_shares[i].service_type
             );
             strlcpy(
-                find_context->file_shares[i].domain, domain,
+                find_context->file_shares[i].domain,
+                domain,
                 sizeof find_context->file_shares[i].domain
             );
 
@@ -100,8 +104,12 @@ static void browse_reply(
         }
     } else {
         int i = matching_file_share(
-            find_context->file_shares, find_context->count, interface_index,
-            service_name, service_type, domain
+            find_context->file_shares,
+            find_context->count,
+            interface_index,
+            service_name,
+            service_type,
+            domain
         );
         if (i >= 0) {
             int count_after = find_context->count - i - 1;
@@ -119,7 +127,8 @@ static void browse_reply(
     if (!more_coming) {
         dispatch_async(find_context->callback_queue, ^{
             find_context->callback(
-                find_context->file_shares, find_context->count,
+                find_context->file_shares,
+                find_context->count,
                 kDNSServiceErr_NoError
             );
             free_find_context(find_context);
@@ -153,8 +162,13 @@ void find_file_shares(
     DNSServiceFlags flags = 0;
     char const *domain = NULL;
     error_code = DNSServiceBrowse(
-        &service_ref, flags, kDNSServiceInterfaceIndexAny, "_mcmus._tcp",
-        domain, browse_reply, find_context
+        &service_ref,
+        flags,
+        kDNSServiceInterfaceIndexAny,
+        "_mcmus._tcp",
+        domain,
+        browse_reply,
+        find_context
     );
     if (kDNSServiceErr_NoError != error_code) {
         free_find_context(find_context);

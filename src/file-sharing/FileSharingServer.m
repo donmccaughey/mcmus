@@ -320,15 +320,18 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     } else if (![request.method isEqual:allowedMethod]) {
         [connection respond:makeHTTPTextResponse(
                                 HTTPStatusMethodNotAllowed,
-                                @"Method not allowed", closes
+                                @"Method not allowed",
+                                closes
                             )
                     closing:closes];
     } else if ([request.path isEqual:@"/files"]) {
         [self respondWithFilesTo:request on:connection];
     } else {
         [connection respond:makeHTTPResponse(
-                                HTTPStatusOK, @"text/csv;charset=UTF-8",
-                                _manifest.csv, closes
+                                HTTPStatusOK,
+                                @"text/csv;charset=UTF-8",
+                                _manifest.csv,
+                                closes
                             )
                     closing:closes];
     }
@@ -367,8 +370,10 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     }
 
     [connection respondWithHeader:makeHTTPResponseHeader(
-                                      HTTPStatusOK, @"application/x-tar",
-                                      tarballSize, closes
+                                      HTTPStatusOK,
+                                      @"application/x-tar",
+                                      tarballSize,
+                                      closes
                                   )
                        bodyLength:tarballSize
                              body:^{ return next_tarball_buffer(writer); }

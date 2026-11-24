@@ -69,7 +69,9 @@ static UIView *makeTitleBar(NSString *title, UIView *_Nullable accessory)
         _titleSeparator = [[HairlineView alloc] init];
         _contentContainer = [[UIView alloc] init];
         UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[
-            _titleBar, _titleSeparator, _contentContainer
+            _titleBar,
+            _titleSeparator,
+            _contentContainer
         ]];
         stack.axis = UILayoutConstraintAxisVertical;
         [self addFillingSubview:stack];

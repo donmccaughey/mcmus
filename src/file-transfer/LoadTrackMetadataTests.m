@@ -60,9 +60,9 @@ static LoadTrackMetadataProgress progressRecorder(
 )
 {
     return ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
-        [progress
-            addObject:[NSString stringWithFormat:@"%lu of %lu", tracksLoaded,
-                                                 totalTracks]];
+        [progress addObject:[NSString stringWithFormat:@"%lu of %lu",
+                                                       tracksLoaded,
+                                                       totalTracks]];
     };
 }
 
@@ -147,7 +147,9 @@ static LoadTrackMetadataProgress progressRecorder(
     [fileSystem addPath:@"/Music/B.mp3" size:2];
     [fileSystem addPath:@"/Music/C.mp3" size:3];
     NSArray<Track *> *tracks = @[
-        track(@"/Music/C.mp3"), track(@"/Music/A.mp3"), track(@"/Music/B.mp3")
+        track(@"/Music/C.mp3"),
+        track(@"/Music/A.mp3"),
+        track(@"/Music/B.mp3")
     ];
 
     NSArray<TrackMetadata *> *loaded =
@@ -241,8 +243,11 @@ static LoadTrackMetadataProgress progressRecorder(
     NSArray<NSError *> *errors;
 
     NSArray<TrackMetadata *> *loaded = loadTrackMetadata(
-        numberedTracks(100), musicDir(), emptyFileSystem,
-        progressRecorder(progress), &errors
+        numberedTracks(100),
+        musicDir(),
+        emptyFileSystem,
+        progressRecorder(progress),
+        &errors
     );
 
     XCTAssertEqual(loaded.count, 0UL);

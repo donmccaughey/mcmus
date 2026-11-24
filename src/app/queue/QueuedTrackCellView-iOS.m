@@ -81,20 +81,25 @@ static CGFloat lineHeight(UIFont *font, UITraitCollection *traitCollection)
     CGFloat detailLineHeight =
         lineHeight(_albumLabel.font, self.traitCollection);
     _trackLabel.frame = CGRectMake(
-        CGRectGetMinX(margins), verticalPadding, CGRectGetWidth(margins),
+        CGRectGetMinX(margins),
+        verticalPadding,
+        CGRectGetWidth(margins),
         trackLineHeight
     );
 
     CGFloat lowerY = verticalPadding + trackLineHeight + lineSpacing;
     LowerLineWidths widths = LowerLineWidthsSplit(
-        CGRectGetWidth(margins), _albumLabel.intrinsicContentSize.width,
+        CGRectGetWidth(margins),
+        _albumLabel.intrinsicContentSize.width,
         _artistLabel.intrinsicContentSize.width
     );
     _albumLabel.frame = CGRectMake(
         CGRectGetMinX(margins), lowerY, widths.album, detailLineHeight
     );
     _artistLabel.frame = CGRectMake(
-        CGRectGetMaxX(margins) - widths.artist, lowerY, widths.artist,
+        CGRectGetMaxX(margins) - widths.artist,
+        lowerY,
+        widths.artist,
         detailLineHeight
     );
 }

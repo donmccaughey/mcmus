@@ -8,7 +8,9 @@
 static NSArray<NSURLResourceKey> *fileInfoKeys(void)
 {
     return @[
-        NSURLIsDirectoryKey, NSURLIsRegularFileKey, NSURLIsPackageKey,
+        NSURLIsDirectoryKey,
+        NSURLIsRegularFileKey,
+        NSURLIsPackageKey,
         NSURLLocalizedNameKey
     ];
 }

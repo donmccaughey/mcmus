@@ -51,13 +51,18 @@ static NSArray<Track *> *load_tracks_and_log_time(
         os_log(
             snapshot_log(),
             "Loaded %lu tracks from %{public}@ in %.1f ms with %lu errors",
-            tracks.count, musicLibraryDir.path, milliseconds_since(start),
+            tracks.count,
+            musicLibraryDir.path,
+            milliseconds_since(start),
             result.errors.count
         );
     } else {
         os_log(
-            snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms",
-            tracks.count, musicLibraryDir.path, milliseconds_since(start)
+            snapshot_log(),
+            "Loaded %lu tracks from %{public}@ in %.1f ms",
+            tracks.count,
+            musicLibraryDir.path,
+            milliseconds_since(start)
         );
     }
     return tracks;
@@ -80,12 +85,16 @@ static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
         os_log(
             snapshot_log(),
             "Loaded metadata for %lu tracks in %.1f ms with %lu errors",
-            metadata.count, milliseconds_since(start), errors.count
+            metadata.count,
+            milliseconds_since(start),
+            errors.count
         );
     } else {
         os_log(
-            snapshot_log(), "Loaded metadata for %lu tracks in %.1f ms",
-            metadata.count, milliseconds_since(start)
+            snapshot_log(),
+            "Loaded metadata for %lu tracks in %.1f ms",
+            metadata.count,
+            milliseconds_since(start)
         );
     }
     return metadata;
@@ -114,14 +123,18 @@ static BOOL write_manifest_and_log_time(
         os_log(
             snapshot_log(),
             "Wrote manifest of %lu tracks to %{public}@ in %.1f ms",
-            manifest.trackCount, manifestURL.path, milliseconds_since(start)
+            manifest.trackCount,
+            manifestURL.path,
+            milliseconds_since(start)
         );
     } else {
         os_log(
             snapshot_log(),
             "Writing manifest of %lu tracks took %.1f ms but failed: "
             "%{public}@",
-            manifest.trackCount, milliseconds_since(start), *error
+            manifest.trackCount,
+            milliseconds_since(start),
+            *error
         );
     }
     return wroteManifest;
@@ -149,15 +162,19 @@ static BOOL remove_snapshot_and_log_time(
     BOOL removedSnapshot = removeSnapshot(workingDir, fileSystem, error);
     if (removedSnapshot) {
         os_log(
-            snapshot_log(), "Removing snapshot in %{public}@ took %.1f ms",
-            workingDir.path, milliseconds_since(start)
+            snapshot_log(),
+            "Removing snapshot in %{public}@ took %.1f ms",
+            workingDir.path,
+            milliseconds_since(start)
         );
     } else {
         os_log(
             snapshot_log(),
             "Removing snapshot in %{public}@ took %.1f ms but failed: "
             "%{public}@",
-            workingDir.path, milliseconds_since(start), *error
+            workingDir.path,
+            milliseconds_since(start),
+            *error
         );
     }
     return removedSnapshot;
@@ -176,15 +193,21 @@ static NSURL *_Nullable take_snapshot_and_log_time(
         takeSnapshot(musicDir, workingDir, fileSystem, error);
     if (musicLibraryDir) {
         os_log(
-            snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
-            musicDir.path, musicLibraryDir.path, milliseconds_since(start)
+            snapshot_log(),
+            "Snapshot of %{public}@ to %{public}@ took %.1f ms",
+            musicDir.path,
+            musicLibraryDir.path,
+            milliseconds_since(start)
         );
     } else {
         os_log(
             snapshot_log(),
             "Snapshot of %{public}@ in %{public}@ took %.1f ms but failed: "
             "%{public}@",
-            musicDir.path, workingDir.path, milliseconds_since(start), *error
+            musicDir.path,
+            workingDir.path,
+            milliseconds_since(start),
+            *error
         );
     }
     return musicLibraryDir;
@@ -268,7 +291,9 @@ static NSURL *_Nullable take_snapshot_and_log_time(
         NSArray<Track *> *tracks =
             load_tracks_and_log_time(musicLibraryDir, _fileSystem);
         NSArray<TrackMetadata *> *metadata = load_track_metadata_and_log_time(
-            tracks, musicLibraryDir, _fileSystem,
+            tracks,
+            musicLibraryDir,
+            _fileSystem,
             ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
                 [self->_client didLoadMetadataForTracks:tracksLoaded
                                                 ofTotal:totalTracks];

@@ -156,8 +156,11 @@ static void connection_callback(
     [self preventSIGPIPE];
     if (make_nonblocking(fd)) {
         _socket = schedule_socket(
-            fd, kCFSocketReadCallBack | kCFSocketWriteCallBack,
-            connection_callback, (__bridge void *)self, YES
+            fd,
+            kCFSocketReadCallBack | kCFSocketWriteCallBack,
+            connection_callback,
+            (__bridge void *)self,
+            YES
         );
     }
     if (!_socket) {
@@ -305,7 +308,10 @@ static void listener_callback(
         return nil;
     }
     _socket = schedule_socket(
-        fd, kCFSocketAcceptCallBack, listener_callback, (__bridge void *)self,
+        fd,
+        kCFSocketAcceptCallBack,
+        listener_callback,
+        (__bridge void *)self,
         YES
     );
     if (!_socket) {
@@ -425,8 +431,17 @@ static void advertisement_registered(
     if (!self) return nil;
 
     DNSServiceErrorType code = DNSServiceRegister(
-        &_service, 0, kDNSServiceInterfaceIndexAny, NULL, type.UTF8String, NULL,
-        NULL, htons(port), 0, NULL, advertisement_registered,
+        &_service,
+        0,
+        kDNSServiceInterfaceIndexAny,
+        NULL,
+        type.UTF8String,
+        NULL,
+        NULL,
+        htons(port),
+        0,
+        NULL,
+        advertisement_registered,
         (__bridge void *)self
     );
     if (code != kDNSServiceErr_NoError) {
@@ -456,8 +471,11 @@ static void advertisement_registered(
 - (nullable CFSocketRef)scheduleResults;
 {
     return schedule_socket(
-        DNSServiceRefSockFD(_service), kCFSocketReadCallBack,
-        advertisement_socket_callback, (__bridge void *)self, NO
+        DNSServiceRefSockFD(_service),
+        kCFSocketReadCallBack,
+        advertisement_socket_callback,
+        (__bridge void *)self,
+        NO
     );
 }
 

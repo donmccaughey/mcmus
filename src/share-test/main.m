@@ -32,8 +32,10 @@ static ShareTestOptions *parse_options_or_exit(void)
                        error:&error];
     if (!options) {
         fprintf(
-            stderr, "share-test: %s\n%s\n",
-            error.localizedDescription.UTF8String, ShareTestUsage.UTF8String
+            stderr,
+            "share-test: %s\n%s\n",
+            error.localizedDescription.UTF8String,
+            ShareTestUsage.UTF8String
         );
         exit(usageExitStatus);
     }
@@ -47,7 +49,9 @@ static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
     if ([fileSystem listDirectory:directoryURL error:&error]) return;
 
     fprintf(
-        stderr, "share-test: %s: %s\n", directoryURL.path.UTF8String,
+        stderr,
+        "share-test: %s: %s\n",
+        directoryURL.path.UTF8String,
         error.localizedDescription.UTF8String
     );
     exit(EXIT_FAILURE);

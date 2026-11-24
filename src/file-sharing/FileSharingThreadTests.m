@@ -33,7 +33,8 @@
 - (void)didLoadMetadataForTracks:(NSUInteger)tracksLoaded
                          ofTotal:(NSUInteger)totalTracks;
 {
-    [_progress addObject:[NSString stringWithFormat:@"%lu of %lu", tracksLoaded,
+    [_progress addObject:[NSString stringWithFormat:@"%lu of %lu",
+                                                    tracksLoaded,
                                                     totalTracks]];
 }
 

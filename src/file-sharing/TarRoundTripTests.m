@@ -16,12 +16,16 @@ static void writeEntry(struct archive *tar, NSString *path, NSData *contents)
     archive_entry_set_filetype(entry, AE_IFREG);
     archive_entry_set_perm(entry, 0644);
     XCTAssertEqual(
-        archive_write_header(tar, entry), ARCHIVE_OK, @"%s",
+        archive_write_header(tar, entry),
+        ARCHIVE_OK,
+        @"%s",
         archive_error_string(tar)
     );
     XCTAssertEqual(
         archive_write_data(tar, contents.bytes, contents.length),
-        (la_ssize_t)contents.length, @"%s", archive_error_string(tar)
+        (la_ssize_t)contents.length,
+        @"%s",
+        archive_error_string(tar)
     );
     archive_entry_free(entry);
 }
@@ -51,7 +55,9 @@ static NSData *writeTar(
         archive_write_open_memory(
             tar, buffer.mutableBytes, buffer.length, &used
         ),
-        ARCHIVE_OK, @"%s", archive_error_string(tar)
+        ARCHIVE_OK,
+        @"%s",
+        archive_error_string(tar)
     );
     for (NSString *path in order)
         writeEntry(tar, path, files[path]);

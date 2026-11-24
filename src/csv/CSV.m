@@ -19,8 +19,10 @@ static NSError *error_at(
 )
 {
     NSString *located =
-        [NSString stringWithFormat:@"%@ at line %lu, column %lu.", description,
-                                   (unsigned long)line, (unsigned long)column];
+        [NSString stringWithFormat:@"%@ at line %lu, column %lu.",
+                                   description,
+                                   (unsigned long)line,
+                                   (unsigned long)column];
     return [NSError errorWithDomain:CSVErrorDomain
                                code:code
                            userInfo:@{
@@ -34,7 +36,9 @@ static NSError *error_at(
 static NSError *invalid_utf8_error(NSUInteger line, NSUInteger column)
 {
     return error_at(
-        CSVErrorCodeInvalidUTF8, @"Invalid UTF-8 in field starting", line,
+        CSVErrorCodeInvalidUTF8,
+        @"Invalid UTF-8 in field starting",
+        line,
         column
     );
 }
@@ -46,7 +50,9 @@ static NSError *unterminated_quoted_field_error(
 {
     return error_at(
         CSVErrorCodeUnterminatedQuotedField,
-        @"Unterminated quoted field starting", line, column
+        @"Unterminated quoted field starting",
+        line,
+        column
     );
 }
 
@@ -56,8 +62,10 @@ static NSError *quote_in_unquoted_field_error(
 )
 {
     return error_at(
-        CSVErrorCodeQuoteInUnquotedField, @"Double quote in unquoted field",
-        line, column
+        CSVErrorCodeQuoteInUnquotedField,
+        @"Double quote in unquoted field",
+        line,
+        column
     );
 }
 
@@ -67,7 +75,9 @@ static NSError *text_after_closing_quote_error(
 )
 {
     return error_at(
-        CSVErrorCodeTextAfterClosingQuote, @"Text after closing quote", line,
+        CSVErrorCodeTextAfterClosingQuote,
+        @"Text after closing quote",
+        line,
         column
     );
 }
@@ -79,7 +89,8 @@ static NSError *inconsistent_field_count_error(
 {
     NSString *description = [NSString
         stringWithFormat:@"Record has %lu fields, expected %lu, starting",
-                         (unsigned long)count, (unsigned long)expected];
+                         (unsigned long)count,
+                         (unsigned long)expected];
     return error_at(CSVErrorCodeInconsistentFieldCount, description, line, 1);
 }
 

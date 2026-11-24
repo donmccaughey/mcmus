@@ -38,12 +38,15 @@ static CFHTTPMessageRef create_response_message(
 )
 {
     CFHTTPMessageRef message = CFHTTPMessageCreateResponse(
-        NULL, status, (__bridge CFStringRef)status_description(status),
+        NULL,
+        status,
+        (__bridge CFStringRef)status_description(status),
         kCFHTTPVersion1_1
     );
     set_header(message, @"Content-Type", contentType);
     set_header(
-        message, @"Content-Length",
+        message,
+        @"Content-Length",
         [NSString stringWithFormat:@"%llu", contentLength]
     );
     if (closesConnection) set_header(message, @"Connection", @"close");
@@ -80,8 +83,10 @@ NSData *makeHTTPTextResponse(
 )
 {
     return makeHTTPResponse(
-        status, @"text/plain;charset=UTF-8",
-        [text dataUsingEncoding:NSUTF8StringEncoding], closesConnection
+        status,
+        @"text/plain;charset=UTF-8",
+        [text dataUsingEncoding:NSUTF8StringEncoding],
+        closesConnection
     );
 }
 

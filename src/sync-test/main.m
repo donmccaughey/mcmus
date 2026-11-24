@@ -31,8 +31,10 @@ static SyncTestOptions *parse_options_or_exit(void)
                        error:&error];
     if (!options) {
         fprintf(
-            stderr, "sync-test: %s\n%s\n",
-            error.localizedDescription.UTF8String, SyncTestUsage.UTF8String
+            stderr,
+            "sync-test: %s\n%s\n",
+            error.localizedDescription.UTF8String,
+            SyncTestUsage.UTF8String
         );
         exit(usageExitStatus);
     }
@@ -46,7 +48,9 @@ static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
     if ([fileSystem listDirectory:directoryURL error:&error]) return;
 
     fprintf(
-        stderr, "sync-test: %s: %s\n", directoryURL.path.UTF8String,
+        stderr,
+        "sync-test: %s: %s\n",
+        directoryURL.path.UTF8String,
         error.localizedDescription.UTF8String
     );
     exit(EXIT_FAILURE);
@@ -64,9 +68,12 @@ static void print_file_shares(struct file_share *file_shares, NSUInteger count)
     char name_buffer[IF_NAMESIZE];
     for (NSUInteger i = 0; i < count; ++i) {
         printf(
-            "%lu: name=\"%s\" type=%s domain=%s interface=%u (%s)\n", i + 1,
-            file_shares[i].service_name, file_shares[i].service_type,
-            file_shares[i].domain, file_shares[i].interface_index,
+            "%lu: name=\"%s\" type=%s domain=%s interface=%u (%s)\n",
+            i + 1,
+            file_shares[i].service_name,
+            file_shares[i].service_type,
+            file_shares[i].domain,
+            file_shares[i].interface_index,
             interface_name(file_shares[i].interface_index, name_buffer)
         );
     }
@@ -81,7 +88,8 @@ static void print_file_shares_and_exit(
 {
     if (kDNSServiceErr_NoError != error_code) {
         fprintf(
-            stderr, "sync-test: finding file shares failed with error %d\n",
+            stderr,
+            "sync-test: finding file shares failed with error %d\n",
             error_code
         );
         exit(EXIT_FAILURE);
