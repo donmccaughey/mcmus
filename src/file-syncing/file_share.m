@@ -118,11 +118,6 @@ static void browse_reply(
             --find_context->count;
         }
     }
-
-    BOOL more_coming = (kDNSServiceFlagsMoreComing & flags) ? YES : NO;
-    if (!more_coming) {
-        complete_find_file_shares(find_context, kDNSServiceErr_NoError);
-    }
 }
 
 

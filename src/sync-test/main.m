@@ -13,7 +13,7 @@
 #define FILE_SHARES_CAPACITY 8
 
 static const int usageExitStatus = 2;
-static const NSUInteger findTimeoutSeconds = 5;
+static const NSUInteger findTimeoutSeconds = 3;
 
 static struct file_share fileShares[FILE_SHARES_CAPACITY];
 static FileSyncing *fileSyncing;
