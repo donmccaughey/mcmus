@@ -2,15 +2,6 @@
 #import <dns_sd.h>
 
 
-struct file_share;
-
-
-typedef void(find_file_shares_callback)(
-    struct file_share *file_shares,
-    NSUInteger count,
-    DNSServiceErrorType error_code
-);
-
 typedef void(get_url_for_file_share_callback)(
     NSURL *url, DNSServiceErrorType error_code
 );
@@ -23,15 +14,6 @@ struct file_share {
     char domain[256];
 };
 
-
-void find_file_shares(
-    dispatch_queue_t serial_queue,
-    struct file_share *file_shares,
-    int capacity,
-    find_file_shares_callback callback,
-    dispatch_queue_t callback_queue,
-    int timeout_secs
-);
 
 void get_url_for_file_share(
     dispatch_queue_t serial_queue,

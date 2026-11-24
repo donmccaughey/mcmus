@@ -1,5 +1,7 @@
-#import "file_share.h"
 #import <Foundation/Foundation.h>
+
+#import "find_file_shares.h"
+#import "get_url_for_file_share.h"
 
 
 @protocol FileSystem;

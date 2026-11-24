@@ -8,6 +8,7 @@
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
 #import "SyncTestOptions.h"
+#import "file_share.h"
 
 
 #define FILE_SHARES_CAPACITY 8

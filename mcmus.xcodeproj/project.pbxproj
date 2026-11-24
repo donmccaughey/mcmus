@@ -15,8 +15,8 @@
 		D43DC18E30B3C78F00C6052F /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D43DC18F30B3C78F00C6052F /* libfile-transfer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7A00030D1000000000001 /* libfile-transfer.a */; };
 		D45A7E0030C1000000000003 /* libfile-sharing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D49BFC4730A26EAF00AED804 /* libfile-sharing.a */; };
-		D45C7E0030C2000000000003 /* libfile-syncing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D43DC19330B3C78F00C6052F /* libfile-syncing.a */; };
 		D45A7E0030C1000000000004 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D45C7E0030C2000000000003 /* libfile-syncing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D43DC19330B3C78F00C6052F /* libfile-syncing.a */; };
 		D45C7E0030C2000000000004 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
 		D47A2B0030B1000000000001 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D47A2B0030B1000000000020 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
@@ -128,19 +128,19 @@
 			remoteGlobalIDString = D49BFC3D30A26EAF00AED804;
 			remoteInfo = "file-sharing";
 		};
-		D45C7E0030C2000000000005 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3A5000000000000000000E0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D43DC17730B3C78F00C6052F;
-			remoteInfo = "file-syncing";
-		};
 		D45A7E0030C1000000000006 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3A5000000000000000000E0 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
 			remoteInfo = wrappers;
+		};
+		D45C7E0030C2000000000005 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D43DC17730B3C78F00C6052F;
+			remoteInfo = "file-syncing";
 		};
 		D45C7E0030C2000000000006 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -504,8 +504,8 @@
 		D43DC19330B3C78F00C6052F /* libfile-syncing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfile-syncing.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4566B11309F9ECF0013DCF4 /* libwrappers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwrappers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45A7E0030C1000000000001 /* share-test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "share-test"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D45C7E0030C2000000000001 /* sync-test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "sync-test"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45A7E0030C1000000000002 /* share-test-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "share-test-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D45C7E0030C2000000000001 /* sync-test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "sync-test"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45C7E0030C2000000000002 /* sync-test-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "sync-test-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45D240330998DFB00F84DF9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		D47A2B0030B1000000000003 /* libtarball.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtarball.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -666,9 +666,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"file-syncing/file_share.h",
-				"file-syncing/file_share.m",
 				"file-syncing/FileSyncing.h",
 				"file-syncing/FileSyncing.m",
+				"file-syncing/find_file_shares.h",
+				"file-syncing/find_file_shares.m",
+				"file-syncing/get_url_for_file_share.h",
+				"file-syncing/get_url_for_file_share.m",
 			);
 			target = D43DC17730B3C78F00C6052F /* file-syncing */;
 		};
@@ -681,14 +684,6 @@
 			);
 			target = D45A7E0030C100000000000F /* share-test */;
 		};
-		D45C7E0030C2000000000009 /* Exceptions for "src" folder in "sync-test" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"sync-test/main.m",
-				"sync-test/SyncTestOptions.m",
-			);
-			target = D45C7E0030C200000000000F /* sync-test */;
-		};
 		D45A7E0030C100000000000A /* Exceptions for "src" folder in "share-test-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -696,6 +691,14 @@
 				"share-test/ShareTestOptionsTests.m",
 			);
 			target = D45A7E0030C1000000000010 /* share-test-tests */;
+		};
+		D45C7E0030C2000000000009 /* Exceptions for "src" folder in "sync-test" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"sync-test/main.m",
+				"sync-test/SyncTestOptions.m",
+			);
+			target = D45C7E0030C200000000000F /* sync-test */;
 		};
 		D45C7E0030C200000000000A /* Exceptions for "src" folder in "sync-test-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -1136,19 +1139,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D45A7E0030C100000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D45C7E0030C200000000000B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D45C7E0030C2000000000003 /* libfile-syncing.a in Frameworks */,
 				D45C7E0030C2000000000004 /* libwrappers.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D45A7E0030C100000000000D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1563,6 +1566,22 @@
 			productReference = D45A7E0030C1000000000001 /* share-test */;
 			productType = "com.apple.product-type.tool";
 		};
+		D45A7E0030C1000000000010 /* share-test-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D45A7E0030C1000000000016 /* Build configuration list for PBXNativeTarget "share-test-tests" */;
+			buildPhases = (
+				D45A7E0030C100000000000E /* Sources */,
+				D45A7E0030C100000000000D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "share-test-tests";
+			productName = "share-test-tests";
+			productReference = D45A7E0030C1000000000002 /* share-test-tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D45C7E0030C200000000000F /* sync-test */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D45C7E0030C2000000000015 /* Build configuration list for PBXNativeTarget "sync-test" */;
@@ -1580,22 +1599,6 @@
 			productName = "sync-test";
 			productReference = D45C7E0030C2000000000001 /* sync-test */;
 			productType = "com.apple.product-type.tool";
-		};
-		D45A7E0030C1000000000010 /* share-test-tests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D45A7E0030C1000000000016 /* Build configuration list for PBXNativeTarget "share-test-tests" */;
-			buildPhases = (
-				D45A7E0030C100000000000E /* Sources */,
-				D45A7E0030C100000000000D /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "share-test-tests";
-			productName = "share-test-tests";
-			productReference = D45A7E0030C1000000000002 /* share-test-tests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D45C7E0030C2000000000010 /* sync-test-tests */ = {
 			isa = PBXNativeTarget;
@@ -2057,14 +2060,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D45C7E0030C200000000000C /* Sources */ = {
+		D45A7E0030C100000000000E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D45A7E0030C100000000000E /* Sources */ = {
+		D45C7E0030C200000000000C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2233,15 +2236,15 @@
 			target = D49BFC3D30A26EAF00AED804 /* file-sharing */;
 			targetProxy = D45A7E0030C1000000000005 /* PBXContainerItemProxy */;
 		};
-		D45C7E0030C2000000000007 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D43DC17730B3C78F00C6052F /* file-syncing */;
-			targetProxy = D45C7E0030C2000000000005 /* PBXContainerItemProxy */;
-		};
 		D45A7E0030C1000000000008 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
 			targetProxy = D45A7E0030C1000000000006 /* PBXContainerItemProxy */;
+		};
+		D45C7E0030C2000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D43DC17730B3C78F00C6052F /* file-syncing */;
+			targetProxy = D45C7E0030C2000000000005 /* PBXContainerItemProxy */;
 		};
 		D45C7E0030C2000000000008 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2812,19 +2815,6 @@
 			};
 			name = Debug;
 		};
-		D45C7E0030C2000000000011 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K39VF43BJL;
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = macosx;
-			};
-			name = Debug;
-		};
 		D45A7E0030C1000000000012 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2838,47 +2828,7 @@
 			};
 			name = Release;
 		};
-		D45C7E0030C2000000000012 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K39VF43BJL;
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = macosx;
-			};
-			name = Release;
-		};
 		D45A7E0030C1000000000013 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = K39VF43BJL;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "cc.donm-mcmus-base-tests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D45C7E0030C2000000000013 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -2931,6 +2881,59 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
+		};
+		D45C7E0030C2000000000011 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		D45C7E0030C2000000000012 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		D45C7E0030C2000000000013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.donm-mcmus-base-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		D45C7E0030C2000000000014 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -3708,20 +3711,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D45C7E0030C2000000000015 /* Build configuration list for PBXNativeTarget "sync-test" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D45C7E0030C2000000000011 /* Debug */,
-				D45C7E0030C2000000000012 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		D45A7E0030C1000000000016 /* Build configuration list for PBXNativeTarget "share-test-tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D45A7E0030C1000000000013 /* Debug */,
 				D45A7E0030C1000000000014 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D45C7E0030C2000000000015 /* Build configuration list for PBXNativeTarget "sync-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D45C7E0030C2000000000011 /* Debug */,
+				D45C7E0030C2000000000012 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
