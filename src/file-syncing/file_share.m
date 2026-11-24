@@ -14,13 +14,17 @@ struct find_context {
 
 static void free_find_context(struct find_context *find_context);
 
-static int matching_file_share(struct file_share *file_shares, int count,
-    uint32_t interface_index, char const *service_name,
-    char const *service_type, char const *domain);
+static int matching_file_share(struct file_share *file_shares,
+    int count,
+    uint32_t interface_index,
+    char const *service_name,
+    char const *service_type,
+    char const *domain);
 
 
 static struct find_context *alloc_find_context(struct file_share *file_shares,
-    int capacity, find_file_shares_callback callback,
+    int capacity,
+    find_file_shares_callback callback,
     dispatch_queue_t callback_queue)
 {
     struct find_context *find_context = calloc(1, sizeof(struct find_context));
@@ -45,9 +49,13 @@ static struct find_context *alloc_find_context(struct file_share *file_shares,
 }
 
 
-static void browse_reply(DNSServiceRef service, DNSServiceFlags flags,
-    uint32_t interface_index, DNSServiceErrorType error_code,
-    const char *service_name, const char *service_type, const char *domain,
+static void browse_reply(DNSServiceRef service,
+    DNSServiceFlags flags,
+    uint32_t interface_index,
+    DNSServiceErrorType error_code,
+    const char *service_name,
+    const char *service_type,
+    const char *domain,
     void *context)
 {
     struct find_context *find_context = context;
@@ -102,9 +110,12 @@ static void browse_reply(DNSServiceRef service, DNSServiceFlags flags,
 }
 
 
-void find_file_shares(dispatch_queue_t queue, struct file_share *file_shares,
-    int capacity, find_file_shares_callback callback,
-    dispatch_queue_t callback_queue, int timeout_secs)
+void find_file_shares(dispatch_queue_t queue,
+    struct file_share *file_shares,
+    int capacity,
+    find_file_shares_callback callback,
+    dispatch_queue_t callback_queue,
+    int timeout_secs)
 {
     struct find_context *find_context =
         alloc_find_context(file_shares, capacity, callback, callback_queue);
@@ -161,9 +172,12 @@ static void free_find_context(struct find_context *find_context)
 }
 
 
-static int matching_file_share(struct file_share *file_shares, int count,
-    uint32_t interface_index, char const *service_name,
-    char const *service_type, char const *domain)
+static int matching_file_share(struct file_share *file_shares,
+    int count,
+    uint32_t interface_index,
+    char const *service_name,
+    char const *service_type,
+    char const *domain)
 {
     for (int i = 0; i < count; ++i) {
         if (file_shares[i].interface_index == interface_index

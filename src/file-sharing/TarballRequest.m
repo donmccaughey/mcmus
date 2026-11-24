@@ -78,7 +78,9 @@ static BOOL is_too_big(NSArray<TarballEntry *> *entries)
 
 
 NSArray<TarballEntry *> *_Nullable parseTarballRequest(HTTPRequest *request,
-    Manifest *manifest, time_t snapshotTime, NSError **error)
+    Manifest *manifest,
+    time_t snapshotTime,
+    NSError **error)
 {
     NSError *failure = nil;
     NSArray<TarballEntry *> *entries = nil;

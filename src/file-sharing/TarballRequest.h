@@ -29,7 +29,9 @@ typedef NS_ENUM(NSInteger, TarballRequestErrorCode) {
 // localized description of an error is the plain text body of the response to
 // send.
 NSArray<TarballEntry *> *_Nullable parseTarballRequest(HTTPRequest *request,
-    Manifest *manifest, time_t snapshotTime, NSError **error);
+    Manifest *manifest,
+    time_t snapshotTime,
+    NSError **error);
 
 
 NS_ASSUME_NONNULL_END

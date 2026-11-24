@@ -9,7 +9,8 @@ static LoadResult *failedResult(NSArray<NSError *> *errors)
 }
 
 static LoadResult *loadLibrary(MusicRootDirectory *_Nullable musicRootDirectory,
-    NSError *_Nullable locateError, id<FileSystem> fileSystem)
+    NSError *_Nullable locateError,
+    id<FileSystem> fileSystem)
 {
     if (!musicRootDirectory) {
         return failedResult(locateError ? @[locateError] : @[]);

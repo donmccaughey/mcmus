@@ -38,8 +38,10 @@ BOOL removeSnapshot(
 }
 
 
-NSURL *_Nullable takeSnapshot(NSURL *musicDir, NSURL *workingDir,
-    id<FileSystem> fileSystem, NSError **error)
+NSURL *_Nullable takeSnapshot(NSURL *musicDir,
+    NSURL *workingDir,
+    id<FileSystem> fileSystem,
+    NSError **error)
 {
     NSURL *snapshotURL = snapshot_url(workingDir);
     BOOL removed = remove_dir_if_exists(snapshotURL, fileSystem, error);

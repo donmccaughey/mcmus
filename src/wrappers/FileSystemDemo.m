@@ -36,7 +36,8 @@ static NSError *no_directory_entry_error(void)
 // The demo data has only names, so the localized display name rule cannot
 // apply. The hidden file rule is applied by leading dot and the package rule
 // by flagging `.itlp` directories, the only packages in the data.
-static void index_directory(NSDictionary *entry, NSString *path,
+static void index_directory(NSDictionary *entry,
+    NSString *path,
     NSMutableDictionary<NSString *, FileSystemItemInfo *> *infoByPath,
     NSMutableDictionary<NSString *, NSArray<NSURL *> *> *contentsByPath)
 {

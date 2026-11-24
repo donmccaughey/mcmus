@@ -19,8 +19,11 @@ static NSError *hashFailed(NSURL *trackURL)
                            userInfo:@{NSFilePathErrorKey: trackURL.path}];
 }
 
-static BOOL hashFile(NSURL *trackURL, id<FileSystem> fileSystem,
-    XXH3_state_t *state, NSUInteger *fileHash, NSError **error)
+static BOOL hashFile(NSURL *trackURL,
+    id<FileSystem> fileSystem,
+    XXH3_state_t *state,
+    NSUInteger *fileHash,
+    NSError **error)
 {
     if (XXH_OK != XXH3_64bits_reset(state)) {
         *error = hashFailed(trackURL);
@@ -46,8 +49,10 @@ static BOOL hashFile(NSURL *trackURL, id<FileSystem> fileSystem,
 // A track whose hash cannot be gathered still gets metadata, with the
 // "not gathered" hash of zero. The state is NULL when it could not be
 // allocated, which fails every track's hash.
-static NSUInteger readTrackHash(NSURL *trackURL, id<FileSystem> fileSystem,
-    XXH3_state_t *_Nullable state, NSMutableArray<NSError *> *errors)
+static NSUInteger readTrackHash(NSURL *trackURL,
+    id<FileSystem> fileSystem,
+    XXH3_state_t *_Nullable state,
+    NSMutableArray<NSError *> *errors)
 {
     if (!state) {
         [errors addObject:hashFailed(trackURL)];
@@ -71,8 +76,10 @@ static NSString *pathRelativeToMusicLibrary(
 }
 
 static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
-    NSURL *musicLibraryDir, id<FileSystem> fileSystem,
-    XXH3_state_t *_Nullable state, NSMutableArray<NSError *> *errors)
+    NSURL *musicLibraryDir,
+    id<FileSystem> fileSystem,
+    XXH3_state_t *_Nullable state,
+    NSMutableArray<NSError *> *errors)
 {
     NSURL *trackURL = track.url;
     unsigned long long size = 0;
@@ -90,7 +97,8 @@ static TrackMetadata *_Nullable loadOneTrackMetadata(Track *track,
 }
 
 NSArray<TrackMetadata *> *loadTrackMetadata(NSArray<Track *> *tracks,
-    NSURL *musicLibraryDir, id<FileSystem> fileSystem,
+    NSURL *musicLibraryDir,
+    id<FileSystem> fileSystem,
     LoadTrackMetadataProgress _Nullable progress,
     NSArray<NSError *> *_Nullable *_Nullable errors)
 {

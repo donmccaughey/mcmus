@@ -35,8 +35,11 @@ static BOOL make_nonblocking(int fd)
 
 // The socket does not retain `info`; the owner invalidates the socket when it
 // closes or is deallocated, which stops the callbacks.
-static CFSocketRef schedule_socket(int fd, CFOptionFlags callbackTypes,
-    CFSocketCallBack callback, void *info, BOOL closeOnInvalidate)
+static CFSocketRef schedule_socket(int fd,
+    CFOptionFlags callbackTypes,
+    CFSocketCallBack callback,
+    void *info,
+    BOOL closeOnInvalidate)
 {
     CFSocketContext context = {.info = info};
     CFSocketRef socket =
@@ -114,8 +117,11 @@ static NSString *client_address(int fd)
 @end
 
 
-static void connection_callback(CFSocketRef socket, CFSocketCallBackType type,
-    CFDataRef address, const void *data, void *info)
+static void connection_callback(CFSocketRef socket,
+    CFSocketCallBackType type,
+    CFDataRef address,
+    const void *data,
+    void *info)
 {
     NetworkConnectionReal *connection = (__bridge NetworkConnectionReal *)info;
     if (type == kCFSocketReadCallBack) [connection readAvailableData];
@@ -257,8 +263,11 @@ static void connection_callback(CFSocketRef socket, CFSocketCallBackType type,
 @end
 
 
-static void listener_callback(CFSocketRef socket, CFSocketCallBackType type,
-    CFDataRef address, const void *data, void *info)
+static void listener_callback(CFSocketRef socket,
+    CFSocketCallBackType type,
+    CFDataRef address,
+    const void *data,
+    void *info)
 {
     NetworkListenerReal *listener = (__bridge NetworkListenerReal *)info;
     [listener accept:*(const CFSocketNativeHandle *)data];
@@ -362,7 +371,10 @@ static void listener_callback(CFSocketRef socket, CFSocketCallBackType type,
 
 
 static void advertisement_socket_callback(CFSocketRef socket,
-    CFSocketCallBackType type, CFDataRef address, const void *data, void *info)
+    CFSocketCallBackType type,
+    CFDataRef address,
+    const void *data,
+    void *info)
 {
     NetworkAdvertisementReal *advertisement =
         (__bridge NetworkAdvertisementReal *)info;
@@ -371,8 +383,12 @@ static void advertisement_socket_callback(CFSocketRef socket,
 
 
 static void advertisement_registered(DNSServiceRef service,
-    DNSServiceFlags flags, DNSServiceErrorType code, const char *name,
-    const char *type, const char *domain, void *context)
+    DNSServiceFlags flags,
+    DNSServiceErrorType code,
+    const char *name,
+    const char *type,
+    const char *domain,
+    void *context)
 {
     NetworkAdvertisementReal *advertisement =
         (__bridge NetworkAdvertisementReal *)context;

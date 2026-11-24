@@ -14,8 +14,10 @@ typedef NS_ENUM(NSInteger, ParseState) {
 };
 
 
-static NSError *error_at(CSVErrorCode code, NSString *description,
-    NSUInteger line, NSUInteger column)
+static NSError *error_at(CSVErrorCode code,
+    NSString *description,
+    NSUInteger line,
+    NSUInteger column)
 {
     NSString *located =
         [NSString stringWithFormat:@"%@ at line %lu, column %lu.", description,

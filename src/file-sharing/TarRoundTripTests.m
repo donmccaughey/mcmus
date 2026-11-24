@@ -34,7 +34,8 @@ static int setBinaryPaxFormat(struct archive *tar)
 }
 
 static NSData *writeTar(NSDictionary<NSString *, NSData *> *files,
-    NSArray<NSString *> *order, int (*setFormat)(struct archive *))
+    NSArray<NSString *> *order,
+    int (*setFormat)(struct archive *))
 {
     NSMutableData *buffer = [NSMutableData dataWithLength:64 * 1024];
     size_t used = 0;

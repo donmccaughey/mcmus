@@ -59,7 +59,9 @@ static NSArray<Track *> *load_tracks_and_log_time(
 
 
 static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
-    NSArray<Track *> *tracks, NSURL *musicLibraryDir, id<FileSystem> fileSystem,
+    NSArray<Track *> *tracks,
+    NSURL *musicLibraryDir,
+    id<FileSystem> fileSystem,
     LoadTrackMetadataProgress progress)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
@@ -84,8 +86,10 @@ static NSURL *get_manifest_url(NSURL *workingDir)
 }
 
 
-static BOOL write_manifest_and_log_time(Manifest *manifest, NSURL *workingDir,
-    id<FileSystem> fileSystem, NSError **error)
+static BOOL write_manifest_and_log_time(Manifest *manifest,
+    NSURL *workingDir,
+    id<FileSystem> fileSystem,
+    NSError **error)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSURL *manifestURL = get_manifest_url(workingDir);
@@ -137,7 +141,9 @@ static BOOL remove_snapshot_and_log_time(
 
 
 static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
-    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *workingDir,
+    id<FileSystem> fileSystem,
+    NSError **error)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSURL *musicLibraryDir =

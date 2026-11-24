@@ -29,7 +29,8 @@ static void set_header(
 
 
 static CFHTTPMessageRef create_response_message(HTTPStatus status,
-    NSString *contentType, unsigned long long contentLength,
+    NSString *contentType,
+    unsigned long long contentLength,
     BOOL closesConnection)
 {
     CFHTTPMessageRef message = CFHTTPMessageCreateResponse(NULL, status,
@@ -51,7 +52,9 @@ static NSData *serialize_and_release(CFHTTPMessageRef message)
 }
 
 
-NSData *makeHTTPResponse(HTTPStatus status, NSString *contentType, NSData *body,
+NSData *makeHTTPResponse(HTTPStatus status,
+    NSString *contentType,
+    NSData *body,
     BOOL closesConnection)
 {
     CFHTTPMessageRef message = create_response_message(
@@ -69,8 +72,10 @@ NSData *makeHTTPTextResponse(
 }
 
 
-NSData *makeHTTPResponseHeader(HTTPStatus status, NSString *contentType,
-    unsigned long long contentLength, BOOL closesConnection)
+NSData *makeHTTPResponseHeader(HTTPStatus status,
+    NSString *contentType,
+    unsigned long long contentLength,
+    BOOL closesConnection)
 {
     return serialize_and_release(create_response_message(
         status, contentType, contentLength, closesConnection));

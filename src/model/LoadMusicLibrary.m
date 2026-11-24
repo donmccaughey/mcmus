@@ -14,8 +14,10 @@ static BOOL hasTrackDescendants(NSArray<id<FolderChild>> *children)
 // children respectively, which is how tracks fall back to "(no album)" and
 // "(no artist)".
 static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
-    NSString *_Nullable folderName, NSString *_Nullable parentFolderName,
-    id<FileSystem> fileSystem, NSMutableArray<NSError *> *errors)
+    NSString *_Nullable folderName,
+    NSString *_Nullable parentFolderName,
+    id<FileSystem> fileSystem,
+    NSMutableArray<NSError *> *errors)
 {
     NSError *error;
     NSArray<NSURL *> *contents = [fileSystem listDirectory:directory

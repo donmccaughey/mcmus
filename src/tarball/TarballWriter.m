@@ -43,16 +43,20 @@ static NSError *file_too_short_error(TarballEntry *entry)
 }
 
 
-static la_ssize_t append_bytes(struct archive *archive, void *client_data,
-    const void *buffer, size_t length)
+static la_ssize_t append_bytes(struct archive *archive,
+    void *client_data,
+    const void *buffer,
+    size_t length)
 {
     [(__bridge NSMutableData *)client_data appendBytes:buffer length:length];
     return (la_ssize_t)length;
 }
 
 
-static la_ssize_t count_bytes(struct archive *archive, void *client_data,
-    const void *buffer, size_t length)
+static la_ssize_t count_bytes(struct archive *archive,
+    void *client_data,
+    const void *buffer,
+    size_t length)
 {
     *(unsigned long long *)client_data += length;
     return (la_ssize_t)length;
