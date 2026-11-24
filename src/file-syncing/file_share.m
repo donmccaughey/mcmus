@@ -43,8 +43,10 @@ static struct find_context *alloc_find_context(
 
     dispatch_block_flags_t block_flags = 0;
     find_context->timeout_block = dispatch_block_create(block_flags, ^{
-        int count = 0;
-        callback(file_shares, count, kDNSServiceErr_Timeout);
+        callback(
+            find_context->file_shares, find_context->count,
+            kDNSServiceErr_NoError
+        );
         free_find_context(find_context);
     });
     NSCAssert(find_context->timeout_block, @"Expected to create timeout_block");
