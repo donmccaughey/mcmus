@@ -647,13 +647,10 @@
 		D43DC19B30B3C7E500C6052F /* Exceptions for "src" folder in "file-syncing" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"file-syncing/file_share.h",
+				"file-syncing/file_share.m",
 				"file-syncing/FileSyncing.h",
 				"file-syncing/FileSyncing.m",
-				"file-syncing/FileSyncingClient.h",
-				"file-syncing/FileSyncingClient.m",
-				"file-syncing/FileSyncingDelegate.h",
-				"file-syncing/FileSyncingState.h",
-				"file-syncing/FileSyncingState.m",
 			);
 			target = D43DC17730B3C78F00C6052F /* file-syncing */;
 		};
