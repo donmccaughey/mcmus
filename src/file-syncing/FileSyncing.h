@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// The caller owns `fileShares` memory
 - (void)findFileSharesWithCallback:(find_file_shares_callback)callback
                            onQueue:(dispatch_queue_t)callbackQueue
                      withinSeconds:(NSUInteger)timeoutSeconds;

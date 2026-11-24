@@ -155,7 +155,6 @@ static void resolve_reply(
     if (kDNSServiceErr_NoError != error_code) {
         get_url_for_file_share_callback *callback = url_context->callback;
         NSURL *url = nil;
-        DNSServiceErrorType error_code = kDNSServiceErr_Timeout;
         dispatch_async(url_context->callback_queue, ^{
             callback(url, error_code);
         });
@@ -164,11 +163,14 @@ static void resolve_reply(
     }
 
     NSString *host = [NSString stringWithCString:target_host_name
-                                        encoding:NSASCIIStringEncoding];
-    NSUInteger last_index = host.length - 1;
-    if ('.' == [host characterAtIndex:last_index]) {
+                                        encoding:NSUTF8StringEncoding];
+    NSCAssert(host, @"Expected target_host_name to be UTF-8");
+
+    if ([host hasSuffix:@"."]) {
+        NSUInteger last_index = host.length - 1;
         host = [host substringToIndex:last_index];
     }
+
     NSURLComponents *components = [NSURLComponents new];
     components.scheme = @"http";
     components.host = host;
