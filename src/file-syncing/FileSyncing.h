@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
                onQueue:(dispatch_queue_t)callbackQueue
          withinSeconds:(NSUInteger)timeoutSeconds;
 
+- (void)getURLForFileShare:(struct file_share const *)fileShare
+              withCallback:(get_url_for_file_share_callback)callback
+                   onQueue:(dispatch_queue_t)callbackQueue
+             withinSeconds:(NSUInteger)timeoutSeconds;
+
 @end
 
 

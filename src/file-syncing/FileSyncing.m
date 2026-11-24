@@ -51,4 +51,24 @@
 }
 
 
+- (void)getURLForFileShare:(struct file_share const *)fileShare
+              withCallback:(get_url_for_file_share_callback)callback
+                   onQueue:(dispatch_queue_t)callbackQueue
+             withinSeconds:(NSUInteger)timeoutSeconds;
+{
+    NSAssert(
+        timeoutSeconds < INT_MAX, @"Expected timeoutSeconds less than INT_MAX"
+    );
+    dispatch_async(_serial_queue, ^{
+        get_url_for_file_share(
+            self->_serial_queue,
+            fileShare,
+            callback,
+            callbackQueue,
+            (int)timeoutSeconds
+        );
+    });
+}
+
+
 @end

@@ -63,7 +63,9 @@ static const char *interface_name(uint32_t interface_index, char *buffer)
 }
 
 
-static void print_file_shares(struct file_share *file_shares, NSUInteger count)
+static void print_file_shares(
+    struct file_share const *file_shares, NSUInteger count
+)
 {
     char name_buffer[IF_NAMESIZE];
     for (NSUInteger i = 0; i < count; ++i) {
@@ -77,6 +79,22 @@ static void print_file_shares(struct file_share *file_shares, NSUInteger count)
             interface_name(file_shares[i].interface_index, name_buffer)
         );
     }
+}
+
+
+static void get_url_callback(NSURL *url, DNSServiceErrorType error_code)
+{
+    if (kDNSServiceErr_NoError != error_code) {
+        fprintf(
+            stderr,
+            "sync-test: finding getting URL failed with error %d\n",
+            error_code
+        );
+        exit(EXIT_FAILURE);
+    }
+
+    printf("File sharing URL: %s.\n", url.description.UTF8String);
+    exit(EXIT_SUCCESS);
 }
 
 
@@ -97,10 +115,14 @@ static void print_file_shares_and_exit(
 
     if (count) {
         print_file_shares(file_shares, count);
+        [fileSyncing getURLForFileShare:&file_shares[0]
+                           withCallback:get_url_callback
+                                onQueue:dispatch_get_main_queue()
+                          withinSeconds:findTimeoutSeconds];
     } else {
         printf("No file sharing servers found.\n");
+        exit(EXIT_SUCCESS);
     }
-    exit(EXIT_SUCCESS);
 }
 
 
