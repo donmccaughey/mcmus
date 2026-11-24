@@ -8,13 +8,16 @@
 
 static BOOL is_missing_file_error(NSError *error)
 {
-    return (NSCocoaErrorDomain == error.domain
-        && NSFileNoSuchFileError == error.code);
+    return (
+        NSCocoaErrorDomain == error.domain
+        && NSFileNoSuchFileError == error.code
+    );
 }
 
 
 static BOOL remove_dir_if_exists(
-    NSURL *dir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *dir, id<FileSystem> fileSystem, NSError **error
+)
 {
     if ([fileSystem removeItemAtURL:dir error:error]) return YES;
     if (is_missing_file_error(*error)) {
@@ -32,16 +35,19 @@ static NSURL *snapshot_url(NSURL *workingDir)
 
 
 BOOL removeSnapshot(
-    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error
+)
 {
     return remove_dir_if_exists(snapshot_url(workingDir), fileSystem, error);
 }
 
 
-NSURL *_Nullable takeSnapshot(NSURL *musicDir,
+NSURL *_Nullable takeSnapshot(
+    NSURL *musicDir,
     NSURL *workingDir,
     id<FileSystem> fileSystem,
-    NSError **error)
+    NSError **error
+)
 {
     NSURL *snapshotURL = snapshot_url(workingDir);
     BOOL removed = remove_dir_if_exists(snapshotURL, fileSystem, error);

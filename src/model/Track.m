@@ -10,7 +10,7 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension)
     NSString *suffix = [@"." stringByAppendingString:pathExtension];
     NSRange range = [displayName rangeOfString:suffix
                                        options:NSCaseInsensitiveSearch
-        | NSAnchoredSearch | NSBackwardsSearch];
+                                       | NSAnchoredSearch | NSBackwardsSearch];
     if (range.location == NSNotFound) {
         return displayName;
     }
@@ -50,12 +50,12 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension)
     return self;
 }
 
-- (nullable instancetype)initWithDisplayName:(NSString *)displayName
-                               pathExtension:(NSString *)pathExtension
-                                        path:(NSString *)path
-                                  folderName:(nullable NSString *)folderName
-                            parentFolderName:
-                                (nullable NSString *)parentFolderName;
+- (nullable instancetype
+)initWithDisplayName:(NSString *)displayName
+       pathExtension:(NSString *)pathExtension
+                path:(NSString *)path
+          folderName:(nullable NSString *)folderName
+    parentFolderName:(nullable NSString *)parentFolderName;
 {
     if (![Track isMusicFileExtension:pathExtension]) return nil;
     return [self initWithTrackName:trackName(displayName, pathExtension)
@@ -101,7 +101,7 @@ static NSString *trackName(NSString *displayName, NSString *pathExtension)
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"Track(%@, %@, %@, %@)", _trackName,
-        _albumName, _artistName, _path];
+                                      _albumName, _artistName, _path];
 }
 
 @end

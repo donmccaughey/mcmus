@@ -25,8 +25,9 @@ NSString *share_test_status_text(FileSharing *fileSharing)
     case FileSharingStateSharing: break;
     }
     if (fileSharing.error) {
-        return [NSString stringWithFormat:@"Sharing failed: %@",
-            fileSharing.error.localizedDescription];
+        return
+            [NSString stringWithFormat:@"Sharing failed: %@",
+                                       fileSharing.error.localizedDescription];
     }
     if (!fileSharing.isSharing) return @"Not sharing.";
 

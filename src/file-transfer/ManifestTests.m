@@ -7,7 +7,8 @@
 
 
 static TrackMetadata *make_metadata(
-    NSString *relativePath, unsigned long long size, NSUInteger fileHash)
+    NSString *relativePath, unsigned long long size, NSUInteger fileHash
+)
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
@@ -98,7 +99,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 
     XCTAssertEqual(manifest.trackCount, 2UL);
     XCTAssertEqual(
-        [manifest metadataForRelativePath:@"Artist/Album/Song.mp3"], song);
+        [manifest metadataForRelativePath:@"Artist/Album/Song.mp3"], song
+    );
     XCTAssertEqual([manifest metadataForRelativePath:@"Tune.m4a"], tune);
 }
 
@@ -109,8 +111,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
         make_manifest(@[make_metadata(@"Artist/Album/Song.mp3", 5, 7)]);
 
     XCTAssertNil([manifest metadataForRelativePath:@"Artist/Album/Other.mp3"]);
-    XCTAssertNil(
-        [manifest metadataForRelativePath:@"/snapshot/Artist/Album/Song.mp3"]);
+    XCTAssertNil([manifest
+        metadataForRelativePath:@"/snapshot/Artist/Album/Song.mp3"]);
     XCTAssertNil([manifest metadataForRelativePath:@""]);
 }
 
@@ -123,11 +125,13 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
         make_metadata(@"B/Song.mp3", 1, 10),
     ]);
 
-    XCTAssertEqualObjects(csv_text(manifest),
+    XCTAssertEqualObjects(
+        csv_text(manifest),
         @"path,size,hash\r\n"
         @"B/Song.mp3,1,10\r\n"
         @"b/Song.mp3,2,20\r\n"
-        @"é/Song.mp3,3,30\r\n");
+        @"é/Song.mp3,3,30\r\n"
+    );
 }
 
 
@@ -136,8 +140,10 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
     Manifest *manifest =
         make_manifest(@[make_metadata(@"Piaf, Edith/Song.mp3", 5, 7)]);
 
-    XCTAssertEqualObjects(csv_text(manifest),
-        @"path,size,hash\r\n\"Piaf, Edith/Song.mp3\",5,7\r\n");
+    XCTAssertEqualObjects(
+        csv_text(manifest),
+        @"path,size,hash\r\n\"Piaf, Edith/Song.mp3\",5,7\r\n"
+    );
 }
 
 
@@ -175,7 +181,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 - (void)testNewWithCSVPathReadsAManifestFile;
 {
     FileSystemFake *fileSystem = file_system_with_manifest(
-        @"path,size,hash\r\nArtist/Album/Song.mp3,5,7\r\nTune.m4a,9,11\r\n");
+        @"path,size,hash\r\nArtist/Album/Song.mp3,5,7\r\nTune.m4a,9,11\r\n"
+    );
     NSError *error = nil;
 
     Manifest *manifest = [Manifest newWithCSVPath:manifest_path()
@@ -216,7 +223,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
     XCTAssertEqualObjects(error.domain, FileSystemFakeErrorDomain);
     XCTAssertEqual(error.code, FileSystemFakeErrorCodeOperationFailed);
     XCTAssertEqualObjects(
-        error.userInfo[NSFilePathErrorKey], manifest_path().path);
+        error.userInfo[NSFilePathErrorKey], manifest_path().path
+    );
 }
 
 
@@ -245,7 +253,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 - (void)testNewWithCSVPathPassesOnManifestErrors;
 {
     NSError *error = error_from_csv_path(
-        file_system_with_manifest(@"path,size,hash\r\nSong.mp3,oops,7\r\n"));
+        file_system_with_manifest(@"path,size,hash\r\nSong.mp3,oops,7\r\n")
+    );
 
     XCTAssertEqualObjects(error.domain, ManifestErrorDomain);
     XCTAssertEqual(error.code, ManifestErrorCodeInvalidSize);
@@ -279,27 +288,33 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
         manifest_from_csv(@"path,size,hash\nb.mp3,2,20\na.mp3,1,10\n");
 
     XCTAssertEqualObjects(
-        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,2,20\r\n");
+        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,2,20\r\n"
+    );
 }
 
 
 - (void)testReadsQuotedPathsThatContainCommas;
 {
-    Manifest *manifest = manifest_from_csv(
-        @"path,size,hash\r\n\"Piaf, Edith/Song.mp3\",5,7\r\n");
+    Manifest *manifest =
+        manifest_from_csv(@"path,size,hash\r\n\"Piaf, Edith/Song.mp3\",5,7\r\n"
+        );
 
     XCTAssertEqual(
-        [manifest metadataForRelativePath:@"Piaf, Edith/Song.mp3"].size, 5ULL);
+        [manifest metadataForRelativePath:@"Piaf, Edith/Song.mp3"].size, 5ULL
+    );
 }
 
 
 - (void)testReadsTheLargestHash;
 {
     Manifest *manifest = manifest_from_csv(
-        @"path,size,hash\r\nSong.mp3,5,18446744073709551615\r\n");
+        @"path,size,hash\r\nSong.mp3,5,18446744073709551615\r\n"
+    );
 
-    XCTAssertEqual([manifest metadataForRelativePath:@"Song.mp3"].fileHash,
-        (NSUInteger)UINT64_MAX);
+    XCTAssertEqual(
+        [manifest metadataForRelativePath:@"Song.mp3"].fileHash,
+        (NSUInteger)UINT64_MAX
+    );
 }
 
 
@@ -368,7 +383,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
         error_from_csv(@"path,size,hash\r\na.mp3,1,10\r\nb.mp3,oops,20\r\n");
 
     XCTAssertEqualObjects(
-        error.localizedDescription, @"Invalid size in record 3");
+        error.localizedDescription, @"Invalid size in record 3"
+    );
 }
 
 
@@ -406,7 +422,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
     Manifest *manifest = make_manifest(@[track]);
 
     XCTAssertEqualObjects(
-        [manifest tracksMissingFrom:make_manifest(@[])], @[track]);
+        [manifest tracksMissingFrom:make_manifest(@[])], @[track]
+    );
     XCTAssertEqualObjects([make_manifest(@[]) tracksMissingFrom:manifest], @[]);
 }
 
@@ -498,13 +515,15 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 {
     Manifest *manifest = make_manifest(@[make_metadata(@"b.mp3", 2, 20)]);
     XCTAssertEqualObjects(
-        csv_text(manifest), @"path,size,hash\r\nb.mp3,2,20\r\n");
+        csv_text(manifest), @"path,size,hash\r\nb.mp3,2,20\r\n"
+    );
 
     [manifest addOrReplaceTrack:make_metadata(@"a.mp3", 1, 10)];
     [manifest addOrReplaceTrack:make_metadata(@"b.mp3", 22, 21)];
 
     XCTAssertEqualObjects(
-        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,22,21\r\n");
+        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,22,21\r\n"
+    );
 }
 
 
@@ -521,7 +540,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
     XCTAssertEqual(manifest.trackCount, 3UL);
     XCTAssertEqual([manifest metadataForRelativePath:@"kept.mp3"], kept);
     XCTAssertEqual(
-        [manifest metadataForRelativePath:@"replaced.mp3"], replacement);
+        [manifest metadataForRelativePath:@"replaced.mp3"], replacement
+    );
     XCTAssertEqual([manifest metadataForRelativePath:@"added.mp3"], added);
 }
 
@@ -598,14 +618,17 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
 - (void)testCSVReflectsTracksRemovedAfterItWasRead;
 {
     Manifest *manifest = make_manifest(
-        @[make_metadata(@"a.mp3", 1, 10), make_metadata(@"b.mp3", 2, 20)]);
+        @[make_metadata(@"a.mp3", 1, 10), make_metadata(@"b.mp3", 2, 20)]
+    );
     XCTAssertEqualObjects(
-        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,2,20\r\n");
+        csv_text(manifest), @"path,size,hash\r\na.mp3,1,10\r\nb.mp3,2,20\r\n"
+    );
 
     [manifest removeTrackWithRelativePath:@"a.mp3"];
 
     XCTAssertEqualObjects(
-        csv_text(manifest), @"path,size,hash\r\nb.mp3,2,20\r\n");
+        csv_text(manifest), @"path,size,hash\r\nb.mp3,2,20\r\n"
+    );
 }
 
 

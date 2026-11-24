@@ -15,10 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // The reply carries the port the server is listening on, or zero with an
 // error when sharing did not start.
-- (void)startSharingMusicDirectory:(NSURL *)musicDir
-                  workingDirectory:(NSURL *)workingDir
-                             reply:(void (^)(uint16_t port,
-                                       NSError *_Nullable error))reply;
+- (void
+)startSharingMusicDirectory:(NSURL *)musicDir
+           workingDirectory:(NSURL *)workingDir
+                      reply:(void (^)(uint16_t port, NSError *_Nullable error)
+                            )reply;
 - (void)stopSharingWithReply:(void (^)(NSError *_Nullable error))reply;
 
 @end

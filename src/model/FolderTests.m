@@ -59,7 +59,8 @@
             ]];
 
     XCTAssertEqualObjects(
-        folder.trackDescendants, (@[albumOne, single, albumTwo, loose]));
+        folder.trackDescendants, (@[albumOne, single, albumTwo, loose])
+    );
 }
 
 @end

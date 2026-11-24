@@ -12,7 +12,8 @@
         // Only the thin axis has an intrinsic size, so these keep a stack
         // view from stretching the line's thickness whichever way it runs.
         UILayoutConstraintAxis layoutAxes[] = {
-            UILayoutConstraintAxisHorizontal, UILayoutConstraintAxisVertical};
+            UILayoutConstraintAxisHorizontal, UILayoutConstraintAxisVertical
+        };
         for (size_t i = 0; i < sizeof(layoutAxes) / sizeof(layoutAxes[0]); i++)
         {
             [self setContentHuggingPriority:UILayoutPriorityRequired

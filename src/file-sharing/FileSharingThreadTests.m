@@ -34,7 +34,7 @@
                          ofTotal:(NSUInteger)totalTracks;
 {
     [_progress addObject:[NSString stringWithFormat:@"%lu of %lu", tracksLoaded,
-                             totalTracks]];
+                                                    totalTracks]];
 }
 
 - (void)serverIsWaitingForClient;
@@ -166,7 +166,8 @@ static NSData *tarball_in(NSData *response)
     XCTAssertTrue(_thread.isExecuting);
     XCTAssertEqualObjects(_fileSystem.clonedSources, @[@"/Users/user/Music"]);
     XCTAssertEqualObjects(
-        _fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
+        _fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]
+    );
 
     NSError *stopError = [self stopAndWait];
 
@@ -179,7 +180,8 @@ static NSData *tarball_in(NSData *response)
 {
     for (int i = 0; i < 250; ++i) {
         [_fileSystem
-            addPath:[NSString stringWithFormat:
+            addPath:[NSString
+                        stringWithFormat:
                             @"/container/AppSupport/snapshot/Song %d.mp3", i]];
     }
 
@@ -254,9 +256,11 @@ static NSData *tarball_in(NSData *response)
 
     [self startAndWait];
 
-    XCTAssertEqualObjects([self writtenManifest],
+    XCTAssertEqualObjects(
+        [self writtenManifest],
         @"path,size,hash\r\n"
-        @"Artist/Album/Song.mp3,10,7918246353190764831\r\n");
+        @"Artist/Album/Song.mp3,10,7918246353190764831\r\n"
+    );
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
@@ -269,9 +273,11 @@ static NSData *tarball_in(NSData *response)
 
     [self startAndWait];
 
-    XCTAssertEqualObjects([self writtenManifest],
+    XCTAssertEqualObjects(
+        [self writtenManifest],
         @"path,size,hash\r\n"
-        @"\"One, Two.mp3\",0,3244421341483603138\r\n");
+        @"\"One, Two.mp3\",0,3244421341483603138\r\n"
+    );
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
@@ -298,11 +304,13 @@ static NSData *tarball_in(NSData *response)
 
     [self startAndWait];
 
-    XCTAssertEqualObjects([self writtenManifest],
+    XCTAssertEqualObjects(
+        [self writtenManifest],
         @"path,size,hash\r\n"
         @"Z.mp3,0,3244421341483603138\r\n"
         @"a.mp3,0,3244421341483603138\r\n"
-        @"b.mp3,0,3244421341483603138\r\n");
+        @"b.mp3,0,3244421341483603138\r\n"
+    );
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
@@ -375,12 +383,15 @@ static NSData *tarball_in(NSData *response)
     XCTAssertTrue([connection.sentText hasPrefix:@"HTTP/1.1 200 OK\r\n"]);
     XCTAssertTrue([connection.sentText hasSuffix:end]);
     XCTAssertEqualObjects(
-        _client.serverEvents, (@[@"waiting", @"connected: Don's iPhone"]));
+        _client.serverEvents, (@[@"waiting", @"connected: Don's iPhone"])
+    );
 
     [self onThread:^{ [self->_clock advance:5]; }];
 
-    XCTAssertEqualObjects(_client.serverEvents,
-        (@[@"waiting", @"connected: Don's iPhone", @"waiting"]));
+    XCTAssertEqualObjects(
+        _client.serverEvents,
+        (@[@"waiting", @"connected: Don's iPhone", @"waiting"])
+    );
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
@@ -405,8 +416,9 @@ static NSData *tarball_in(NSData *response)
                             @"path\r\nSong.mp3\r\n"];
     }];
 
-    XCTAssertEqualObjects(readTar(tarball_in(connection.sentData)),
-        (@[@[@"Song.mp3", contents]]));
+    XCTAssertEqualObjects(
+        readTar(tarball_in(connection.sentData)), (@[@[@"Song.mp3", contents]])
+    );
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
@@ -434,7 +446,8 @@ static NSData *tarball_in(NSData *response)
 
     XCTAssertEqualObjects(
         readTarModificationTimes(tarball_in(connection.sentData)),
-        (@[@1700000000]));
+        (@[@1700000000])
+    );
 
     [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];

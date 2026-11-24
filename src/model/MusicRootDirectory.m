@@ -2,7 +2,8 @@
 
 #if TARGET_OS_OSX
 static MusicRootDirectory *_Nullable accessBookmark(
-    NSData *bookmark, id<FileSystem> fileSystem, id<Preferences> preferences)
+    NSData *bookmark, id<FileSystem> fileSystem, id<Preferences> preferences
+)
 {
     ResolvedBookmark *resolved =
         [fileSystem resolveSecurityScopedBookmark:bookmark error:NULL];

@@ -49,7 +49,8 @@
     [queue add:_song];
     XCTAssertEqualObjects(queue.tracks, (@[_song, _song]));
     XCTAssertNotEqualObjects(
-        queue.queuedTracks[0].identifier, queue.queuedTracks[1].identifier);
+        queue.queuedTracks[0].identifier, queue.queuedTracks[1].identifier
+    );
 }
 
 - (void)testAddingFolderAppendsTrackDescendantsInPreorder

@@ -23,7 +23,8 @@ extern NSString *const CSVErrorColumnKey;
 // skipping a leading UTF-8 byte order mark. Every record must have the same
 // number of fields as the first record.
 NSArray<NSArray<NSString *> *> *_Nullable parseCSV(
-    NSData *data, NSError **error);
+    NSData *data, NSError **error
+);
 
 // Writes RFC 4180 CSV with CRLF after every record, including the last, and
 // quotes only fields that contain a comma, a double quote, CR or LF. Every

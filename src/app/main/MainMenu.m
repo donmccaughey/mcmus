@@ -15,7 +15,8 @@ static NSMenuItem *menuItem(NSString *title, NSArray<NSMenuItem *> *items)
 }
 
 static NSMenuItem *item(
-    NSString *title, SEL _Nullable action, NSString *keyEquivalent)
+    NSString *title, SEL _Nullable action, NSString *keyEquivalent
+)
 {
     return [[NSMenuItem alloc] initWithTitle:title
                                       action:action

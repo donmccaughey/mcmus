@@ -114,10 +114,12 @@ static CGFloat idealWidth(NSTextField *label)
 
     CGFloat lowerY = verticalPadding + trackLineHeight() + lineSpacing;
     LowerLineWidths widths = LowerLineWidthsSplit(
-        width, idealWidth(_albumLabel), idealWidth(_artistLabel));
+        width, idealWidth(_albumLabel), idealWidth(_artistLabel)
+    );
     _albumLabel.frame = NSMakeRect(x, lowerY, widths.album, detailLineHeight());
     _artistLabel.frame = NSMakeRect(
-        x + width - widths.artist, lowerY, widths.artist, detailLineHeight());
+        x + width - widths.artist, lowerY, widths.artist, detailLineHeight()
+    );
 }
 
 @end

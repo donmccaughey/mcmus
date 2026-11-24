@@ -36,10 +36,13 @@
 {
     NSAssert(capacity < INT_MAX, @"Expected capacity less than INT_MAX");
     NSAssert(
-        timeoutSeconds < INT_MAX, @"Expected timeoutSeconds less than INT_MAX");
+        timeoutSeconds < INT_MAX, @"Expected timeoutSeconds less than INT_MAX"
+    );
     dispatch_async(_queue, ^{
-        find_file_shares(self->_queue, fileShares, (int)capacity, callback,
-            callbackQueue, (int)timeoutSeconds);
+        find_file_shares(
+            self->_queue, fileShares, (int)capacity, callback, callbackQueue,
+            (int)timeoutSeconds
+        );
     });
 }
 

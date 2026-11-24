@@ -74,7 +74,8 @@ static NSData *read_entry_data(struct archive *tar, struct archive_entry *entry)
     la_ssize_t read =
         archive_read_data(tar, contents.mutableBytes, contents.length);
     XCTAssertEqual(
-        read, (la_ssize_t)contents.length, @"%s", archive_error_string(tar));
+        read, (la_ssize_t)contents.length, @"%s", archive_error_string(tar)
+    );
     return contents;
 }
 
@@ -84,8 +85,10 @@ static NSArray<TarEntry *> *read_tar(NSData *data)
     NSMutableArray<TarEntry *> *entries = [NSMutableArray array];
     struct archive *tar = archive_read_new();
     XCTAssertEqual(archive_read_support_format_tar(tar), ARCHIVE_OK);
-    XCTAssertEqual(archive_read_open_memory(tar, data.bytes, data.length),
-        ARCHIVE_OK, @"%s", archive_error_string(tar));
+    XCTAssertEqual(
+        archive_read_open_memory(tar, data.bytes, data.length), ARCHIVE_OK,
+        @"%s", archive_error_string(tar)
+    );
     struct archive_entry *header;
     int status;
     while (ARCHIVE_OK == (status = archive_read_next_header(tar, &header))) {
@@ -324,7 +327,7 @@ static NSArray<TarEntry *> *read_tar(NSData *data)
 
     XCTAssertGreaterThan(_buffers.count, 32UL);
     for (NSData *buffer in
-        [_buffers subarrayWithRange:NSMakeRange(0, _buffers.count - 1)])
+         [_buffers subarrayWithRange:NSMakeRange(0, _buffers.count - 1)])
     {
         XCTAssertEqual(buffer.length, 64UL * 1024);
     }
@@ -359,7 +362,8 @@ static NSArray<TarEntry *> *read_tar(NSData *data)
     NSError *error = [self failureFrom:[self writer]];
 
     XCTAssertEqualObjects(
-        fileSystemFakeErrorPath(error), @"/snapshot/Missing.mp3");
+        fileSystemFakeErrorPath(error), @"/snapshot/Missing.mp3"
+    );
 }
 
 
@@ -372,7 +376,8 @@ static NSArray<TarEntry *> *read_tar(NSData *data)
     NSError *error = [self failureFrom:[self writer]];
 
     XCTAssertEqualObjects(
-        fileSystemFakeErrorPath(error), @"/snapshot/Track.mp3");
+        fileSystemFakeErrorPath(error), @"/snapshot/Track.mp3"
+    );
 }
 
 

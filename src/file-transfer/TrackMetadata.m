@@ -19,7 +19,8 @@
 - (NSString *)description;
 {
     return [NSString stringWithFormat:@"TrackMetadata(%@, %llu, 0x%016lx)",
-        _relativePath, _size, (unsigned long)_fileHash];
+                                      _relativePath, _size,
+                                      (unsigned long)_fileHash];
 }
 
 @end

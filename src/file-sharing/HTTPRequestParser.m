@@ -40,10 +40,12 @@ static const NSUInteger maxBodyLength = 1024 * 1024;
 
 
 static NSString *_Nullable header_value(
-    CFHTTPMessageRef message, NSString *name)
+    CFHTTPMessageRef message, NSString *name
+)
 {
     return CFBridgingRelease(
-        CFHTTPMessageCopyHeaderFieldValue(message, (__bridge CFStringRef)name));
+        CFHTTPMessageCopyHeaderFieldValue(message, (__bridge CFStringRef)name)
+    );
 }
 
 
@@ -116,9 +118,10 @@ static BOOL is_decimal_number(NSString *text)
     if (received.length < _bodyLength) return;
 
     NSData *body = [received subdataWithRange:NSMakeRange(0, _bodyLength)];
-    _excessData =
-        [received subdataWithRange:NSMakeRange(_bodyLength,
-                                       received.length - _bodyLength)];
+    _excessData = [received
+        subdataWithRange:NSMakeRange(
+                             _bodyLength, received.length - _bodyLength
+                         )];
     _request = [[HTTPRequest alloc] initWithMethod:_method
                                               path:_path
                                          userAgent:_userAgent

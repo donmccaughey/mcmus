@@ -144,20 +144,23 @@ static NSError *someError(void)
     [self loadInBackgroundAndWait:store];
 
     XCTAssertEqualObjects(
-        store.musicRootDirectory.url.path, @"/Users/demo/Music");
+        store.musicRootDirectory.url.path, @"/Users/demo/Music"
+    );
     XCTAssertFalse(store.loadDidFail);
-    XCTAssertEqualObjects(store.library.rootFolder.children, (@[
-        [[Folder alloc]
-            initWithPath:@"/Users/demo/Music/Album"
-                    name:@"Album"
-                children:@[
-                    [[Track alloc]
-                        initWithTrackName:@"Song"
-                                albumName:@"Album"
-                               artistName:Track.noArtist
-                                     path:@"/Users/demo/Music/Album/Song.mp3"],
-                ]],
-    ]));
+    XCTAssertEqualObjects(
+        store.library.rootFolder.children, (@[
+            [[Folder alloc]
+                initWithPath:@"/Users/demo/Music/Album"
+                        name:@"Album"
+                    children:@[
+                        [[Track alloc] initWithTrackName:@"Song"
+                                               albumName:@"Album"
+                                              artistName:Track.noArtist
+                                                    path:@"/Users/demo/Music/"
+                                                         @"Album/Song.mp3"],
+                    ]],
+        ])
+    );
 }
 
 #if TARGET_OS_OSX
@@ -172,9 +175,9 @@ static NSError *someError(void)
 - (void)testBackgroundLoadLocatesRootAndLoadsLibrary
 {
     [_fileSystem addPath:@"/Saved/Music/Song.mp3"];
-    PreferencesFake *preferences =
-        [[PreferencesFake alloc] initWithMusicRootDirectoryBookmark:
-                [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:
+            [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
     MusicLibraryStore *store =
         [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                           preferences:preferences];
@@ -198,17 +201,19 @@ static NSError *someError(void)
     XCTAssertTrue(store.loadDidFail);
     XCTAssertTrue(store.library.isEmpty);
     XCTAssertEqual(store.loadErrors.count, 1UL);
-    XCTAssertEqualObjects(fileSystemFakeErrorPath(store.loadErrors.firstObject),
-        @"getMusicDirectoryURL");
+    XCTAssertEqualObjects(
+        fileSystemFakeErrorPath(store.loadErrors.firstObject),
+        @"getMusicDirectoryURL"
+    );
 }
 
 - (void)testBackgroundLoadPrefersRootOverrideToSavedBookmark
 {
     [_fileSystem addPath:@"/Saved/Music/Saved.mp3"];
     [_fileSystem addPath:@"/Given/Music/Given.mp3"];
-    PreferencesFake *preferences =
-        [[PreferencesFake alloc] initWithMusicRootDirectoryBookmark:
-                [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:
+            [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
     MusicLibraryStore *store =
         [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                           preferences:preferences];
@@ -220,8 +225,10 @@ static NSError *someError(void)
     XCTAssertEqualObjects(store.musicRootDirectory.url.path, @"/Given/Music");
     XCTAssertFalse(store.loadDidFail);
     XCTAssertEqualObjects([self trackNamesInStore:store], @[@"Given"]);
-    XCTAssertEqualObjects(preferences.musicRootDirectoryBookmark,
-        [FileSystemFake bookmarkForPath:@"/Saved/Music"]);
+    XCTAssertEqualObjects(
+        preferences.musicRootDirectoryBookmark,
+        [FileSystemFake bookmarkForPath:@"/Saved/Music"]
+    );
 }
 
 - (void)testLoadAfterChangingRootKeepsChangedRootOverRootOverride
@@ -248,9 +255,9 @@ static NSError *someError(void)
 {
     [_fileSystem addPath:@"/Saved/Music/Old.mp3"];
     [_fileSystem addPath:@"/Other/Music/New.mp3"];
-    PreferencesFake *preferences =
-        [[PreferencesFake alloc] initWithMusicRootDirectoryBookmark:
-                [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:
+            [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
     MusicLibraryStore *store =
         [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                           preferences:preferences];
@@ -263,11 +270,14 @@ static NSError *someError(void)
                                                  isDirectory:YES]
                            completion:^{ [loaded fulfill]; }];
 
-    XCTAssertEqualObjects(preferences.musicRootDirectoryBookmark,
-        [FileSystemFake bookmarkForPath:@"/Other/Music"]);
+    XCTAssertEqualObjects(
+        preferences.musicRootDirectoryBookmark,
+        [FileSystemFake bookmarkForPath:@"/Other/Music"]
+    );
     XCTAssertEqualObjects(_fileSystem.stopped, @[@"/Saved/Music"]);
     XCTAssertEqualObjects(
-        _fileSystem.started, (@[@"/Saved/Music", @"/Other/Music"]));
+        _fileSystem.started, (@[@"/Saved/Music", @"/Other/Music"])
+    );
     XCTAssertEqualObjects(store.musicRootDirectory.url.path, @"/Other/Music");
     XCTAssertEqualObjects([self trackNamesInStore:store], @[@"Old"]);
 
@@ -280,9 +290,9 @@ static NSError *someError(void)
 - (void)testChangingRootPostsRootChangeFirstAndLibraryChangeWhenLoaded
 {
     [_fileSystem addPath:@"/Other/Music/New.mp3"];
-    PreferencesFake *preferences =
-        [[PreferencesFake alloc] initWithMusicRootDirectoryBookmark:
-                [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:
+            [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
     MusicLibraryStore *store =
         [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                           preferences:preferences];
@@ -309,9 +319,9 @@ static NSError *someError(void)
 
 - (void)testChoosingCurrentRootAgainDoesNothing
 {
-    PreferencesFake *preferences =
-        [[PreferencesFake alloc] initWithMusicRootDirectoryBookmark:
-                [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
+    PreferencesFake *preferences = [[PreferencesFake alloc]
+        initWithMusicRootDirectoryBookmark:
+            [FileSystemFake bookmarkForPath:@"/Saved/Music"]];
     MusicLibraryStore *store =
         [[MusicLibraryStore alloc] initWithFileSystem:_fileSystem
                                           preferences:preferences];

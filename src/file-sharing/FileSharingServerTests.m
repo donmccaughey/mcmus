@@ -74,7 +74,8 @@ static NSString *snapshot_file_path(NSString *relativePath)
 
 
 static TrackMetadata *make_metadata(
-    NSString *relativePath, unsigned long long size, NSUInteger fileHash)
+    NSString *relativePath, unsigned long long size, NSUInteger fileHash
+)
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
@@ -108,7 +109,7 @@ static NSString *request(NSString *method, NSString *path, NSString *userAgent)
                                       @"Host: mac.local\r\n"
                                       @"User-Agent: %@\r\n"
                                       @"\r\n",
-        method, path, userAgent];
+                                      method, path, userAgent];
 }
 
 
@@ -125,7 +126,7 @@ static NSString *post_files_with_headers(NSString *headers, NSString *csv)
                                       @"%@"
                                       @"\r\n"
                                       @"%@",
-        headers, csv];
+                                      headers, csv];
 }
 
 
@@ -134,7 +135,7 @@ static NSString *post_files(NSString *csv)
     NSString *headers =
         [NSString stringWithFormat:@"Content-Type: text/csv;charset=UTF-8\r\n"
                                    @"Content-Length: %lu\r\n",
-            utf8(csv).length];
+                                   utf8(csv).length];
     return post_files_with_headers(headers, csv);
 }
 
@@ -250,9 +251,11 @@ static NSUInteger count_of(NSString *part, NSString *text)
     XCTAssertTrue([response hasPrefix:statusLine], @"%@", response);
     XCTAssertTrue(
         [response containsString:@"Content-Type: text/plain;charset=UTF-8\r\n"],
-        @"%@", response);
+        @"%@", response
+    );
     XCTAssertTrue(
-        [response containsString:@"Connection: close\r\n"], @"%@", response);
+        [response containsString:@"Connection: close\r\n"], @"%@", response
+    );
     NSString *end = [@"\r\n\r\n" stringByAppendingString:body];
     XCTAssertTrue([response hasSuffix:end], @"%@", response);
     XCTAssertTrue(connection.isClosed);
@@ -360,7 +363,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     XCTAssertTrue([response hasPrefix:@"HTTP/1.1 200 OK\r\n"], @"%@", response);
     XCTAssertTrue(
         [response containsString:@"Content-Type: text/csv;charset=UTF-8\r\n"],
-        @"%@", response);
+        @"%@", response
+    );
     NSString *contentLength = [NSString
         stringWithFormat:@"Content-Length: %lu\r\n", utf8(manifest).length];
     XCTAssertTrue([response containsString:contentLength], @"%@", response);
@@ -448,7 +452,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     NSString *response = connection.sentText;
     XCTAssertTrue(
-        [response hasPrefix:@"HTTP/1.1 404 Not Found\r\n"], @"%@", response);
+        [response hasPrefix:@"HTTP/1.1 404 Not Found\r\n"], @"%@", response
+    );
     XCTAssertTrue([response hasSuffix:@"\r\n\r\nNot found"], @"%@", response);
     XCTAssertFalse(connection.isClosed);
 }
@@ -462,8 +467,10 @@ static NSUInteger count_of(NSString *part, NSString *text)
     [connection receive:request(@"DELETE", @"/manifest", @"iPhone")];
 
     NSString *response = connection.sentText;
-    XCTAssertTrue([response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"],
-        @"%@", response);
+    XCTAssertTrue(
+        [response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"], @"%@",
+        response
+    );
     XCTAssertFalse(connection.isClosed);
 }
 
@@ -484,10 +491,12 @@ static NSUInteger count_of(NSString *part, NSString *text)
 {
     NSString *response = connection.sentText;
     XCTAssertTrue(
-        [response hasPrefix:@"HTTP/1.1 400 Bad Request\r\n"], @"%@", response);
+        [response hasPrefix:@"HTTP/1.1 400 Bad Request\r\n"], @"%@", response
+    );
     XCTAssertTrue(
         [response containsString:@"Content-Type: text/plain;charset=UTF-8\r\n"],
-        @"%@", response);
+        @"%@", response
+    );
     NSString *end = [@"\r\n\r\n" stringByAppendingString:body];
     XCTAssertTrue([response hasSuffix:end], @"%@", response);
     XCTAssertFalse(connection.isClosed);
@@ -502,9 +511,9 @@ static NSUInteger count_of(NSString *part, NSString *text)
         [self connectAndPostFiles:tarball_csv(@[rosePath, songPath])];
 
     XCTAssertEqualObjects(readTar(body_of(connection.sentData)), (@[
-        @[rosePath, rose_contents()],
-        @[songPath, song_contents()],
-    ]));
+                              @[rosePath, rose_contents()],
+                              @[songPath, song_contents()],
+                          ]));
     XCTAssertFalse(connection.isClosed);
 }
 
@@ -518,7 +527,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     XCTAssertEqualObjects(
         readTarModificationTimes(body_of(connection.sentData)),
-        (@[@(snapshotTime), @(snapshotTime)]));
+        (@[@(snapshotTime), @(snapshotTime)])
+    );
 }
 
 
@@ -531,11 +541,13 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     NSString *head = head_of(connection.sentData);
     XCTAssertTrue([head hasPrefix:@"HTTP/1.1 200 OK\r\n"], @"%@", head);
-    XCTAssertTrue([head containsString:@"Content-Type: application/x-tar\r\n"],
-        @"%@", head);
+    XCTAssertTrue(
+        [head containsString:@"Content-Type: application/x-tar\r\n"], @"%@",
+        head
+    );
     NSString *contentLength =
         [NSString stringWithFormat:@"Content-Length: %lu\r\n",
-            body_of(connection.sentData).length];
+                                   body_of(connection.sentData).length];
     XCTAssertTrue([head containsString:contentLength], @"%@", head);
     XCTAssertFalse([head containsString:@"Connection: close"]);
 }
@@ -561,9 +573,10 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     NSString *end = [@"\r\n\r\n" stringByAppendingString:manifest];
     NSData *sent = connection.sentData;
-    NSData *sentEnd =
-        [sent subdataWithRange:NSMakeRange(sent.length - utf8(end).length,
-                                   utf8(end).length)];
+    NSData *sentEnd = [sent
+        subdataWithRange:NSMakeRange(
+                             sent.length - utf8(end).length, utf8(end).length
+                         )];
     XCTAssertEqualObjects(sentEnd, utf8(end));
     XCTAssertFalse(connection.isClosed);
 }
@@ -578,14 +591,15 @@ static NSUInteger count_of(NSString *part, NSString *text)
         [NSString stringWithFormat:@"Content-Type: text/csv;charset=UTF-8\r\n"
                                    @"Content-Length: %lu\r\n"
                                    @"Connection: close\r\n",
-            utf8(csv).length];
+                                   utf8(csv).length];
 
     [connection receive:post_files_with_headers(headers, csv)];
 
-    XCTAssertTrue(
-        [head_of(connection.sentData) containsString:@"Connection: close"]);
-    XCTAssertEqualObjects(readTar(body_of(connection.sentData)),
-        (@[@[songPath, song_contents()]]));
+    XCTAssertTrue([head_of(connection.sentData)
+        containsString:@"Connection: close"]);
+    XCTAssertEqualObjects(
+        readTar(body_of(connection.sentData)), (@[@[songPath, song_contents()]])
+    );
     XCTAssertTrue(connection.isClosed);
 }
 
@@ -601,8 +615,9 @@ static NSUInteger count_of(NSString *part, NSString *text)
 
     [connection finishSending];
     XCTAssertEqual(_server.state, FileSharingServerStateClientLingering);
-    XCTAssertEqualObjects(readTar(body_of(connection.sentData)),
-        (@[@[rosePath, rose_contents()]]));
+    XCTAssertEqualObjects(
+        readTar(body_of(connection.sentData)), (@[@[rosePath, rose_contents()]])
+    );
 }
 
 
@@ -631,8 +646,10 @@ static NSUInteger count_of(NSString *part, NSString *text)
     [connection receive:request(@"GET", @"/files", @"iPhone")];
 
     NSString *response = connection.sentText;
-    XCTAssertTrue([response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"],
-        @"%@", response);
+    XCTAssertTrue(
+        [response hasPrefix:@"HTTP/1.1 405 Method Not Allowed\r\n"], @"%@",
+        response
+    );
     XCTAssertFalse(connection.isClosed);
 }
 
@@ -643,7 +660,8 @@ static NSUInteger count_of(NSString *part, NSString *text)
     NetworkConnectionFake *connection = [_network connectFrom:iPhoneAddress];
 
     [connection receive:post_files_with_headers(
-                            @"Content-Type: text/csv;charset=UTF-8\r\n", @"")];
+                            @"Content-Type: text/csv;charset=UTF-8\r\n", @""
+                        )];
 
     [self assertBadRequest:connection body:@"Invalid content length"];
 }
@@ -667,7 +685,7 @@ static NSUInteger count_of(NSString *part, NSString *text)
     NSString *headers =
         [NSString stringWithFormat:@"Content-Type: text/plain\r\n"
                                    @"Content-Length: %lu\r\n",
-            utf8(csv).length];
+                                   utf8(csv).length];
 
     [connection receive:post_files_with_headers(headers, csv)];
 
@@ -689,9 +707,9 @@ static NSUInteger count_of(NSString *part, NSString *text)
 {
     [self start];
 
-    NetworkConnectionFake *connection =
-        [self connectAndPostFiles:tarball_csv(
-                                      @[songPath, @"Artist/Album/Other.mp3"])];
+    NetworkConnectionFake *connection = [self
+        connectAndPostFiles:tarball_csv(@[songPath, @"Artist/Album/Other.mp3"]
+                            )];
 
     [self assertBadRequest:connection body:@"Unknown track"];
 }
@@ -717,11 +735,13 @@ static NSUInteger count_of(NSString *part, NSString *text)
     [connection receive:post_files(tarball_csv(@[songPath]))];
 
     NSData *sent = connection.sentData;
-    NSData *second =
-        [sent subdataWithRange:NSMakeRange(badRequestLength,
-                                   sent.length - badRequestLength)];
+    NSData *second = [sent
+        subdataWithRange:NSMakeRange(
+                             badRequestLength, sent.length - badRequestLength
+                         )];
     XCTAssertEqualObjects(
-        readTar(body_of(second)), (@[@[songPath, song_contents()]]));
+        readTar(body_of(second)), (@[@[songPath, song_contents()]])
+    );
 }
 
 

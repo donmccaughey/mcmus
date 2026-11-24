@@ -11,7 +11,8 @@ NSErrorDomain const ManifestErrorDomain = @"ManifestErrorDomain";
 // Orders paths by their UTF-8 bytes, so that the order does not depend on
 // the locale or on Unicode normalization.
 static NSComparisonResult compare_paths_by_bytes(
-    NSString *first, NSString *second, void *context)
+    NSString *first, NSString *second, void *context
+)
 {
     int order = strcmp(first.UTF8String, second.UTF8String);
     if (order < 0) return NSOrderedAscending;
@@ -21,7 +22,8 @@ static NSComparisonResult compare_paths_by_bytes(
 
 
 static NSArray<NSString *> *sorted_relative_paths(
-    NSDictionary<NSString *, TrackMetadata *> *metadataByRelativePath)
+    NSDictionary<NSString *, TrackMetadata *> *metadataByRelativePath
+)
 {
     return [metadataByRelativePath.allKeys
         sortedArrayUsingFunction:compare_paths_by_bytes
@@ -30,13 +32,14 @@ static NSArray<NSString *> *sorted_relative_paths(
 
 
 static NSArray<NSArray<NSString *> *> *manifest_records(
-    NSDictionary<NSString *, TrackMetadata *> *metadataByRelativePath)
+    NSDictionary<NSString *, TrackMetadata *> *metadataByRelativePath
+)
 {
     NSMutableArray<NSArray<NSString *> *> *records =
         [NSMutableArray arrayWithCapacity:metadataByRelativePath.count + 1];
     [records addObject:@[@"path", @"size", @"hash"]];
-    for (NSString *relativePath in sorted_relative_paths(
-             metadataByRelativePath))
+    for (NSString *relativePath in sorted_relative_paths(metadataByRelativePath
+         ))
     {
         TrackMetadata *trackMetadata = metadataByRelativePath[relativePath];
         [records addObject:@[
@@ -74,14 +77,17 @@ static BOOL parse_decimal_uint64(NSString *text, unsigned long long *value)
 
 
 static TrackMetadata *_Nullable metadata_for_record(
-    NSArray<NSString *> *record, NSUInteger recordNumber, NSError **error)
+    NSArray<NSString *> *record, NSUInteger recordNumber, NSError **error
+)
 {
     unsigned long long size = 0;
     if (!parse_decimal_uint64(record[1], &size)) {
         if (error) {
-            *error = manifest_error(ManifestErrorCodeInvalidSize,
+            *error = manifest_error(
+                ManifestErrorCodeInvalidSize,
                 [NSString stringWithFormat:@"Invalid size in record %lu",
-                    (unsigned long)recordNumber]);
+                                           (unsigned long)recordNumber]
+            );
         }
         return nil;
     }
@@ -89,9 +95,11 @@ static TrackMetadata *_Nullable metadata_for_record(
     unsigned long long fileHash = 0;
     if (!parse_decimal_uint64(record[2], &fileHash)) {
         if (error) {
-            *error = manifest_error(ManifestErrorCodeInvalidHash,
+            *error = manifest_error(
+                ManifestErrorCodeInvalidHash,
                 [NSString stringWithFormat:@"Invalid hash in record %lu",
-                    (unsigned long)recordNumber]);
+                                           (unsigned long)recordNumber]
+            );
         }
         return nil;
     }
@@ -103,7 +111,8 @@ static TrackMetadata *_Nullable metadata_for_record(
 
 
 static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
-    NSData *csv, NSError **error)
+    NSData *csv, NSError **error
+)
 {
     NSArray<NSArray<NSString *> *> *records = parseCSV(csv, error);
     if (!records) return nil;
@@ -111,7 +120,8 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
     if (![records.firstObject isEqual:@[@"path", @"size", @"hash"]]) {
         if (error) {
             *error = manifest_error(
-                ManifestErrorCodeInvalidHeader, @"Invalid manifest header");
+                ManifestErrorCodeInvalidHeader, @"Invalid manifest header"
+            );
         }
         return nil;
     }
@@ -227,8 +237,8 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 - (NSArray<TrackMetadata *> *)tracksMissingFrom:(Manifest *)other;
 {
     NSMutableArray<TrackMetadata *> *missing = [NSMutableArray array];
-    for (NSString *relativePath in sorted_relative_paths(
-             _metadataByRelativePath))
+    for (NSString *relativePath in sorted_relative_paths(_metadataByRelativePath
+         ))
     {
         if (![other metadataForRelativePath:relativePath]) {
             [missing addObject:_metadataByRelativePath[relativePath]];
@@ -241,8 +251,8 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 - (NSArray<TrackMetadata *> *)tracksChangedIn:(Manifest *)other;
 {
     NSMutableArray<TrackMetadata *> *changed = [NSMutableArray array];
-    for (NSString *relativePath in sorted_relative_paths(
-             _metadataByRelativePath))
+    for (NSString *relativePath in sorted_relative_paths(_metadataByRelativePath
+         ))
     {
         TrackMetadata *trackMetadata = _metadataByRelativePath[relativePath];
         TrackMetadata *otherMetadata =

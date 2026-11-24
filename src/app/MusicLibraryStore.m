@@ -8,9 +8,11 @@ static LoadResult *failedResult(NSArray<NSError *> *errors)
                                         errors:errors];
 }
 
-static LoadResult *loadLibrary(MusicRootDirectory *_Nullable musicRootDirectory,
+static LoadResult *loadLibrary(
+    MusicRootDirectory *_Nullable musicRootDirectory,
     NSError *_Nullable locateError,
-    id<FileSystem> fileSystem)
+    id<FileSystem> fileSystem
+)
 {
     if (!musicRootDirectory) {
         return failedResult(locateError ? @[locateError] : @[]);
@@ -109,8 +111,9 @@ static dispatch_queue_t loadQueue(void)
                                          preferences:preferences
                                                error:&locateError];
 #endif
-        dispatch_async(dispatch_get_main_queue(),
-            ^{ self.musicRootDirectory = musicRootDirectory; });
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.musicRootDirectory = musicRootDirectory;
+        });
         LoadResult *result =
             loadLibrary(musicRootDirectory, locateError, fileSystem);
         dispatch_async(dispatch_get_main_queue(), ^{

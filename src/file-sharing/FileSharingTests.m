@@ -96,7 +96,8 @@
     XCTAssertEqual(_changes.count, 2UL);
     XCTAssertEqualObjects(_fileSystem.clonedSources, @[@"/Users/user/Music"]);
     XCTAssertEqualObjects(
-        _fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
+        _fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]
+    );
 }
 
 
@@ -145,7 +146,8 @@
 {
     for (int i = 0; i < 250; ++i) {
         [_fileSystem
-            addPath:[NSString stringWithFormat:
+            addPath:[NSString
+                        stringWithFormat:
                             @"/container/AppSupport/snapshot/Song %d.mp3", i]];
     }
     NSMutableArray<NSString *> *progress = [NSMutableArray array];
@@ -156,9 +158,11 @@
                 usingBlock:^(NSNotification *notification) {
                     FileSharing *fileSharing = notification.object;
                     [progress
-                        addObject:[NSString stringWithFormat:@"%lu of %lu",
-                                      fileSharing.metadataTracksLoaded,
-                                      fileSharing.metadataTotalTracks]];
+                        addObject:[NSString
+                                      stringWithFormat:
+                                          @"%lu of %lu",
+                                          fileSharing.metadataTracksLoaded,
+                                          fileSharing.metadataTotalTracks]];
                 }];
 
     [self startAndWait:_fileSharing];
@@ -166,7 +170,8 @@
 
     XCTAssertEqual(_fileSharing.state, FileSharingStateSharing);
     XCTAssertEqualObjects(
-        progress, (@[@"0 of 0", @"100 of 250", @"200 of 250", @"0 of 0"]));
+        progress, (@[@"0 of 0", @"100 of 250", @"200 of 250", @"0 of 0"])
+    );
 }
 
 
@@ -196,7 +201,8 @@
     XCTAssertEqual(fileSharing.state, FileSharingStateOff);
     XCTAssertFalse(fileSharing.isSharing);
     XCTAssertEqualObjects(
-        fileSharing.error.localizedDescription, @"No working directory.");
+        fileSharing.error.localizedDescription, @"No working directory."
+    );
     XCTAssertEqual(_fileSystem.clonedSources.count, 0UL);
 }
 

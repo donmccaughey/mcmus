@@ -17,7 +17,8 @@ static const time_t snapshotTime = 1700000000;
 
 
 static TrackMetadata *make_metadata(
-    NSString *relativePath, unsigned long long size)
+    NSString *relativePath, unsigned long long size
+)
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
@@ -45,7 +46,8 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
                                                     @"Content-Length: %lu\r\n"
                                                     @"\r\n"
                                                     @"%@",
-        contentTypeHeader, bodyLength, body]);
+                                                    contentTypeHeader,
+                                                    bodyLength, body]);
 }
 
 
@@ -78,7 +80,8 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
 {
     NSError *error = nil;
     NSArray<TarballEntry *> *entries = parseTarballRequest(
-        post_files(csvContentType, csv), _manifest, snapshotTime, &error);
+        post_files(csvContentType, csv), _manifest, snapshotTime, &error
+    );
     XCTAssertNotNil(entries, @"%@", error);
     return entries;
 }
@@ -116,8 +119,10 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
                             @"Artist/Album/Two.m4a\r\n"
                             @"Artist/Album/One.mp3\r\n"];
 
-    XCTAssertEqualObjects([entries valueForKey:@"relativePath"],
-        (@[@"Artist/Album/Two.m4a", @"Artist/Album/One.mp3"]));
+    XCTAssertEqualObjects(
+        [entries valueForKey:@"relativePath"],
+        (@[@"Artist/Album/Two.m4a", @"Artist/Album/One.mp3"])
+    );
 }
 
 
@@ -139,7 +144,8 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
                             @"Artist/Album/One.mp3\r\n"];
 
     XCTAssertEqualObjects(
-        [entries valueForKey:@"mtime"], (@[@(snapshotTime), @(snapshotTime)]));
+        [entries valueForKey:@"mtime"], (@[@(snapshotTime), @(snapshotTime)])
+    );
 }
 
 
@@ -149,8 +155,9 @@ static HTTPRequest *post_files(NSString *_Nullable contentType, NSString *body)
         entriesForCSV:@"path\r\n"
                       @"\"Piaf, Edith/La Vie en rose (slow chanté).mp3\"\r\n"];
 
-    XCTAssertEqualObjects(entries[0].relativePath,
-        @"Piaf, Edith/La Vie en rose (slow chanté).mp3");
+    XCTAssertEqualObjects(
+        entries[0].relativePath, @"Piaf, Edith/La Vie en rose (slow chanté).mp3"
+    );
     XCTAssertEqual(entries[0].size, 300ULL);
 }
 

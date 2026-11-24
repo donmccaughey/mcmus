@@ -60,7 +60,8 @@
     ShareTestOptions *options = [self parse:@[@"some/music"] error:NULL];
 
     XCTAssertEqualObjects(
-        options.musicDirectoryURL.path, @"/Current/Dir/some/music");
+        options.musicDirectoryURL.path, @"/Current/Dir/some/music"
+    );
 }
 
 
@@ -88,7 +89,8 @@
         [self parse:@[@"--workdir=work/dir", @"/Some/Music"] error:NULL];
 
     XCTAssertEqualObjects(
-        options.workingDirectoryURL.path, @"/Current/Dir/work/dir");
+        options.workingDirectoryURL.path, @"/Current/Dir/work/dir"
+    );
 }
 
 

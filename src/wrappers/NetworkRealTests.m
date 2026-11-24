@@ -143,7 +143,8 @@ static NSData *read_bytes(int fd, NSUInteger length)
     [self waitForExpectations:@[received] timeout:5];
 
     XCTAssertEqualObjects(
-        data, [@"hello" dataUsingEncoding:NSUTF8StringEncoding]);
+        data, [@"hello" dataUsingEncoding:NSUTF8StringEncoding]
+    );
 }
 
 

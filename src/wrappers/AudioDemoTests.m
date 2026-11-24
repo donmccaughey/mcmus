@@ -52,9 +52,9 @@
     [_demo replaceNextTrackWith:nil];
 
     XCTAssertEqualObjects(_audio.calls, (@[
-        [AudioFakeCall replaceNextTrack:_demoTrackURL],
-        [AudioFakeCall replaceNextTrack:nil],
-    ]));
+                              [AudioFakeCall replaceNextTrack:_demoTrackURL],
+                              [AudioFakeCall replaceNextTrack:nil],
+                          ]));
 }
 
 - (void)testStopIsForwarded

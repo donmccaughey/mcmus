@@ -74,7 +74,8 @@
 - (void)testTrackIsNotEqualToItsPath
 {
     XCTAssertNotEqualObjects(
-        [self trackNamed:@"Song"], @"/Music/Artist/Album/Song.mp3");
+        [self trackNamed:@"Song"], @"/Music/Artist/Album/Song.mp3"
+    );
 }
 
 - (void)testSetHoldsOneTrackPerPath

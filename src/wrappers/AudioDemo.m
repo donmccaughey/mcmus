@@ -44,8 +44,8 @@
 }
 
 
-- (void)setOnPlaybackPositionChanged:
-    (void (^_Nullable)(NSTimeInterval))onPlaybackPositionChanged;
+- (void)setOnPlaybackPositionChanged:(void (^_Nullable)(NSTimeInterval)
+                                     )onPlaybackPositionChanged;
 {
     _audio.onPlaybackPositionChanged = onPlaybackPositionChanged;
 }

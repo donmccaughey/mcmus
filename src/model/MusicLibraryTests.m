@@ -125,7 +125,8 @@
     MusicLibrary *library = [[MusicLibrary alloc] initWithRootFolder:root];
 
     XCTAssertEqualObjects(
-        [library getTracks], (@[deep, middle, shallow, loose]));
+        [library getTracks], (@[deep, middle, shallow, loose])
+    );
 }
 
 - (void)testEmptyFoldersBetweenTracksAreSkipped

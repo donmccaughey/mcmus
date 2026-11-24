@@ -5,7 +5,8 @@
 
 
 static NSData *_Nullable read_entry_data(
-    struct archive *tar, struct archive_entry *entry)
+    struct archive *tar, struct archive_entry *entry
+)
 {
     NSMutableData *contents =
         [NSMutableData dataWithLength:(NSUInteger)archive_entry_size(entry)];
@@ -44,7 +45,8 @@ NSArray<NSArray *> *_Nullable readTar(NSData *data)
 
 
 static NSArray<NSNumber *> *_Nullable read_modification_times(
-    struct archive *tar)
+    struct archive *tar
+)
 {
     NSMutableArray<NSNumber *> *mtimes = [NSMutableArray array];
     struct archive_entry *entry;

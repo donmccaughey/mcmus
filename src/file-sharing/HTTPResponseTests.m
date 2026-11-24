@@ -63,9 +63,9 @@ static NSString *body_text(NSData *response)
 
     XCTAssertEqualObjects(status_line(response), @"HTTP/1.1 200 OK");
     XCTAssertEqualObjects(headers(response), ([NSSet setWithArray:@[
-        @"Content-Type: text/csv;charset=UTF-8",
-        @"Content-Length: 16",
-    ]]));
+                              @"Content-Type: text/csv;charset=UTF-8",
+                              @"Content-Length: 16",
+                          ]]));
     XCTAssertEqualObjects(body_text(response), @"path,size,hash\r\n");
 }
 
@@ -77,10 +77,10 @@ static NSString *body_text(NSData *response)
 
     XCTAssertEqualObjects(status_line(response), @"HTTP/1.1 400 Bad Request");
     XCTAssertEqualObjects(headers(response), ([NSSet setWithArray:@[
-        @"Content-Type: text/plain;charset=UTF-8",
-        @"Content-Length: 15",
-        @"Connection: close",
-    ]]));
+                              @"Content-Type: text/plain;charset=UTF-8",
+                              @"Content-Length: 15",
+                              @"Connection: close",
+                          ]]));
     XCTAssertEqualObjects(body_text(response), @"Invalid request");
 }
 
@@ -96,13 +96,14 @@ static NSString *body_text(NSData *response)
 - (void)testResponseHeaderEndsAfterTheBlankLine;
 {
     NSData *header = makeHTTPResponseHeader(
-        HTTPStatusOK, @"application/x-tar", 5000000000ULL, NO);
+        HTTPStatusOK, @"application/x-tar", 5000000000ULL, NO
+    );
 
     XCTAssertEqualObjects(status_line(header), @"HTTP/1.1 200 OK");
     XCTAssertEqualObjects(headers(header), ([NSSet setWithArray:@[
-        @"Content-Type: application/x-tar",
-        @"Content-Length: 5000000000",
-    ]]));
+                              @"Content-Type: application/x-tar",
+                              @"Content-Length: 5000000000",
+                          ]]));
     XCTAssertTrue([text(header) hasSuffix:@"\r\n\r\n"], @"%@", text(header));
     XCTAssertEqualObjects(body_text(header), @"");
 }
@@ -114,10 +115,10 @@ static NSString *body_text(NSData *response)
         makeHTTPResponseHeader(HTTPStatusOK, @"application/x-tar", 1024, YES);
 
     XCTAssertEqualObjects(headers(header), ([NSSet setWithArray:@[
-        @"Content-Type: application/x-tar",
-        @"Content-Length: 1024",
-        @"Connection: close",
-    ]]));
+                              @"Content-Type: application/x-tar",
+                              @"Content-Length: 1024",
+                              @"Connection: close",
+                          ]]));
 }
 
 
@@ -138,8 +139,10 @@ static NSString *body_text(NSData *response)
     for (NSNumber *status in statusLines) {
         NSData *response = makeHTTPTextResponse(status.integerValue, @"", NO);
 
-        XCTAssertTrue([text(response) hasPrefix:statusLines[status]], @"%@",
-            text(response));
+        XCTAssertTrue(
+            [text(response) hasPrefix:statusLines[status]], @"%@",
+            text(response)
+        );
     }
 }
 

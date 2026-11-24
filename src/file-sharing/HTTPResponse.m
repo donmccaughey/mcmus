@@ -21,23 +21,31 @@ static NSString *status_description(HTTPStatus status)
 
 
 static void set_header(
-    CFHTTPMessageRef message, NSString *name, NSString *value)
+    CFHTTPMessageRef message, NSString *name, NSString *value
+)
 {
     CFHTTPMessageSetHeaderFieldValue(
-        message, (__bridge CFStringRef)name, (__bridge CFStringRef)value);
+        message, (__bridge CFStringRef)name, (__bridge CFStringRef)value
+    );
 }
 
 
-static CFHTTPMessageRef create_response_message(HTTPStatus status,
+static CFHTTPMessageRef create_response_message(
+    HTTPStatus status,
     NSString *contentType,
     unsigned long long contentLength,
-    BOOL closesConnection)
+    BOOL closesConnection
+)
 {
-    CFHTTPMessageRef message = CFHTTPMessageCreateResponse(NULL, status,
-        (__bridge CFStringRef)status_description(status), kCFHTTPVersion1_1);
+    CFHTTPMessageRef message = CFHTTPMessageCreateResponse(
+        NULL, status, (__bridge CFStringRef)status_description(status),
+        kCFHTTPVersion1_1
+    );
     set_header(message, @"Content-Type", contentType);
-    set_header(message, @"Content-Length",
-        [NSString stringWithFormat:@"%llu", contentLength]);
+    set_header(
+        message, @"Content-Length",
+        [NSString stringWithFormat:@"%llu", contentLength]
+    );
     if (closesConnection) set_header(message, @"Connection", @"close");
     return message;
 }
@@ -52,33 +60,42 @@ static NSData *serialize_and_release(CFHTTPMessageRef message)
 }
 
 
-NSData *makeHTTPResponse(HTTPStatus status,
+NSData *makeHTTPResponse(
+    HTTPStatus status,
     NSString *contentType,
     NSData *body,
-    BOOL closesConnection)
+    BOOL closesConnection
+)
 {
     CFHTTPMessageRef message = create_response_message(
-        status, contentType, body.length, closesConnection);
+        status, contentType, body.length, closesConnection
+    );
     CFHTTPMessageSetBody(message, (__bridge CFDataRef)body);
     return serialize_and_release(message);
 }
 
 
 NSData *makeHTTPTextResponse(
-    HTTPStatus status, NSString *text, BOOL closesConnection)
+    HTTPStatus status, NSString *text, BOOL closesConnection
+)
 {
-    return makeHTTPResponse(status, @"text/plain;charset=UTF-8",
-        [text dataUsingEncoding:NSUTF8StringEncoding], closesConnection);
+    return makeHTTPResponse(
+        status, @"text/plain;charset=UTF-8",
+        [text dataUsingEncoding:NSUTF8StringEncoding], closesConnection
+    );
 }
 
 
-NSData *makeHTTPResponseHeader(HTTPStatus status,
+NSData *makeHTTPResponseHeader(
+    HTTPStatus status,
     NSString *contentType,
     unsigned long long contentLength,
-    BOOL closesConnection)
+    BOOL closesConnection
+)
 {
     return serialize_and_release(create_response_message(
-        status, contentType, contentLength, closesConnection));
+        status, contentType, contentLength, closesConnection
+    ));
 }
 
 

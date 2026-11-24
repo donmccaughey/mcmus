@@ -17,7 +17,8 @@ static const unsigned long long maxRequestedSize = 100ULL * 1024 * 1024;
 
 
 static NSError *tarball_request_error(
-    TarballRequestErrorCode code, NSString *description)
+    TarballRequestErrorCode code, NSString *description
+)
 {
     return [NSError errorWithDomain:TarballRequestErrorDomain
                                code:code
@@ -50,7 +51,8 @@ static NSArray<NSString *> *_Nullable requested_paths(NSData *tarballCSV)
 
 
 static NSArray<TarballEntry *> *_Nullable entries_for_paths(
-    NSArray<NSString *> *paths, Manifest *manifest, time_t snapshotTime)
+    NSArray<NSString *> *paths, Manifest *manifest, time_t snapshotTime
+)
 {
     NSMutableArray<TarballEntry *> *entries =
         [NSMutableArray arrayWithCapacity:paths.count];
@@ -77,31 +79,38 @@ static BOOL is_too_big(NSArray<TarballEntry *> *entries)
 }
 
 
-NSArray<TarballEntry *> *_Nullable parseTarballRequest(HTTPRequest *request,
+NSArray<TarballEntry *> *_Nullable parseTarballRequest(
+    HTTPRequest *request,
     Manifest *manifest,
     time_t snapshotTime,
-    NSError **error)
+    NSError **error
+)
 {
     NSError *failure = nil;
     NSArray<TarballEntry *> *entries = nil;
     NSArray<NSString *> *paths = nil;
 
     if (!has_content(request)) {
-        failure =
-            tarball_request_error(TarballRequestErrorCodeInvalidContentLength,
-                @"Invalid content length");
+        failure = tarball_request_error(
+            TarballRequestErrorCodeInvalidContentLength,
+            @"Invalid content length"
+        );
     } else if (![request.contentType isEqual:tarballCSVContentType]) {
         failure = tarball_request_error(
-            TarballRequestErrorCodeInvalidContentType, @"Invalid content type");
+            TarballRequestErrorCodeInvalidContentType, @"Invalid content type"
+        );
     } else if (!(paths = requested_paths(request.body))) {
         failure = tarball_request_error(
-            TarballRequestErrorCodeInvalidCSV, @"Invalid CSV");
+            TarballRequestErrorCodeInvalidCSV, @"Invalid CSV"
+        );
     } else if (!(entries = entries_for_paths(paths, manifest, snapshotTime))) {
         failure = tarball_request_error(
-            TarballRequestErrorCodeUnknownTrack, @"Unknown track");
+            TarballRequestErrorCodeUnknownTrack, @"Unknown track"
+        );
     } else if (is_too_big(entries)) {
         failure = tarball_request_error(
-            TarballRequestErrorCodeTarballTooBig, @"Tarball too big");
+            TarballRequestErrorCodeTarballTooBig, @"Tarball too big"
+        );
     }
 
     if (failure && error) *error = failure;

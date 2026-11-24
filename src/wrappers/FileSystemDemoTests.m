@@ -145,7 +145,8 @@
     XCTAssertNotNil(reader, @"%@", error);
     uint8_t buffer[16];
     XCTAssertEqual(
-        [reader readInto:buffer length:sizeof buffer error:&error], 0L);
+        [reader readInto:buffer length:sizeof buffer error:&error], 0L
+    );
 }
 
 - (void)testReaderForFileOutsideDemoRootComesFromWrappedFileSystem
@@ -171,17 +172,20 @@
 
 - (void)testRootDirectoryNameBecomesRootURL
 {
-    FileSystemDemo *demo = [self demo:
+    FileSystemDemo *demo = [self
+        demo:
             @"[{'type':'directory','name':'/Users/demo/Music','contents':[]}]"];
 
     XCTAssertEqualObjects(demo.rootURL.path, @"/Users/demo/Music");
     XCTAssertTrue(demo.rootURL.hasDirectoryPath);
     NSError *error;
-    XCTAssertEqualObjects([demo getMusicDirectoryURLAndReturnError:&error].path,
-        @"/Users/demo/Music");
-    XCTAssertNil(error);
     XCTAssertEqualObjects(
-        [self pathsIn:@"/Users/demo/Music" listedBy:demo], @[]);
+        [demo getMusicDirectoryURLAndReturnError:&error].path,
+        @"/Users/demo/Music"
+    );
+    XCTAssertNil(error);
+    XCTAssertEqualObjects([self pathsIn:@"/Users/demo/Music" listedBy:demo], @[
+    ]);
 }
 
 - (void)testRootDirectoryWithoutNameUsesSlash
@@ -217,7 +221,8 @@
 
     XCTAssertEqualObjects(demo.rootURL.path, @"/Music");
     XCTAssertEqualObjects(
-        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Song.mp3"]);
+        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Song.mp3"]
+    );
     NSError *error;
     XCTAssertNil([demo listDirectory:[self directory:@"/Other"] error:&error]);
     XCTAssertEqualObjects(fileSystemFakeErrorPath(error), @"/Other");
@@ -236,11 +241,11 @@
     NSArray<NSURL *> *urls = [demo listDirectory:[self directory:@"/Music"]
                                            error:NULL];
     XCTAssertEqualObjects([urls valueForKey:@"path"], (@[
-        @"/Music/Track 10.mp3",
-        @"/Music/track 2.mp3",
-        @"/Music/B folder",
-        @"/Music/a folder",
-    ]));
+                              @"/Music/Track 10.mp3",
+                              @"/Music/track 2.mp3",
+                              @"/Music/B folder",
+                              @"/Music/a folder",
+                          ]));
     XCTAssertFalse(urls[0].hasDirectoryPath);
     XCTAssertTrue(urls[2].hasDirectoryPath);
 }
@@ -257,13 +262,17 @@
                     "]}]"];
 
     XCTAssertEqualObjects(
-        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Artist"]);
-    XCTAssertEqualObjects([self pathsIn:@"/Music/Artist" listedBy:demo],
-        @[@"/Music/Artist/Album"]);
-    XCTAssertEqualObjects([self pathsIn:@"/Music/Artist/Album" listedBy:demo],
-        @[@"/Music/Artist/Album/01 Song.mp3"]);
+        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Artist"]
+    );
+    XCTAssertEqualObjects(
+        [self pathsIn:@"/Music/Artist" listedBy:demo], @[@"/Music/Artist/Album"]
+    );
+    XCTAssertEqualObjects(
+        [self pathsIn:@"/Music/Artist/Album" listedBy:demo],
+        @[@"/Music/Artist/Album/01 Song.mp3"]
+    );
     XCTAssertTrue([self infoFor:@"/Music/Artist/Album/01 Song.mp3" from:demo]
-            .isRegularFile);
+                      .isRegularFile);
 }
 
 - (void)testFileInfoClassifiesEntries
@@ -311,8 +320,9 @@
     XCTAssertTrue(loud.isDirectory);
     XCTAssertTrue(loud.isPackage);
     XCTAssertFalse([self infoFor:@"/Music/Song.mp3" from:demo].isPackage);
-    XCTAssertEqualObjects([self pathsIn:@"/Music/Album.itlp" listedBy:demo],
-        @[@"/Music/Album.itlp/Inside.mp3"]);
+    XCTAssertEqualObjects([self pathsIn:@"/Music/Album.itlp" listedBy:demo], @[
+        @"/Music/Album.itlp/Inside.mp3"
+    ]);
 }
 
 - (void)testHiddenFilesAndDirectoriesAreOmitted
@@ -328,7 +338,8 @@
                     "]}]"];
 
     XCTAssertEqualObjects(
-        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Song.mp3"]);
+        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Song.mp3"]
+    );
     NSError *error;
     XCTAssertNil([demo getFileInfo:[self directory:@"/Music/.hidden"]
                              error:&error]);
@@ -347,7 +358,8 @@
                     "]}]"];
 
     XCTAssertEqualObjects(
-        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Song.mp3"]);
+        [self pathsIn:@"/Music" listedBy:demo], @[@"/Music/Song.mp3"]
+    );
 }
 
 - (void)testInvalidJSONIsReportedWhenLocatingTheMusicDirectory
@@ -391,7 +403,8 @@
     FileSystemDemo *demo = [self demoWithTrackInRoot];
 
     XCTAssertEqualObjects(
-        [self pathsIn:@"/Other" listedBy:demo], @[@"/Other/Song.mp3"]);
+        [self pathsIn:@"/Other" listedBy:demo], @[@"/Other/Song.mp3"]
+    );
     XCTAssertTrue([self infoFor:@"/Other/Song.mp3" from:demo].isRegularFile);
 }
 
@@ -445,7 +458,8 @@
 
     XCTAssertEqualObjects(
         [demo getApplicationSupportDirectoryURLAndReturnError:NULL].path,
-        @"/AppSupport");
+        @"/AppSupport"
+    );
 }
 
 - (void)testSavedBookmarkResolvesToDemoRoot
@@ -480,10 +494,10 @@
     FileSystemDemo *demo = [self demo:@"not json"];
 
     NSError *error;
-    XCTAssertNil(
-        [demo resolveSecurityScopedBookmark:[FileSystemFake
-                                                bookmarkForPath:@"/Saved/Music"]
-                                      error:&error]);
+    XCTAssertNil([demo
+        resolveSecurityScopedBookmark:[FileSystemFake
+                                          bookmarkForPath:@"/Saved/Music"]
+                                error:&error]);
     XCTAssertEqualObjects(error.domain, NSCocoaErrorDomain);
 }
 
@@ -511,7 +525,8 @@
     NSError *error;
     XCTAssertEqualObjects(
         [demo getApplicationSupportDirectoryURLAndReturnError:&error].path,
-        @"/Users/demo");
+        @"/Users/demo"
+    );
     XCTAssertNil(error);
 }
 

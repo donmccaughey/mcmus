@@ -23,8 +23,9 @@
         _player = player;
         _clearButton = [UIButton
             borderedWithTitle:@"Clear"
-                primaryAction:[UIAction actionWithHandler:^(
-                                  UIAction *action) { [player clear]; }]];
+                primaryAction:[UIAction actionWithHandler:^(UIAction *action) {
+                    [player clear];
+                }]];
         _emptyQueueView =
             [[EmptyStateView alloc] initWithTitle:@"No tracks"
                                       systemImage:@"list.bullet"

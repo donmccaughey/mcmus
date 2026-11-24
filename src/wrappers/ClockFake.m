@@ -102,8 +102,9 @@
 - (void)discardCancelledTimers;
 {
     NSIndexSet *cancelled =
-        [_timers indexesOfObjectsPassingTest:^BOOL(ClockTimerFake *timer,
-            NSUInteger index, BOOL *stop) { return timer.isCancelled; }];
+        [_timers indexesOfObjectsPassingTest:^BOOL(
+                     ClockTimerFake *timer, NSUInteger index, BOOL *stop
+        ) { return timer.isCancelled; }];
     [_timers removeObjectsAtIndexes:cancelled];
 }
 

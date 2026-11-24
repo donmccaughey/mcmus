@@ -26,8 +26,9 @@ static os_log_t snapshot_log(void)
 {
     static os_log_t log;
     static dispatch_once_t once;
-    dispatch_once(
-        &once, ^{ log = os_log_create("cc.donm.mcmus", "snapshot"); });
+    dispatch_once(&once, ^{
+        log = os_log_create("cc.donm.mcmus", "snapshot");
+    });
     return log;
 }
 
@@ -40,19 +41,24 @@ static double milliseconds_since(uint64_t start)
 
 
 static NSArray<Track *> *load_tracks_and_log_time(
-    NSURL *musicLibraryDir, id<FileSystem> fileSystem)
+    NSURL *musicLibraryDir, id<FileSystem> fileSystem
+)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     LoadResult *result = loadMusicLibrary(musicLibraryDir, fileSystem);
     NSArray<Track *> *tracks = [result.library getTracks];
     if (result.errors.count) {
-        os_log(snapshot_log(),
+        os_log(
+            snapshot_log(),
             "Loaded %lu tracks from %{public}@ in %.1f ms with %lu errors",
             tracks.count, musicLibraryDir.path, milliseconds_since(start),
-            result.errors.count);
+            result.errors.count
+        );
     } else {
-        os_log(snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms",
-            tracks.count, musicLibraryDir.path, milliseconds_since(start));
+        os_log(
+            snapshot_log(), "Loaded %lu tracks from %{public}@ in %.1f ms",
+            tracks.count, musicLibraryDir.path, milliseconds_since(start)
+        );
     }
     return tracks;
 }
@@ -62,19 +68,25 @@ static NSArray<TrackMetadata *> *load_track_metadata_and_log_time(
     NSArray<Track *> *tracks,
     NSURL *musicLibraryDir,
     id<FileSystem> fileSystem,
-    LoadTrackMetadataProgress progress)
+    LoadTrackMetadataProgress progress
+)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSArray<NSError *> *errors = nil;
     NSArray<TrackMetadata *> *metadata = loadTrackMetadata(
-        tracks, musicLibraryDir, fileSystem, progress, &errors);
+        tracks, musicLibraryDir, fileSystem, progress, &errors
+    );
     if (errors.count) {
-        os_log(snapshot_log(),
+        os_log(
+            snapshot_log(),
             "Loaded metadata for %lu tracks in %.1f ms with %lu errors",
-            metadata.count, milliseconds_since(start), errors.count);
+            metadata.count, milliseconds_since(start), errors.count
+        );
     } else {
-        os_log(snapshot_log(), "Loaded metadata for %lu tracks in %.1f ms",
-            metadata.count, milliseconds_since(start));
+        os_log(
+            snapshot_log(), "Loaded metadata for %lu tracks in %.1f ms",
+            metadata.count, milliseconds_since(start)
+        );
     }
     return metadata;
 }
@@ -86,10 +98,12 @@ static NSURL *get_manifest_url(NSURL *workingDir)
 }
 
 
-static BOOL write_manifest_and_log_time(Manifest *manifest,
+static BOOL write_manifest_and_log_time(
+    Manifest *manifest,
     NSURL *workingDir,
     id<FileSystem> fileSystem,
-    NSError **error)
+    NSError **error
+)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSURL *manifestURL = get_manifest_url(workingDir);
@@ -97,21 +111,26 @@ static BOOL write_manifest_and_log_time(Manifest *manifest,
                                         toFile:manifestURL
                                          error:error];
     if (wroteManifest) {
-        os_log(snapshot_log(),
+        os_log(
+            snapshot_log(),
             "Wrote manifest of %lu tracks to %{public}@ in %.1f ms",
-            manifest.trackCount, manifestURL.path, milliseconds_since(start));
+            manifest.trackCount, manifestURL.path, milliseconds_since(start)
+        );
     } else {
-        os_log(snapshot_log(),
+        os_log(
+            snapshot_log(),
             "Writing manifest of %lu tracks took %.1f ms but failed: "
             "%{public}@",
-            manifest.trackCount, milliseconds_since(start), *error);
+            manifest.trackCount, milliseconds_since(start), *error
+        );
     }
     return wroteManifest;
 }
 
 
 static BOOL remove_manifest(
-    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error
+)
 {
     BOOL removedManifest =
         [fileSystem removeItemAtURL:get_manifest_url(workingDir) error:error];
@@ -123,40 +142,50 @@ static BOOL remove_manifest(
 
 
 static BOOL remove_snapshot_and_log_time(
-    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error)
+    NSURL *workingDir, id<FileSystem> fileSystem, NSError **error
+)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     BOOL removedSnapshot = removeSnapshot(workingDir, fileSystem, error);
     if (removedSnapshot) {
-        os_log(snapshot_log(), "Removing snapshot in %{public}@ took %.1f ms",
-            workingDir.path, milliseconds_since(start));
+        os_log(
+            snapshot_log(), "Removing snapshot in %{public}@ took %.1f ms",
+            workingDir.path, milliseconds_since(start)
+        );
     } else {
-        os_log(snapshot_log(),
+        os_log(
+            snapshot_log(),
             "Removing snapshot in %{public}@ took %.1f ms but failed: "
             "%{public}@",
-            workingDir.path, milliseconds_since(start), *error);
+            workingDir.path, milliseconds_since(start), *error
+        );
     }
     return removedSnapshot;
 }
 
 
-static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
+static NSURL *_Nullable take_snapshot_and_log_time(
+    NSURL *musicDir,
     NSURL *workingDir,
     id<FileSystem> fileSystem,
-    NSError **error)
+    NSError **error
+)
 {
     uint64_t start = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     NSURL *musicLibraryDir =
         takeSnapshot(musicDir, workingDir, fileSystem, error);
     if (musicLibraryDir) {
-        os_log(snapshot_log(),
-            "Snapshot of %{public}@ to %{public}@ took %.1f ms", musicDir.path,
-            musicLibraryDir.path, milliseconds_since(start));
+        os_log(
+            snapshot_log(), "Snapshot of %{public}@ to %{public}@ took %.1f ms",
+            musicDir.path, musicLibraryDir.path, milliseconds_since(start)
+        );
     } else {
-        os_log(snapshot_log(),
+        os_log(
+            snapshot_log(),
             "Snapshot of %{public}@ in %{public}@ took %.1f ms but failed: "
             "%{public}@",
-            musicDir.path, workingDir.path, milliseconds_since(start), *error);
+            musicDir.path, workingDir.path, milliseconds_since(start), *error
+        );
     }
     return musicLibraryDir;
 }
@@ -228,7 +257,8 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
     @autoreleasepool {
         NSError *error = nil;
         NSURL *musicLibraryDir = take_snapshot_and_log_time(
-            _musicDir, _workingDir, _fileSystem, &error);
+            _musicDir, _workingDir, _fileSystem, &error
+        );
         if (!musicLibraryDir) {
             [self replyToStartWithPort:0 error:error];
             return;
@@ -242,10 +272,12 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
             ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
                 [self->_client didLoadMetadataForTracks:tracksLoaded
                                                 ofTotal:totalTracks];
-            });
+            }
+        );
         Manifest *manifest = [[Manifest alloc] initWithTrackMetadata:metadata];
         BOOL wroteManifest = write_manifest_and_log_time(
-            manifest, _workingDir, _fileSystem, &error);
+            manifest, _workingDir, _fileSystem, &error
+        );
         FileSharingServer *server = wroteManifest
             ? [self startServerWithManifest:manifest
                       musicLibraryDirectory:musicLibraryDir
@@ -258,7 +290,8 @@ static NSURL *_Nullable take_snapshot_and_log_time(NSURL *musicDir,
                 remove_manifest(_workingDir, _fileSystem, &cleanUpError);
             }
             remove_snapshot_and_log_time(
-                _workingDir, _fileSystem, &cleanUpError);
+                _workingDir, _fileSystem, &cleanUpError
+            );
             [self replyToStartWithPort:0 error:error];
             return;
         }

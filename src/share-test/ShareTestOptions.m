@@ -65,11 +65,11 @@ static NSURL *directory_url(NSString *path, NSURL *currentDirectoryURL)
         } else if ([argument isEqual:workdirOption]) {
             parseError = options_error(@"--workdir requires a DIR value");
         } else if ([argument hasPrefix:@"--"]) {
-            parseError = options_error(
-                [@"unknown option " stringByAppendingString:argument]);
+            parseError = options_error([@"unknown option "
+                stringByAppendingString:argument]);
         } else if (musicDir) {
-            parseError = options_error(
-                [@"unexpected argument " stringByAppendingString:argument]);
+            parseError = options_error([@"unexpected argument "
+                stringByAppendingString:argument]);
         } else {
             musicDir = argument;
         }

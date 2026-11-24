@@ -59,7 +59,7 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
         [_shareSwitch setAccessibilityLabel:@"File Sharing"];
 
         for (NSView *subview in
-            @[titleLabel, _statusLabel, _spinner, _shareSwitch])
+             @[titleLabel, _statusLabel, _spinner, _shareSwitch])
         {
             subview.translatesAutoresizingMaskIntoConstraints = NO;
             [self addSubview:subview];
@@ -118,8 +118,9 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 - (NSString *)statusText
 {
     if (_fileSharing.error) {
-        return [NSString stringWithFormat:@"Sharing failed: %@",
-            _fileSharing.error.localizedDescription];
+        return
+            [NSString stringWithFormat:@"Sharing failed: %@",
+                                       _fileSharing.error.localizedDescription];
     }
     if (!_fileSharing.isSharing) return @"Not sharing.";
     NSString *deviceName = _fileSharing.connectedDeviceName;
@@ -216,13 +217,17 @@ static const NSTimeInterval minimumProgressDuration = 0.5;
 
     NSTimeInterval remaining = self.remainingProgressDuration;
     if (remaining > 0) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                           (int64_t)(remaining * NSEC_PER_SEC)),
-            dispatch_get_main_queue(), ^{
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_SEC)
+            ),
+            dispatch_get_main_queue(),
+            ^{
                 if (!self->_fileSharing.isChanging) {
                     [self finishChange];
                 }
-            });
+            }
+        );
         return;
     }
 

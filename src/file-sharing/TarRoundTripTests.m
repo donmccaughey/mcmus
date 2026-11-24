@@ -15,10 +15,14 @@ static void writeEntry(struct archive *tar, NSString *path, NSData *contents)
     archive_entry_set_size(entry, (la_int64_t)contents.length);
     archive_entry_set_filetype(entry, AE_IFREG);
     archive_entry_set_perm(entry, 0644);
-    XCTAssertEqual(archive_write_header(tar, entry), ARCHIVE_OK, @"%s",
-        archive_error_string(tar));
-    XCTAssertEqual(archive_write_data(tar, contents.bytes, contents.length),
-        (la_ssize_t)contents.length, @"%s", archive_error_string(tar));
+    XCTAssertEqual(
+        archive_write_header(tar, entry), ARCHIVE_OK, @"%s",
+        archive_error_string(tar)
+    );
+    XCTAssertEqual(
+        archive_write_data(tar, contents.bytes, contents.length),
+        (la_ssize_t)contents.length, @"%s", archive_error_string(tar)
+    );
     archive_entry_free(entry);
 }
 
@@ -33,17 +37,22 @@ static int setBinaryPaxFormat(struct archive *tar)
     return archive_write_set_options(tar, "hdrcharset=BINARY");
 }
 
-static NSData *writeTar(NSDictionary<NSString *, NSData *> *files,
+static NSData *writeTar(
+    NSDictionary<NSString *, NSData *> *files,
     NSArray<NSString *> *order,
-    int (*setFormat)(struct archive *))
+    int (*setFormat)(struct archive *)
+)
 {
     NSMutableData *buffer = [NSMutableData dataWithLength:64 * 1024];
     size_t used = 0;
     struct archive *tar = archive_write_new();
     XCTAssertEqual(setFormat(tar), ARCHIVE_OK);
-    XCTAssertEqual(archive_write_open_memory(
-                       tar, buffer.mutableBytes, buffer.length, &used),
-        ARCHIVE_OK, @"%s", archive_error_string(tar));
+    XCTAssertEqual(
+        archive_write_open_memory(
+            tar, buffer.mutableBytes, buffer.length, &used
+        ),
+        ARCHIVE_OK, @"%s", archive_error_string(tar)
+    );
     for (NSString *path in order)
         writeEntry(tar, path, files[path]);
     XCTAssertEqual(archive_write_close(tar), ARCHIVE_OK);
@@ -65,10 +74,11 @@ static NSData *writeTar(NSDictionary<NSString *, NSData *> *files,
     NSString *first = @"Artist/Album/First Track.mp3";
     // Longer than the 100 byte ustar name field and not ASCII, so the pax
     // format has to write an extended header for it.
-    NSString *second = [NSString stringWithFormat:@"Ärtist/%@/Second Track.m4a",
-        [@"" stringByPaddingToLength:120
-                          withString:@"Album "
-                     startingAtIndex:0]];
+    NSString *second =
+        [NSString stringWithFormat:@"Ärtist/%@/Second Track.m4a",
+                                   [@"" stringByPaddingToLength:120
+                                                     withString:@"Album "
+                                                startingAtIndex:0]];
     NSData *firstContents = [@"first" dataUsingEncoding:NSUTF8StringEncoding];
     NSData *secondContents = [NSMutableData dataWithLength:1000];
     _files = @{first: firstContents, second: secondContents};
@@ -99,7 +109,8 @@ static NSData *writeTar(NSDictionary<NSString *, NSData *> *files,
     XCTAssertEqual(tar.length % 512, 0UL);
     NSData *magic = [tar subdataWithRange:NSMakeRange(257, 5)];
     XCTAssertEqualObjects(
-        magic, [@"ustar" dataUsingEncoding:NSASCIIStringEncoding]);
+        magic, [@"ustar" dataUsingEncoding:NSASCIIStringEncoding]
+    );
 }
 
 @end

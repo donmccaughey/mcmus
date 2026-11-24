@@ -53,7 +53,7 @@
         } else {
             NSString *reason =
                 [NSString stringWithFormat:@"Unexpected child %@ of class %@",
-                    child, [child class]];
+                                           child, [child class]];
             @throw
                 [NSException exceptionWithName:NSInternalInconsistencyException
                                         reason:reason

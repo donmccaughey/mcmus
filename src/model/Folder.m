@@ -77,7 +77,8 @@ static BOOL equalOrBothNil(id _Nullable a, id _Nullable b)
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"Folder(%@, %@, %lu children)",
-        _path ?: @"nil", _name, (unsigned long)_children.count];
+                                      _path ?: @"nil", _name,
+                                      (unsigned long)_children.count];
 }
 
 @end

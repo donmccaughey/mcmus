@@ -13,11 +13,13 @@ static BOOL hasTrackDescendants(NSArray<id<FolderChild>> *children)
 // folderName and parentFolderName are nil for the root folder and its
 // children respectively, which is how tracks fall back to "(no album)" and
 // "(no artist)".
-static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
+static NSArray<id<FolderChild>> *loadChildren(
+    NSURL *directory,
     NSString *_Nullable folderName,
     NSString *_Nullable parentFolderName,
     id<FileSystem> fileSystem,
-    NSMutableArray<NSError *> *errors)
+    NSMutableArray<NSError *> *errors
+)
 {
     NSError *error;
     NSArray<NSURL *> *contents = [fileSystem listDirectory:directory
@@ -50,7 +52,7 @@ static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
                                                   children:grandchildren]];
             }
         } else if (info.isRegularFile &&
-            [Track isMusicFileExtension:url.pathExtension])
+                   [Track isMusicFileExtension:url.pathExtension])
         {
             [children
                 addObject:[[Track alloc] initWithDisplayName:name
@@ -64,7 +66,8 @@ static NSArray<id<FolderChild>> *loadChildren(NSURL *directory,
 }
 
 LoadResult *loadMusicLibrary(
-    NSURL *musicRootDirectory, id<FileSystem> fileSystem)
+    NSURL *musicRootDirectory, id<FileSystem> fileSystem
+)
 {
     NSMutableArray<NSError *> *errors = [NSMutableArray array];
     NSArray<id<FolderChild>> *children =

@@ -47,8 +47,9 @@ static UIButton *makeButton(NSString *systemImage, NSString *accessibilityLabel)
         _backButton = makeButton(@"backward.fill", @"Back");
         _playStopButton = makeButton(@"play.fill", @"Play");
         _nextButton = makeButton(@"forward.fill", @"Next");
-        [_backButton addAction:[UIAction actionWithHandler:^(
-                                   UIAction *action) { [player back]; }]
+        [_backButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
+                         [player back];
+                     }]
               forControlEvents:UIControlEventPrimaryActionTriggered];
         [_playStopButton
                    addAction:[UIAction actionWithHandler:^(UIAction *action) {
@@ -59,8 +60,9 @@ static UIButton *makeButton(NSString *systemImage, NSString *accessibilityLabel)
                        }
                    }]
             forControlEvents:UIControlEventPrimaryActionTriggered];
-        [_nextButton addAction:[UIAction actionWithHandler:^(
-                                   UIAction *action) { [player next]; }]
+        [_nextButton addAction:[UIAction actionWithHandler:^(UIAction *action) {
+                         [player next];
+                     }]
               forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[

@@ -13,13 +13,16 @@ typedef NS_ENUM(NSInteger, LoadTrackMetadataErrorCode) {
 };
 
 typedef void (^LoadTrackMetadataProgress)(
-    NSUInteger tracksLoaded, NSUInteger totalTracks);
+    NSUInteger tracksLoaded, NSUInteger totalTracks
+);
 
 // Calls progress after every 100 tracks, counting tracks that failed to load.
-NSArray<TrackMetadata *> *loadTrackMetadata(NSArray<Track *> *tracks,
+NSArray<TrackMetadata *> *loadTrackMetadata(
+    NSArray<Track *> *tracks,
     NSURL *musicLibraryDir,
     id<FileSystem> fileSystem,
     LoadTrackMetadataProgress _Nullable progress,
-    NSArray<NSError *> *_Nullable *_Nullable errors);
+    NSArray<NSError *> *_Nullable *_Nullable errors
+);
 
 NS_ASSUME_NONNULL_END

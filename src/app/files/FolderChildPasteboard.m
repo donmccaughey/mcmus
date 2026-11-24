@@ -30,7 +30,8 @@ static NSString *const trackKind = @"track";
 @end
 
 static NSArray<FolderChildPayload *> *payloadsForChildren(
-    NSArray<id<FolderChild>> *children)
+    NSArray<id<FolderChild>> *children
+)
 {
     NSMutableArray<FolderChildPayload *> *payloads =
         [NSMutableArray arrayWithCapacity:children.count];
@@ -41,7 +42,8 @@ static NSArray<FolderChildPayload *> *payloadsForChildren(
 }
 
 static NSArray<id<FolderChild>> *childrenOfPayloads(
-    NSArray<FolderChildPayload *> *payloads)
+    NSArray<FolderChildPayload *> *payloads
+)
 {
     NSMutableArray<id<FolderChild>> *children =
         [NSMutableArray arrayWithCapacity:payloads.count];

@@ -88,7 +88,8 @@
     XCTAssertNil(error);
     XCTAssertEqualObjects(fileSystem.clonedSources, @[@"/Users/user/Music"]);
     XCTAssertEqualObjects(
-        fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]);
+        fileSystem.clonedDestinations, @[@"/container/AppSupport/snapshot"]
+    );
 }
 
 
@@ -102,7 +103,8 @@
 
     XCTAssertNotNil(snapshotURL);
     XCTAssertEqualObjects(
-        fileSystem.removedPaths, @[@"/container/AppSupport/snapshot"]);
+        fileSystem.removedPaths, @[@"/container/AppSupport/snapshot"]
+    );
 }
 
 
@@ -154,7 +156,8 @@
     XCTAssertTrue(removed);
     XCTAssertNil(error);
     XCTAssertEqualObjects(
-        fileSystem.removedPaths, @[@"/container/AppSupport/snapshot"]);
+        fileSystem.removedPaths, @[@"/container/AppSupport/snapshot"]
+    );
 }
 
 

@@ -154,7 +154,8 @@ static NSData *utf8(NSString *text)
                  @"\r\n"];
 
     XCTAssertEqualObjects(
-        _parser.request.contentType, @"text/csv;charset=UTF-8");
+        _parser.request.contentType, @"text/csv;charset=UTF-8"
+    );
 }
 
 
@@ -237,8 +238,8 @@ static NSData *utf8(NSString *text)
 
 - (void)testBinaryDataIsInvalid;
 {
-    uint8_t bytes[] = {0x16, 0x03, 0x01, 0x02, 0x00, 0x01, 0x00, 0x01, 0xfc,
-        0x03, 0x03, '\r', '\n', '\r', '\n'};
+    uint8_t bytes[] = {0x16, 0x03, 0x01, 0x02, 0x00, 0x01, 0x00, 0x01,
+                       0xfc, 0x03, 0x03, '\r', '\n', '\r', '\n'};
 
     [_parser append:[NSData dataWithBytes:bytes length:sizeof bytes]];
 
@@ -317,7 +318,7 @@ static NSData *utf8(NSString *text)
 
     [self append:[NSString stringWithFormat:@"GET /manifest HTTP/1.1\r\n"
                                             @"X-Padding: %@\r\n\r\n",
-                     padding]];
+                                            padding]];
 
     XCTAssertEqual(_parser.state, HTTPRequestParserStateInvalid);
 }

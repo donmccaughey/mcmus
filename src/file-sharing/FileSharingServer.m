@@ -42,8 +42,9 @@ static NSString *_Nullable device_name(NSString *_Nullable userAgent)
         stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
     if (name.length > maxDeviceNameLength) {
         NSRange kept = [name
-            rangeOfComposedCharacterSequencesForRange:NSMakeRange(0,
-                                                          maxDeviceNameLength)];
+            rangeOfComposedCharacterSequencesForRange:NSMakeRange(
+                                                          0, maxDeviceNameLength
+                                                      )];
         name = [name substringWithRange:kept];
     }
     return name.length ? name : nil;
@@ -136,7 +137,8 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
         ^(id<NetworkConnection> connection) { [weakSelf accept:connection]; };
     _advertisement.onFailed = ^(NSError *advertisementError) {
         os_log_error(
-            server_log(), "Advertising failed: %{public}@", advertisementError);
+            server_log(), "Advertising failed: %{public}@", advertisementError
+        );
     };
     os_log(server_log(), "Listening on port %d", _listener.port);
     [self enterWaitingForClient];
@@ -249,10 +251,10 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
 - (NSArray<FileSharingConnection *> *)connectionsFromClient;
 {
     NSString *clientAddress = _clientAddress;
-    NSIndexSet *indexes = [_connections indexesOfObjectsPassingTest:^BOOL(
-        FileSharingConnection *connection, NSUInteger index, BOOL *stop) {
-        return [connection.clientAddress isEqual:clientAddress];
-    }];
+    NSIndexSet *indexes = [_connections
+        indexesOfObjectsPassingTest:^BOOL(
+            FileSharingConnection *connection, NSUInteger index, BOOL *stop
+        ) { return [connection.clientAddress isEqual:clientAddress]; }];
     return [_connections objectsAtIndexes:indexes];
 }
 
@@ -283,20 +285,24 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
 {
     if (connection.isOverClientLimit) {
         return makeHTTPTextResponse(
-            HTTPStatusTooManyRequests, @"Too many connections", YES);
+            HTTPStatusTooManyRequests, @"Too many connections", YES
+        );
     }
     if (!request) {
         return makeHTTPTextResponse(
-            HTTPStatusBadRequest, @"Invalid request", YES);
+            HTTPStatusBadRequest, @"Invalid request", YES
+        );
     }
     BOOL isWaiting = FileSharingServerStateWaitingForClient == _state;
     if (!isWaiting && ![connection.clientAddress isEqual:_clientAddress]) {
         return makeHTTPTextResponse(
-            HTTPStatusServiceUnavailable, @"Max clients connected", YES);
+            HTTPStatusServiceUnavailable, @"Max clients connected", YES
+        );
     }
     if (!device_name(request.userAgent)) {
         return makeHTTPTextResponse(
-            HTTPStatusBadRequest, @"Missing User-Agent header", YES);
+            HTTPStatusBadRequest, @"Missing User-Agent header", YES
+        );
     }
     return nil;
 }
@@ -308,19 +314,23 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     NSString *allowedMethod = allowed_method(request.path);
     if (!allowedMethod) {
         [connection respond:makeHTTPTextResponse(
-                                HTTPStatusNotFound, @"Not found", closes)
+                                HTTPStatusNotFound, @"Not found", closes
+                            )
                     closing:closes];
     } else if (![request.method isEqual:allowedMethod]) {
-        [connection respond:makeHTTPTextResponse(HTTPStatusMethodNotAllowed,
-                                @"Method not allowed", closes)
+        [connection respond:makeHTTPTextResponse(
+                                HTTPStatusMethodNotAllowed,
+                                @"Method not allowed", closes
+                            )
                     closing:closes];
     } else if ([request.path isEqual:@"/files"]) {
         [self respondWithFilesTo:request on:connection];
     } else {
-        [connection
-            respond:makeHTTPResponse(HTTPStatusOK, @"text/csv;charset=UTF-8",
-                        _manifest.csv, closes)
-            closing:closes];
+        [connection respond:makeHTTPResponse(
+                                HTTPStatusOK, @"text/csv;charset=UTF-8",
+                                _manifest.csv, closes
+                            )
+                    closing:closes];
     }
 }
 
@@ -333,9 +343,11 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     NSArray<TarballEntry *> *entries =
         parseTarballRequest(request, _manifest, _snapshotTime, &error);
     if (!entries) {
-        [connection respond:makeHTTPTextResponse(HTTPStatusBadRequest,
-                                error.localizedDescription, closes)
-                    closing:closes];
+        [connection
+            respond:makeHTTPTextResponse(
+                        HTTPStatusBadRequest, error.localizedDescription, closes
+                    )
+            closing:closes];
         return;
     }
 
@@ -346,14 +358,18 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     unsigned long long tarballSize = writer.tarballSize;
     if (!tarballSize) {
         os_log_error(server_log(), "Tarball size cannot be calculated");
-        [connection respond:makeHTTPTextResponse(HTTPStatusInternalServerError,
-                                @"Tarball failed", closes)
-                    closing:closes];
+        [connection
+            respond:makeHTTPTextResponse(
+                        HTTPStatusInternalServerError, @"Tarball failed", closes
+                    )
+            closing:closes];
         return;
     }
 
-    [connection respondWithHeader:makeHTTPResponseHeader(HTTPStatusOK,
-                                      @"application/x-tar", tarballSize, closes)
+    [connection respondWithHeader:makeHTTPResponseHeader(
+                                      HTTPStatusOK, @"application/x-tar",
+                                      tarballSize, closes
+                                  )
                        bodyLength:tarballSize
                              body:^{ return next_tarball_buffer(writer); }
                           closing:closes];

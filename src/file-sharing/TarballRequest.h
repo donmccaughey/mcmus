@@ -28,10 +28,12 @@ typedef NS_ENUM(NSInteger, TarballRequestErrorCode) {
 // the order it asks for them, each with the snapshot time as its mtime. The
 // localized description of an error is the plain text body of the response to
 // send.
-NSArray<TarballEntry *> *_Nullable parseTarballRequest(HTTPRequest *request,
+NSArray<TarballEntry *> *_Nullable parseTarballRequest(
+    HTTPRequest *request,
     Manifest *manifest,
     time_t snapshotTime,
-    NSError **error);
+    NSError **error
+);
 
 
 NS_ASSUME_NONNULL_END

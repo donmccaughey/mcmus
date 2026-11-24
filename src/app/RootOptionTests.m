@@ -29,9 +29,11 @@
 - (void)testReturnsNilInDemoMode
 {
     XCTAssertNil(
-        rootOptionURL(@[@"MC Mus", @"--demo", @"--root", @"/Some/Music"]));
+        rootOptionURL(@[@"MC Mus", @"--demo", @"--root", @"/Some/Music"])
+    );
     XCTAssertNil(
-        rootOptionURL(@[@"MC Mus", @"--root", @"/Some/Music", @"--demo"]));
+        rootOptionURL(@[@"MC Mus", @"--root", @"/Some/Music", @"--demo"])
+    );
 }
 
 - (void)testResolvesRelativePathAgainstWorkingDirectory
@@ -40,8 +42,10 @@
 
     NSString *workingDirectory =
         NSFileManager.defaultManager.currentDirectoryPath;
-    XCTAssertEqualObjects(url.path,
-        [workingDirectory stringByAppendingPathComponent:@"some/music"]);
+    XCTAssertEqualObjects(
+        url.path,
+        [workingDirectory stringByAppendingPathComponent:@"some/music"]
+    );
 }
 
 @end

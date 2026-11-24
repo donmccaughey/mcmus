@@ -31,8 +31,10 @@ static ShareTestOptions *parse_options_or_exit(void)
          currentDirectoryURL:currentDirectoryURL
                        error:&error];
     if (!options) {
-        fprintf(stderr, "share-test: %s\n%s\n",
-            error.localizedDescription.UTF8String, ShareTestUsage.UTF8String);
+        fprintf(
+            stderr, "share-test: %s\n%s\n",
+            error.localizedDescription.UTF8String, ShareTestUsage.UTF8String
+        );
         exit(usageExitStatus);
     }
     return options;
@@ -44,8 +46,10 @@ static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
     NSError *error = nil;
     if ([fileSystem listDirectory:directoryURL error:&error]) return;
 
-    fprintf(stderr, "share-test: %s: %s\n", directoryURL.path.UTF8String,
-        error.localizedDescription.UTF8String);
+    fprintf(
+        stderr, "share-test: %s: %s\n", directoryURL.path.UTF8String,
+        error.localizedDescription.UTF8String
+    );
     exit(EXIT_FAILURE);
 }
 
@@ -125,7 +129,8 @@ static void stop_on_interrupt(FileSharing *fileSharing)
 {
     signal(SIGINT, SIG_IGN);
     interruptSource = dispatch_source_create(
-        DISPATCH_SOURCE_TYPE_SIGNAL, SIGINT, 0, dispatch_get_main_queue());
+        DISPATCH_SOURCE_TYPE_SIGNAL, SIGINT, 0, dispatch_get_main_queue()
+    );
     dispatch_source_set_event_handler(interruptSource, ^{
         isInterrupted = YES;
         if (fileSharing.isSharing) stop_and_exit(fileSharing);

@@ -23,40 +23,49 @@ static NSError *tarball_error(TarballErrorCode code, NSString *description)
 static NSError *finished_error(void)
 {
     return tarball_error(
-        TarballErrorCodeFinished, @"The tarball is already complete.");
+        TarballErrorCodeFinished, @"The tarball is already complete."
+    );
 }
 
 
 static NSError *archive_error(struct archive *_Nullable archive)
 {
     const char *message = archive ? archive_error_string(archive) : NULL;
-    return tarball_error(TarballErrorCodeArchiveFailed,
-        message ? @(message) : @"The tar archive could not be written.");
+    return tarball_error(
+        TarballErrorCodeArchiveFailed,
+        message ? @(message) : @"The tar archive could not be written."
+    );
 }
 
 
 static NSError *file_too_short_error(TarballEntry *entry)
 {
-    return tarball_error(TarballErrorCodeFileTooShort,
+    return tarball_error(
+        TarballErrorCodeFileTooShort,
         [NSString stringWithFormat:@"%@ is shorter than %llu bytes.",
-            entry.relativePath, entry.size]);
+                                   entry.relativePath, entry.size]
+    );
 }
 
 
-static la_ssize_t append_bytes(struct archive *archive,
+static la_ssize_t append_bytes(
+    struct archive *archive,
     void *client_data,
     const void *buffer,
-    size_t length)
+    size_t length
+)
 {
     [(__bridge NSMutableData *)client_data appendBytes:buffer length:length];
     return (la_ssize_t)length;
 }
 
 
-static la_ssize_t count_bytes(struct archive *archive,
+static la_ssize_t count_bytes(
+    struct archive *archive,
     void *client_data,
     const void *buffer,
-    size_t length)
+    size_t length
+)
 {
     *(unsigned long long *)client_data += length;
     return (la_ssize_t)length;
@@ -67,7 +76,8 @@ static la_ssize_t count_bytes(struct archive *archive,
 // reaches the callback at once and the tar file is not padded out to a
 // multiple of the default 10240 byte block.
 static struct archive *_Nullable new_archive(
-    archive_write_callback *write, void *client_data)
+    archive_write_callback *write, void *client_data
+)
 {
     struct archive *archive = archive_write_new();
     if (!archive) return NULL;
@@ -106,7 +116,8 @@ static BOOL write_header(struct archive *archive, TarballEntry *entry)
 // file; libarchive fills in the data of each entry with zeros, so the bytes
 // counted are the size of the real tar file.
 static unsigned long long calculate_tarball_size(
-    NSArray<TarballEntry *> *entries)
+    NSArray<TarballEntry *> *entries
+)
 {
     unsigned long long size = 0;
     struct archive *archive = new_archive(count_bytes, &size);
@@ -257,7 +268,9 @@ static unsigned long long calculate_tarball_size(
     } else if (0 == count) {
         _failure = file_too_short_error(_entries[_entryIndex]);
     } else if (count
-        != archive_write_data(_archive, _readBuffer.bytes, (size_t)count))
+               != archive_write_data(
+                   _archive, _readBuffer.bytes, (size_t)count
+               ))
     {
         _failure = archive_error(_archive);
     }

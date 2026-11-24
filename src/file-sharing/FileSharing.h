@@ -44,12 +44,12 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 
 // The snapshot and the manifest CSV are placed inside the working directory;
 // the working directory itself is never removed.
-- (instancetype)
-    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
-              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL
-                       fileSystem:(id<FileSystem>)fileSystem
-                          network:(id<Network>)network
-                            clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
+- (instancetype
+)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+           workingDirectoryURL:(nullable NSURL *)workingDirectoryURL
+                    fileSystem:(id<FileSystem>)fileSystem
+                       network:(id<Network>)network
+                         clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)start;

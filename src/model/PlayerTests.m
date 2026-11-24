@@ -66,9 +66,11 @@
     XCTAssertEqualObjects([self makePlayer:@[_first]].currentTrack, _first);
     XCTAssertNil([self makePlayer:@[_first]].nextTrack);
     XCTAssertEqualObjects(
-        ([self makePlayer:@[_first, _second]].nextTrack), _second);
+        ([self makePlayer:@[_first, _second]].nextTrack), _second
+    );
     XCTAssertEqualObjects(
-        ([self makePlayer:@[_first, _second, _third]].nextTrack), _second);
+        ([self makePlayer:@[_first, _second, _third]].nextTrack), _second
+    );
 }
 
 - (void)testCommandsAreIgnoredWhileQueueIsEmpty
@@ -220,8 +222,8 @@
     XCTAssertEqualObjects(player.queue.tracks, (@[_second, _third]));
     XCTAssertEqualObjects(player.currentTrack, _second);
     XCTAssertEqual(player.timeIndex, 0.0);
-    XCTAssertEqualObjects(
-        _audio.calls, @[[AudioFakeCall replaceNextTrack:_third.url]]);
+    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall
+                                            replaceNextTrack:_third.url]]);
     XCTAssertTrue(player.isPlaying);
 }
 
@@ -253,13 +255,13 @@
 {
     Player *player = [self makePlayingPlayer:@[_first]];
     [player.queue add:_second];
-    XCTAssertEqualObjects(
-        _audio.calls, @[[AudioFakeCall replaceNextTrack:_second.url]]);
+    XCTAssertEqualObjects(_audio.calls, @[[AudioFakeCall
+                                            replaceNextTrack:_second.url]]);
     [player.queue add:_third];
     XCTAssertEqualObjects(_audio.calls, (@[
-        [AudioFakeCall replaceNextTrack:_second.url],
-        [AudioFakeCall replaceNextTrack:_second.url],
-    ]));
+                              [AudioFakeCall replaceNextTrack:_second.url],
+                              [AudioFakeCall replaceNextTrack:_second.url],
+                          ]));
 }
 
 - (void)testTrackAddedWhileStoppedDoesNotTouchAudio

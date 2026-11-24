@@ -42,7 +42,8 @@
     XCTAssertEqualObjects(fileSystem.started, @[@"/Saved/Music"]);
     XCTAssertEqual(fileSystem.bookmarked.count, 0UL);
     XCTAssertEqualObjects(
-        preferences.musicRootDirectoryBookmark, _savedBookmark);
+        preferences.musicRootDirectoryBookmark, _savedBookmark
+    );
 }
 
 - (void)testRefreshesStaleBookmark
@@ -63,7 +64,8 @@
     XCTAssertTrue(root.isSecurityScoped);
     XCTAssertEqualObjects(fileSystem.bookmarked, @[@"/Saved/Music"]);
     XCTAssertEqualObjects(
-        preferences.musicRootDirectoryBookmark, _savedBookmark);
+        preferences.musicRootDirectoryBookmark, _savedBookmark
+    );
 }
 
 - (void)testFallsBackToSystemMusicDirectoryWhenBookmarkDoesNotResolve
@@ -85,7 +87,8 @@
     XCTAssertFalse(root.isSecurityScoped);
     XCTAssertEqual(fileSystem.started.count, 0UL);
     XCTAssertEqualObjects(
-        preferences.musicRootDirectoryBookmark, _savedBookmark);
+        preferences.musicRootDirectoryBookmark, _savedBookmark
+    );
 }
 
 - (void)testFallsBackToSystemMusicDirectoryWhenAccessIsDenied
@@ -140,7 +143,8 @@
     XCTAssertNil(root);
     XCTAssertNotNil(error);
     XCTAssertEqualObjects(
-        fileSystemFakeErrorPath(error), @"getMusicDirectoryURL");
+        fileSystemFakeErrorPath(error), @"getMusicDirectoryURL"
+    );
     XCTAssertNil(preferences.musicRootDirectoryBookmark);
 }
 
@@ -164,7 +168,8 @@
     XCTAssertEqual(fileSystem.started.count, 0UL);
     XCTAssertEqual(fileSystem.bookmarked.count, 0UL);
     XCTAssertEqualObjects(
-        preferences.musicRootDirectoryBookmark, _savedBookmark);
+        preferences.musicRootDirectoryBookmark, _savedBookmark
+    );
 }
 
 - (void)testFallsBackToSavedBookmarkWhenRootOverrideCannotBeListed
@@ -221,8 +226,10 @@
 
     XCTAssertEqualObjects(root.url.path, @"/Other/Music");
     XCTAssertTrue(root.isSecurityScoped);
-    XCTAssertEqualObjects(preferences.musicRootDirectoryBookmark,
-        [FileSystemFake bookmarkForPath:@"/Other/Music"]);
+    XCTAssertEqualObjects(
+        preferences.musicRootDirectoryBookmark,
+        [FileSystemFake bookmarkForPath:@"/Other/Music"]
+    );
     XCTAssertEqualObjects(fileSystem.started, @[@"/Other/Music"]);
 }
 

@@ -14,18 +14,22 @@ struct find_context {
 
 static void free_find_context(struct find_context *find_context);
 
-static int matching_file_share(struct file_share *file_shares,
+static int matching_file_share(
+    struct file_share *file_shares,
     int count,
     uint32_t interface_index,
     char const *service_name,
     char const *service_type,
-    char const *domain);
+    char const *domain
+);
 
 
-static struct find_context *alloc_find_context(struct file_share *file_shares,
+static struct find_context *alloc_find_context(
+    struct file_share *file_shares,
     int capacity,
     find_file_shares_callback callback,
-    dispatch_queue_t callback_queue)
+    dispatch_queue_t callback_queue
+)
 {
     struct find_context *find_context = calloc(1, sizeof(struct find_context));
     if (!find_context) return NULL;
@@ -49,21 +53,24 @@ static struct find_context *alloc_find_context(struct file_share *file_shares,
 }
 
 
-static void browse_reply(DNSServiceRef service,
+static void browse_reply(
+    DNSServiceRef service,
     DNSServiceFlags flags,
     uint32_t interface_index,
     DNSServiceErrorType error_code,
     const char *service_name,
     const char *service_type,
     const char *domain,
-    void *context)
+    void *context
+)
 {
     struct find_context *find_context = context;
     if (kDNSServiceErr_NoError != error_code) {
         dispatch_async(find_context->callback_queue, ^{
             int count = 0;
             find_context->callback(
-                find_context->file_shares, count, error_code);
+                find_context->file_shares, count, error_code
+            );
             free_find_context(find_context);
         });
         return;
@@ -74,19 +81,26 @@ static void browse_reply(DNSServiceRef service,
             int i = find_context->count;
 
             find_context->file_shares[i].interface_index = interface_index;
-            strlcpy(find_context->file_shares[i].service_name, service_name,
-                sizeof find_context->file_shares[i].service_name);
-            strlcpy(find_context->file_shares[i].service_type, service_type,
-                sizeof find_context->file_shares[i].service_type);
-            strlcpy(find_context->file_shares[i].domain, domain,
-                sizeof find_context->file_shares[i].domain);
+            strlcpy(
+                find_context->file_shares[i].service_name, service_name,
+                sizeof find_context->file_shares[i].service_name
+            );
+            strlcpy(
+                find_context->file_shares[i].service_type, service_type,
+                sizeof find_context->file_shares[i].service_type
+            );
+            strlcpy(
+                find_context->file_shares[i].domain, domain,
+                sizeof find_context->file_shares[i].domain
+            );
 
             ++find_context->count;
         }
     } else {
-        int i =
-            matching_file_share(find_context->file_shares, find_context->count,
-                interface_index, service_name, service_type, domain);
+        int i = matching_file_share(
+            find_context->file_shares, find_context->count, interface_index,
+            service_name, service_type, domain
+        );
         if (i >= 0) {
             int count_after = find_context->count - i - 1;
             if (count_after) {
@@ -102,20 +116,24 @@ static void browse_reply(DNSServiceRef service,
     BOOL more_coming = (kDNSServiceFlagsMoreComing & flags) ? YES : NO;
     if (!more_coming) {
         dispatch_async(find_context->callback_queue, ^{
-            find_context->callback(find_context->file_shares,
-                find_context->count, kDNSServiceErr_NoError);
+            find_context->callback(
+                find_context->file_shares, find_context->count,
+                kDNSServiceErr_NoError
+            );
             free_find_context(find_context);
         });
     }
 }
 
 
-void find_file_shares(dispatch_queue_t queue,
+void find_file_shares(
+    dispatch_queue_t queue,
     struct file_share *file_shares,
     int capacity,
     find_file_shares_callback callback,
     dispatch_queue_t callback_queue,
-    int timeout_secs)
+    int timeout_secs
+)
 {
     struct find_context *find_context =
         alloc_find_context(file_shares, capacity, callback, callback_queue);
@@ -132,9 +150,10 @@ void find_file_shares(dispatch_queue_t queue,
     DNSServiceRef service_ref;
     DNSServiceFlags flags = 0;
     char const *domain = NULL;
-    error_code =
-        DNSServiceBrowse(&service_ref, flags, kDNSServiceInterfaceIndexAny,
-            "_mcmus._tcp", domain, browse_reply, find_context);
+    error_code = DNSServiceBrowse(
+        &service_ref, flags, kDNSServiceInterfaceIndexAny, "_mcmus._tcp",
+        domain, browse_reply, find_context
+    );
     if (kDNSServiceErr_NoError != error_code) {
         free_find_context(find_context);
         dispatch_async(callback_queue, ^{
@@ -155,7 +174,8 @@ void find_file_shares(dispatch_queue_t queue,
     }
 
     dispatch_time_t timeout_nanos = dispatch_time(
-        DISPATCH_TIME_NOW, (int64_t)(timeout_secs * NSEC_PER_SEC));
+        DISPATCH_TIME_NOW, (int64_t)(timeout_secs * NSEC_PER_SEC)
+    );
     dispatch_after(timeout_nanos, callback_queue, find_context->timeout_block);
 }
 
@@ -172,12 +192,14 @@ static void free_find_context(struct find_context *find_context)
 }
 
 
-static int matching_file_share(struct file_share *file_shares,
+static int matching_file_share(
+    struct file_share *file_shares,
     int count,
     uint32_t interface_index,
     char const *service_name,
     char const *service_type,
-    char const *domain)
+    char const *domain
+)
 {
     for (int i = 0; i < count; ++i) {
         if (file_shares[i].interface_index == interface_index

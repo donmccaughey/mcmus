@@ -31,7 +31,8 @@ static NSURL *musicDir(void)
 }
 
 static NSString *metadata(
-    NSString *relativePath, unsigned long long size, NSUInteger fileHash)
+    NSString *relativePath, unsigned long long size, NSUInteger fileHash
+)
 {
     return [[TrackMetadata alloc] initWithRelativePath:relativePath
                                                   size:size
@@ -55,11 +56,13 @@ static NSArray<Track *> *numberedTracks(NSUInteger count)
 }
 
 static LoadTrackMetadataProgress progressRecorder(
-    NSMutableArray<NSString *> *progress)
+    NSMutableArray<NSString *> *progress
+)
 {
     return ^(NSUInteger tracksLoaded, NSUInteger totalTracks) {
-        [progress addObject:[NSString stringWithFormat:@"%lu of %lu",
-                                tracksLoaded, totalTracks]];
+        [progress
+            addObject:[NSString stringWithFormat:@"%lu of %lu", tracksLoaded,
+                                                 totalTracks]];
     };
 }
 
@@ -76,7 +79,8 @@ static LoadTrackMetadataProgress progressRecorder(
     NSArray<NSError *> *errors;
 
     NSArray<TrackMetadata *> *loaded = loadTrackMetadata(
-        @[], musicDir(), [[FileSystemFake alloc] init], nil, &errors);
+        @[], musicDir(), [[FileSystemFake alloc] init], nil, &errors
+    );
 
     XCTAssertEqualObjects(loaded, @[]);
     XCTAssertEqualObjects(errors, @[]);
@@ -93,8 +97,10 @@ static LoadTrackMetadataProgress progressRecorder(
     NSArray<TrackMetadata *> *loaded =
         loadTrackMetadata(tracks, musicDir(), fileSystem, nil, NULL);
 
-    XCTAssertEqualObjects([loaded valueForKey:@"relativePath"],
-        (@[@"Song.mp3", @"Artist/Album/Tune.m4a"]));
+    XCTAssertEqualObjects(
+        [loaded valueForKey:@"relativePath"],
+        (@[@"Song.mp3", @"Artist/Album/Tune.m4a"])
+    );
 }
 
 - (void)testTrackSizeIsRead
@@ -128,9 +134,9 @@ static LoadTrackMetadataProgress progressRecorder(
         loadTrackMetadata(tracks, musicDir(), fileSystem, nil, &errors);
 
     XCTAssertEqualObjects(descriptions(loaded), (@[
-        metadata(@"Empty.m4a", 0, emptyFileHash),
-        metadata(@"Song.mp3", 43, foxFileHash),
-    ]));
+                              metadata(@"Empty.m4a", 0, emptyFileHash),
+                              metadata(@"Song.mp3", 43, foxFileHash),
+                          ]));
     XCTAssertEqual(errors.count, 0UL);
 }
 
@@ -147,8 +153,9 @@ static LoadTrackMetadataProgress progressRecorder(
     NSArray<TrackMetadata *> *loaded =
         loadTrackMetadata(tracks, musicDir(), fileSystem, nil, NULL);
 
-    XCTAssertEqualObjects([loaded valueForKey:@"relativePath"],
-        (@[@"C.mp3", @"A.mp3", @"B.mp3"]));
+    XCTAssertEqualObjects(
+        [loaded valueForKey:@"relativePath"], (@[@"C.mp3", @"A.mp3", @"B.mp3"])
+    );
 }
 
 - (void)testUnsizeableTrackIsSkippedAndReportsFailure
@@ -165,11 +172,12 @@ static LoadTrackMetadataProgress progressRecorder(
         loadTrackMetadata(tracks, musicDir(), fileSystem, nil, &errors);
 
     XCTAssertEqualObjects(descriptions(loaded), (@[
-        metadata(@"Good.mp3", 43, foxFileHash),
-    ]));
+                              metadata(@"Good.mp3", 43, foxFileHash),
+                          ]));
     XCTAssertEqual(errors.count, 1UL);
     XCTAssertEqualObjects(
-        fileSystemFakeErrorPaths(errors), @[@"/Music/Bad.mp3"]);
+        fileSystemFakeErrorPaths(errors), @[@"/Music/Bad.mp3"]
+    );
 }
 
 - (void)testUnhashableTrackKeepsZeroHashAndReportsFailure
@@ -186,12 +194,13 @@ static LoadTrackMetadataProgress progressRecorder(
         loadTrackMetadata(tracks, musicDir(), fileSystem, nil, &errors);
 
     XCTAssertEqualObjects(descriptions(loaded), (@[
-        metadata(@"Bad.mp3", 43, 0),
-        metadata(@"Good.mp3", 43, foxFileHash),
-    ]));
+                              metadata(@"Bad.mp3", 43, 0),
+                              metadata(@"Good.mp3", 43, foxFileHash),
+                          ]));
     XCTAssertEqual(errors.count, 1UL);
     XCTAssertEqualObjects(
-        fileSystemFakeErrorPaths(errors), @[@"/Music/Bad.mp3"]);
+        fileSystemFakeErrorPaths(errors), @[@"/Music/Bad.mp3"]
+    );
 }
 
 - (void)testProgressIsReportedEveryHundredTracks
@@ -203,7 +212,8 @@ static LoadTrackMetadataProgress progressRecorder(
     NSMutableArray<NSString *> *progress = [NSMutableArray array];
 
     NSArray<TrackMetadata *> *loaded = loadTrackMetadata(
-        tracks, musicDir(), fileSystem, progressRecorder(progress), NULL);
+        tracks, musicDir(), fileSystem, progressRecorder(progress), NULL
+    );
 
     XCTAssertEqual(loaded.count, 250UL);
     XCTAssertEqualObjects(progress, (@[@"100 of 250", @"200 of 250"]));
@@ -218,7 +228,8 @@ static LoadTrackMetadataProgress progressRecorder(
     NSMutableArray<NSString *> *progress = [NSMutableArray array];
 
     loadTrackMetadata(
-        tracks, musicDir(), fileSystem, progressRecorder(progress), NULL);
+        tracks, musicDir(), fileSystem, progressRecorder(progress), NULL
+    );
 
     XCTAssertEqualObjects(progress, @[]);
 }
@@ -229,8 +240,10 @@ static LoadTrackMetadataProgress progressRecorder(
     NSMutableArray<NSString *> *progress = [NSMutableArray array];
     NSArray<NSError *> *errors;
 
-    NSArray<TrackMetadata *> *loaded = loadTrackMetadata(numberedTracks(100),
-        musicDir(), emptyFileSystem, progressRecorder(progress), &errors);
+    NSArray<TrackMetadata *> *loaded = loadTrackMetadata(
+        numberedTracks(100), musicDir(), emptyFileSystem,
+        progressRecorder(progress), &errors
+    );
 
     XCTAssertEqual(loaded.count, 0UL);
     XCTAssertEqual(errors.count, 100UL);

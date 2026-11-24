@@ -20,19 +20,24 @@ typedef NS_ENUM(NSInteger, HTTPStatus) {
 
 
 // Both return a complete serialized HTTP 1.1 response.
-NSData *makeHTTPResponse(HTTPStatus status,
+NSData *makeHTTPResponse(
+    HTTPStatus status,
     NSString *contentType,
     NSData *body,
-    BOOL closesConnection);
+    BOOL closesConnection
+);
 NSData *makeHTTPTextResponse(
-    HTTPStatus status, NSString *text, BOOL closesConnection);
+    HTTPStatus status, NSString *text, BOOL closesConnection
+);
 
 // The status line and header fields of a response whose body is sent
 // separately.
-NSData *makeHTTPResponseHeader(HTTPStatus status,
+NSData *makeHTTPResponseHeader(
+    HTTPStatus status,
     NSString *contentType,
     unsigned long long contentLength,
-    BOOL closesConnection);
+    BOOL closesConnection
+);
 
 
 NS_ASSUME_NONNULL_END

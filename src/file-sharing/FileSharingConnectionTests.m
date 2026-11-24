@@ -142,7 +142,8 @@ static NSString *get(NSString *path)
     [_client receive:get(@"/files")];
 
     XCTAssertEqualObjects(
-        _client.sentText, [header stringByAppendingString:@"one,two,three"]);
+        _client.sentText, [header stringByAppendingString:@"one,two,three"]
+    );
     XCTAssertEqual(_countOfPartsAskedFor, 3UL);
     XCTAssertFalse(_client.isClosed);
 }
@@ -166,7 +167,8 @@ static NSString *get(NSString *path)
     [_client receive:get(@"/files")];
 
     XCTAssertEqualObjects(
-        _client.sentText, [header stringByAppendingString:@"one,two"]);
+        _client.sentText, [header stringByAppendingString:@"one,two"]
+    );
     XCTAssertTrue(_client.isClosed);
     XCTAssertEqualObjects(_delegate.events, (@[@"begin", @"/files", @"close"]));
 }
@@ -174,14 +176,17 @@ static NSString *get(NSString *path)
 
 - (void)testResponseWithoutBodyIsOnlyTheHeader;
 {
-    _delegate.onRequest = ^(FileSharingConnection *connection,
-        HTTPRequest *request) { [connection respond:utf8(header) closing:NO]; };
+    _delegate.onRequest =
+        ^(FileSharingConnection *connection, HTTPRequest *request) {
+            [connection respond:utf8(header) closing:NO];
+        };
 
     [_client receive:get(@"/manifest")];
 
     XCTAssertEqualObjects(_client.sentText, header);
     XCTAssertEqualObjects(
-        _delegate.events, (@[@"begin", @"/manifest", @"end"]));
+        _delegate.events, (@[@"begin", @"/manifest", @"end"])
+    );
 }
 
 
@@ -215,7 +220,8 @@ static NSString *get(NSString *path)
     [_client finishSending];
 
     XCTAssertEqualObjects(
-        _client.sentText, [header stringByAppendingString:@"one,two"]);
+        _client.sentText, [header stringByAppendingString:@"one,two"]
+    );
     XCTAssertFalse(_connection.hasActiveRequest);
 }
 
@@ -242,7 +248,8 @@ static NSString *get(NSString *path)
     [_client receive:get(@"/files")];
 
     XCTAssertEqualObjects(
-        _client.sentText, [header stringByAppendingString:@"one,"]);
+        _client.sentText, [header stringByAppendingString:@"one,"]
+    );
     XCTAssertTrue(_client.isClosed);
     XCTAssertEqualObjects(_delegate.events, (@[@"begin", @"/files", @"close"]));
 }
@@ -257,7 +264,8 @@ static NSString *get(NSString *path)
     [_client receive:get(@"/files")];
 
     XCTAssertEqualObjects(
-        _client.sentText, [header stringByAppendingString:@"one,"]);
+        _client.sentText, [header stringByAppendingString:@"one,"]
+    );
     XCTAssertTrue(_client.isClosed);
 }
 
@@ -271,7 +279,8 @@ static NSString *get(NSString *path)
     [_client receive:get(@"/files")];
 
     XCTAssertEqualObjects(
-        _client.sentText, [header stringByAppendingString:@"one,"]);
+        _client.sentText, [header stringByAppendingString:@"one,"]
+    );
     XCTAssertTrue(_client.isClosed);
 }
 
@@ -319,9 +328,11 @@ static NSString *get(NSString *path)
 
     NSString *response = [header stringByAppendingString:@"one,two"];
     XCTAssertEqualObjects(
-        _client.sentText, [response stringByAppendingString:response]);
+        _client.sentText, [response stringByAppendingString:response]
+    );
     XCTAssertEqualObjects(
-        _delegate.events, (@[@"begin", @"/first", @"/second", @"end"]));
+        _delegate.events, (@[@"begin", @"/first", @"/second", @"end"])
+    );
 }
 
 

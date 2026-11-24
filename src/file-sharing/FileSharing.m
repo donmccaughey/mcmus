@@ -56,12 +56,12 @@ static NSError *no_working_directory_error(void)
 }
 
 
-- (instancetype)
-    initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
-              workingDirectoryURL:(nullable NSURL *)workingDirectoryURL
-                       fileSystem:(id<FileSystem>)fileSystem
-                          network:(id<Network>)network
-                            clock:(id<Clock>)clock;
+- (instancetype
+)initWithMusicRootDirectoryURL:(nullable NSURL *)musicRootDirectoryURL
+           workingDirectoryURL:(nullable NSURL *)workingDirectoryURL
+                    fileSystem:(id<FileSystem>)fileSystem
+                       network:(id<Network>)network
+                         clock:(id<Clock>)clock;
 {
     self = [super init];
     if (!self) return nil;

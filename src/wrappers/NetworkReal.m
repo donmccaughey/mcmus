@@ -35,11 +35,13 @@ static BOOL make_nonblocking(int fd)
 
 // The socket does not retain `info`; the owner invalidates the socket when it
 // closes or is deallocated, which stops the callbacks.
-static CFSocketRef schedule_socket(int fd,
+static CFSocketRef schedule_socket(
+    int fd,
     CFOptionFlags callbackTypes,
     CFSocketCallBack callback,
     void *info,
-    BOOL closeOnInvalidate)
+    BOOL closeOnInvalidate
+)
 {
     CFSocketContext context = {.info = info};
     CFSocketRef socket =
@@ -117,11 +119,13 @@ static NSString *client_address(int fd)
 @end
 
 
-static void connection_callback(CFSocketRef socket,
+static void connection_callback(
+    CFSocketRef socket,
     CFSocketCallBackType type,
     CFDataRef address,
     const void *data,
-    void *info)
+    void *info
+)
 {
     NetworkConnectionReal *connection = (__bridge NetworkConnectionReal *)info;
     if (type == kCFSocketReadCallBack) [connection readAvailableData];
@@ -151,9 +155,10 @@ static void connection_callback(CFSocketRef socket,
     _pendingSends = [NSMutableArray new];
     [self preventSIGPIPE];
     if (make_nonblocking(fd)) {
-        _socket =
-            schedule_socket(fd, kCFSocketReadCallBack | kCFSocketWriteCallBack,
-                connection_callback, (__bridge void *)self, YES);
+        _socket = schedule_socket(
+            fd, kCFSocketReadCallBack | kCFSocketWriteCallBack,
+            connection_callback, (__bridge void *)self, YES
+        );
     }
     if (!_socket) {
         close(fd);
@@ -263,11 +268,13 @@ static void connection_callback(CFSocketRef socket,
 @end
 
 
-static void listener_callback(CFSocketRef socket,
+static void listener_callback(
+    CFSocketRef socket,
     CFSocketCallBackType type,
     CFDataRef address,
     const void *data,
-    void *info)
+    void *info
+)
 {
     NetworkListenerReal *listener = (__bridge NetworkListenerReal *)info;
     [listener accept:*(const CFSocketNativeHandle *)data];
@@ -297,8 +304,10 @@ static void listener_callback(CFSocketRef socket,
         close(fd);
         return nil;
     }
-    _socket = schedule_socket(fd, kCFSocketAcceptCallBack, listener_callback,
-        (__bridge void *)self, YES);
+    _socket = schedule_socket(
+        fd, kCFSocketAcceptCallBack, listener_callback, (__bridge void *)self,
+        YES
+    );
     if (!_socket) {
         if (error)
             *error = [NSError errorWithDomain:NSPOSIXErrorDomain
@@ -370,11 +379,13 @@ static void listener_callback(CFSocketRef socket,
 @end
 
 
-static void advertisement_socket_callback(CFSocketRef socket,
+static void advertisement_socket_callback(
+    CFSocketRef socket,
     CFSocketCallBackType type,
     CFDataRef address,
     const void *data,
-    void *info)
+    void *info
+)
 {
     NetworkAdvertisementReal *advertisement =
         (__bridge NetworkAdvertisementReal *)info;
@@ -382,13 +393,15 @@ static void advertisement_socket_callback(CFSocketRef socket,
 }
 
 
-static void advertisement_registered(DNSServiceRef service,
+static void advertisement_registered(
+    DNSServiceRef service,
     DNSServiceFlags flags,
     DNSServiceErrorType code,
     const char *name,
     const char *type,
     const char *domain,
-    void *context)
+    void *context
+)
 {
     NetworkAdvertisementReal *advertisement =
         (__bridge NetworkAdvertisementReal *)context;
@@ -411,9 +424,11 @@ static void advertisement_registered(DNSServiceRef service,
     self = [super init];
     if (!self) return nil;
 
-    DNSServiceErrorType code = DNSServiceRegister(&_service, 0,
-        kDNSServiceInterfaceIndexAny, NULL, type.UTF8String, NULL, NULL,
-        htons(port), 0, NULL, advertisement_registered, (__bridge void *)self);
+    DNSServiceErrorType code = DNSServiceRegister(
+        &_service, 0, kDNSServiceInterfaceIndexAny, NULL, type.UTF8String, NULL,
+        NULL, htons(port), 0, NULL, advertisement_registered,
+        (__bridge void *)self
+    );
     if (code != kDNSServiceErr_NoError) {
         if (error) *error = advertisement_error(code);
         return nil;
@@ -440,8 +455,10 @@ static void advertisement_registered(DNSServiceRef service,
 // service.
 - (nullable CFSocketRef)scheduleResults;
 {
-    return schedule_socket(DNSServiceRefSockFD(_service), kCFSocketReadCallBack,
-        advertisement_socket_callback, (__bridge void *)self, NO);
+    return schedule_socket(
+        DNSServiceRefSockFD(_service), kCFSocketReadCallBack,
+        advertisement_socket_callback, (__bridge void *)self, NO
+    );
 }
 
 
