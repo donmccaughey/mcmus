@@ -2,7 +2,7 @@
 
 
 @implementation FileSyncing {
-    dispatch_queue_t _queue;
+    dispatch_queue_t _serial_queue;
 }
 
 
@@ -14,7 +14,7 @@
     self = [super init];
     if (!self) return nil;
 
-    _queue =
+    _serial_queue =
         dispatch_queue_create(self.className.UTF8String, DISPATCH_QUEUE_SERIAL);
 
     return self;
@@ -38,9 +38,9 @@
     NSAssert(
         timeoutSeconds < INT_MAX, @"Expected timeoutSeconds less than INT_MAX"
     );
-    dispatch_async(_queue, ^{
+    dispatch_async(_serial_queue, ^{
         find_file_shares(
-            self->_queue,
+            self->_serial_queue,
             fileShares,
             (int)capacity,
             callback,

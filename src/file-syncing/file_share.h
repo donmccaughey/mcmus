@@ -21,7 +21,7 @@ struct file_share {
 
 
 void find_file_shares(
-    dispatch_queue_t queue,
+    dispatch_queue_t serial_queue,
     struct file_share *file_shares,
     int capacity,
     find_file_shares_callback callback,
