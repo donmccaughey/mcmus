@@ -706,6 +706,7 @@
 		D45C7E0030C2000000000009 /* Exceptions for "src" folder in "sync-test" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"sync-test/FileShareSelection.m",
 				"sync-test/main.m",
 				"sync-test/SyncTest.m",
 				"sync-test/SyncTestOptions.m",
@@ -715,6 +716,8 @@
 		D45C7E0030C200000000000A /* Exceptions for "src" folder in "sync-test-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"sync-test/FileShareSelection.m",
+				"sync-test/FileShareSelectionTests.m",
 				"sync-test/SyncTest.m",
 				"sync-test/SyncTestOptions.m",
 				"sync-test/SyncTestOptionsTests.m",

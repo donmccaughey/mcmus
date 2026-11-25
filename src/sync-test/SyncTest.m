@@ -3,10 +3,12 @@
 #import <net/if.h>
 
 #import "FileShare.h"
+#import "FileShareSelection.h"
 #import "FileSyncing.h"
 
 
 static void printFileShares(NSArray<FileShare *> *fileShares);
+static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 
 
 @implementation SyncTest
@@ -15,13 +17,16 @@ static void printFileShares(NSArray<FileShare *> *fileShares);
 - (void)fileSyncing:(FileSyncing *)fileSyncing
     didFindFileShares:(NSArray<FileShare *> *)fileShares;
 {
-    if (fileShares.count) {
-        printFileShares(fileShares);
-        [fileSyncing resolveFileShare:fileShares.firstObject withTimeout:3];
-    } else {
+    if (!fileShares.count) {
         printf("No file sharing servers found.\n");
         exit(EXIT_SUCCESS);
     }
+
+    printFileShares(fileShares);
+    FileShare *fileShare = fileShares.count == 1
+        ? fileShares.firstObject
+        : promptForFileShareOrExit(fileShares);
+    [fileSyncing resolveFileShare:fileShare withTimeout:3];
 }
 
 
@@ -82,5 +87,47 @@ static void printFileShares(NSArray<FileShare *> *fileShares)
             (unsigned)fileShare.interfaceIndex,
             interfaceName(fileShare.interfaceIndex, nameBuffer)
         );
+    }
+}
+
+
+// Returns an empty string for a line that is not UTF-8, so that only end of
+// input reads as nil.
+static NSString *_Nullable readLine(void)
+{
+    char *line = NULL;
+    size_t capacity = 0;
+    ssize_t length = getline(&line, &capacity, stdin);
+    NSString *string =
+        length < 0 ? nil : [NSString stringWithUTF8String:line] ?: @"";
+    free(line);
+    return string;
+}
+
+
+// Blocks the main queue while waiting for an answer. Nothing else is due
+// there: FileSyncing works on its own queue and is idle between finding and
+// resolving.
+static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares)
+{
+    for (;;) {
+        printf(
+            "Select a file share (1-%lu), or q to cancel: ", fileShares.count
+        );
+        fflush(stdout);
+
+        NSString *answer = readLine();
+        BOOL isEndOfInput = !answer;
+        FileShareSelection selection =
+            parse_file_share_selection(answer, fileShares.count);
+        switch (selection.kind) {
+        case FileShareSelectionKindSelected:
+            return [fileShares objectAtIndex:selection.index];
+        case FileShareSelectionKindCancelled:
+            if (isEndOfInput) printf("\n");
+            printf("Cancelled.\n");
+            exit(EXIT_SUCCESS);
+        case FileShareSelectionKindInvalid: break;
+        }
     }
 }

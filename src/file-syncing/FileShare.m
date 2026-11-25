@@ -57,7 +57,6 @@
     NSString *domain = [NSString stringWithUTF8String:replyDomain];
     NSAssert(domain, @"Expected replyDomain to be UTF-8");
 
-
     return [self initWithInterfaceIndex:(NSUInteger)interfaceIndex
                             serviceName:serviceNameString
                             serviceType:serviceType
