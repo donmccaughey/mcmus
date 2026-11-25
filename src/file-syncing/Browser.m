@@ -95,7 +95,7 @@ static void browseReply(
     dispatch_assert_queue(_serialQueue);
 
     if (kDNSServiceErr_NoError != errorCode) {
-        if (_fileShares) {
+        if (_fileShares.count) {
             [self finishWithFileShares];
         } else {
             [self finishWithErrorCode:errorCode];
