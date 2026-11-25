@@ -72,12 +72,12 @@
 {
     dispatch_async(_serialQueue, ^{
         NSAssert(!self->_resolver, @"Expected only one active Resolver");
-        self->_resolver =
-            [[Resolver alloc] initWithFileShare:fileShare
-                                    serialQueue:self->_serialQueue
-                                        timeout:timeout
-                                       delegate:self
-                                  delegateQueue:self->_serialQueue];
+        self->_resolver = [[Resolver alloc] initWithFileShare:fileShare
+                                                  serialQueue:self->_serialQueue
+                                                      timeout:timeout
+                                                     delegate:self
+                                                delegateQueue:self->_serialQueue
+                                                          dns:self->_dns];
         [self->_resolver start];
     });
 }

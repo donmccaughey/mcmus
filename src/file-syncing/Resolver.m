@@ -1,5 +1,6 @@
 #import "Resolver.h"
 
+#import "DNS.h"
 #import "FileShare.h"
 #import "NSError+FileSyncing.h"
 #import "ResolverDelegate.h"
@@ -43,6 +44,7 @@ static void resolveReply(
     dispatch_block_t _timeoutBlock;
     __weak id<ResolverDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
+    id<DNS> _dns;
     DNSServiceRef _serviceRef;
 }
 
@@ -51,7 +53,8 @@ static void resolveReply(
                       serialQueue:(dispatch_queue_t)serialQueue
                           timeout:(NSTimeInterval)timeout
                          delegate:(id<ResolverDelegate>)delegate
-                    delegateQueue:(dispatch_queue_t)delegateQueue;
+                    delegateQueue:(dispatch_queue_t)delegateQueue
+                              dns:(id<DNS>)dns;
 {
     self = [super init];
     if (!self) return nil;
@@ -69,6 +72,7 @@ static void resolveReply(
 
     _delegate = delegate;
     _delegateQueue = delegateQueue;
+    _dns = dns;
 
     return self;
 }
@@ -90,7 +94,7 @@ static void resolveReply(
     _timeoutBlock = nil;
 
     if (_serviceRef) {
-        DNSServiceRefDeallocate(_serviceRef);
+        [_dns deallocateServiceRef:_serviceRef];
         _serviceRef = NULL;
         // balances CFRetain in -start
         CFRelease((__bridge CFTypeRef)self);
@@ -165,25 +169,23 @@ static void resolveReply(
     DNSServiceErrorType errorCode;
 
     DNSServiceFlags flags = 0;
-    errorCode = DNSServiceResolve(
-        &_serviceRef,
-        flags,
-        (uint32_t)_fileShare.interfaceIndex,
-        _fileShare.serviceName.UTF8String,
-        _fileShare.serviceType.UTF8String,
-        _fileShare.domain.UTF8String,
-        resolveReply,
-        (__bridge void *)self
-    );
+    errorCode = [_dns resolve:&_serviceRef
+                        flags:flags
+               interfaceIndex:(uint32_t)_fileShare.interfaceIndex
+                         name:_fileShare.serviceName.UTF8String
+                      regtype:_fileShare.serviceType.UTF8String
+                       domain:_fileShare.domain.UTF8String
+                     callBack:resolveReply
+                      context:(__bridge void *)self];
     if (kDNSServiceErr_NoError != errorCode) {
         [self finishWithErrorCode:errorCode];
         return;
     }
-    // retain self for DNSServiceResolve() callback
+    // retain self for the resolve callback
     // balances CFRelease in -cleanup
     CFRetain((__bridge CFTypeRef)self);
 
-    errorCode = DNSServiceSetDispatchQueue(_serviceRef, _serialQueue);
+    errorCode = [_dns setDispatchQueue:_serialQueue forServiceRef:_serviceRef];
     if (kDNSServiceErr_NoError != errorCode) {
         [self finishWithErrorCode:errorCode];
         return;
