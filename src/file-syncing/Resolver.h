@@ -3,6 +3,7 @@
 
 @class FileShare;
 
+@protocol Clock;
 @protocol DNS;
 @protocol ResolverDelegate;
 
@@ -17,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
                           timeout:(NSTimeInterval)timeout
                          delegate:(id<ResolverDelegate>)delegate
                     delegateQueue:(dispatch_queue_t)delegateQueue
-                              dns:(id<DNS>)dns NS_DESIGNATED_INITIALIZER;
+                              dns:(id<DNS>)dns
+                            clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

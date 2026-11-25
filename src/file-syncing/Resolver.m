@@ -1,5 +1,6 @@
 #import "Resolver.h"
 
+#import "Clock.h"
 #import "DNS.h"
 #import "FileShare.h"
 #import "NSError+FileSyncing.h"
@@ -41,10 +42,11 @@ static void resolveReply(
     FileShare *_fileShare;
     dispatch_queue_t _serialQueue;
     NSTimeInterval _timeout;
-    dispatch_block_t _timeoutBlock;
+    id<ClockTimer> _Nullable _timeoutTimer;
     __weak id<ResolverDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     id<DNS> _dns;
+    id<Clock> _clock;
     DNSServiceRef _serviceRef;
 }
 
@@ -54,7 +56,8 @@ static void resolveReply(
                           timeout:(NSTimeInterval)timeout
                          delegate:(id<ResolverDelegate>)delegate
                     delegateQueue:(dispatch_queue_t)delegateQueue
-                              dns:(id<DNS>)dns;
+                              dns:(id<DNS>)dns
+                            clock:(id<Clock>)clock;
 {
     self = [super init];
     if (!self) return nil;
@@ -62,17 +65,10 @@ static void resolveReply(
     _fileShare = fileShare;
     _serialQueue = serialQueue;
     _timeout = timeout;
-
-    dispatch_block_flags_t block_flags = 0;
-    __weak Resolver *weakSelf = self;
-    _timeoutBlock = dispatch_block_create(block_flags, ^{
-        [weakSelf finishWithErrorCode:kDNSServiceErr_Timeout];
-    });
-    NSAssert(_timeoutBlock, @"Expected to create timeout_block");
-
     _delegate = delegate;
     _delegateQueue = delegateQueue;
     _dns = dns;
+    _clock = clock;
 
     return self;
 }
@@ -89,9 +85,8 @@ static void resolveReply(
 {
     dispatch_assert_queue(_serialQueue);
 
-    NSAssert(_timeoutBlock, @"Expected _timeoutBlock");
-    dispatch_block_cancel(_timeoutBlock);
-    _timeoutBlock = nil;
+    [_timeoutTimer cancel];
+    _timeoutTimer = nil;
 
     if (_serviceRef) {
         [_dns deallocateServiceRef:_serviceRef];
@@ -191,10 +186,11 @@ static void resolveReply(
         return;
     }
 
-    dispatch_time_t timeoutNanos =
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_timeout * NSEC_PER_SEC));
-    NSAssert(_timeoutBlock, @"Expected _timeoutBlock");
-    dispatch_after(timeoutNanos, _serialQueue, _timeoutBlock);
+    __weak Resolver *weakSelf = self;
+    _timeoutTimer = [_clock
+          after:_timeout
+        onQueue:_serialQueue
+            run:^{ [weakSelf finishWithErrorCode:kDNSServiceErr_Timeout]; }];
 }
 
 

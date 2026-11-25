@@ -81,7 +81,8 @@
                                                       timeout:timeout
                                                      delegate:self
                                                 delegateQueue:self->_serialQueue
-                                                          dns:self->_dns];
+                                                          dns:self->_dns
+                                                        clock:self->_clock];
         [self->_resolver start];
     });
 }
