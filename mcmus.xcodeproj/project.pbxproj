@@ -69,6 +69,14 @@
 		D4F7A00030D1000000000029 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
 		D4F7A00030D100000000002A /* libfile-transfer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7A00030D1000000000001 /* libfile-transfer.a */; };
 		D4F7A00030D100000000002B /* libfile-transfer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7A00030D1000000000001 /* libfile-transfer.a */; };
+		D4F5C00030E2000000000010 /* libfile-syncing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D43DC19330B3C78F00C6052F /* libfile-syncing.a */; };
+		D4F5C00030E2000000000011 /* libwrappers-fakes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF0C3309FA6D800B3F3CB /* libwrappers-fakes.a */; };
+		D4F5C00030E2000000000012 /* libwrappers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4566B11309F9ECF0013DCF4 /* libwrappers.a */; };
+		D4F5C00030E2000000000013 /* libmodel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4DEF148309FB00900B3F3CB /* libmodel.a */; };
+		D4F5C00030E2000000000014 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C5A00030A4000000000003 /* libcsv.a */; };
+		D4F5C00030E2000000000015 /* libtarball.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47A2B0030B1000000000003 /* libtarball.a */; };
+		D4F5C00030E2000000000016 /* libfile-transfer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7A00030D1000000000001 /* libfile-transfer.a */; };
+		D4F5C00030E2000000000017 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E7A10030B0000000000002 /* libarchive.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -492,6 +500,62 @@
 			remoteGlobalIDString = D4F7A00030D100000000000A;
 			remoteInfo = "file-transfer";
 		};
+		D4F5C00030E2000000000020 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D43DC17730B3C78F00C6052F;
+			remoteInfo = "file-syncing";
+		};
+		D4F5C00030E2000000000021 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4DEF0BC309FA6D800B3F3CB;
+			remoteInfo = "wrappers-fakes";
+		};
+		D4F5C00030E2000000000022 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4566B10309F9ECF0013DCF4;
+			remoteInfo = wrappers;
+		};
+		D4F5C00030E2000000000023 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4DEF141309FB00900B3F3CB;
+			remoteInfo = model;
+		};
+		D4F5C00030E2000000000024 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4C5A00030A400000000000A;
+			remoteInfo = csv;
+		};
+		D4F5C00030E2000000000025 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D47A2B0030B100000000000A;
+			remoteInfo = tarball;
+		};
+		D4F5C00030E2000000000026 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4F7A00030D100000000000A;
+			remoteInfo = "file-transfer";
+		};
+		D4F5C00030E2000000000027 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3A5000000000000000000E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4E7A10030B0000000000001;
+			remoteInfo = libarchive;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -525,6 +589,7 @@
 		D4EAD844309FF58900573748 /* libsnapshot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsnapshot.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4F7A00030D1000000000001 /* libfile-transfer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfile-transfer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4F7A00030D1000000000002 /* file-transfer-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "file-transfer-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4F5C00030E2000000000001 /* file-syncing-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "file-syncing-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -989,6 +1054,13 @@
 			);
 			target = D4F7A00030D100000000000B /* file-transfer-tests */;
 		};
+		D4F5C00030E2000000000005 /* Exceptions for "src" folder in "file-syncing-tests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"file-syncing/FileShareTests.m",
+			);
+			target = D4F5C00030E2000000000002 /* file-syncing-tests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -1078,12 +1150,11 @@
 				D47252A7309FD2C9008D1F07 /* Exceptions for "src" folder in "Compile Sources" phase from "app" target */,
 				D4EAD6E4309FD51100573748 /* Exceptions for "src" folder in "app-tests" target */,
 				D4C5A00030A4000000000005 /* Exceptions for "src" folder in "csv" target */,
-				D47A2B0030B1000000000005 /* Exceptions for "src" folder in "tarball" target */,
 				D4C5A00030A4000000000006 /* Exceptions for "src" folder in "csv-tests" target */,
-				D47A2B0030B1000000000006 /* Exceptions for "src" folder in "tarball-tests" target */,
 				D49BFC5A30A26F0600AED804 /* Exceptions for "src" folder in "file-sharing" target */,
 				D49BFC6030A26F3700AED804 /* Exceptions for "src" folder in "file-sharing-tests" target */,
 				D43DC19B30B3C7E500C6052F /* Exceptions for "src" folder in "file-syncing" target */,
+				D4F5C00030E2000000000005 /* Exceptions for "src" folder in "file-syncing-tests" target */,
 				D4F7A00030D1000000000003 /* Exceptions for "src" folder in "file-transfer" target */,
 				D4F7A00030D1000000000004 /* Exceptions for "src" folder in "file-transfer-tests" target */,
 				D41B8727309FB45700136AE5 /* Exceptions for "src" folder in "model" target */,
@@ -1091,9 +1162,11 @@
 				D48B3900309FFD2900B21A13 /* Exceptions for "src" folder in "snapshot" target */,
 				D48B391730A001EA00B21A13 /* Exceptions for "src" folder in "snapshot-tests" target */,
 				D45A7E0030C1000000000009 /* Exceptions for "src" folder in "share-test" target */,
-				D45C7E0030C2000000000009 /* Exceptions for "src" folder in "sync-test" target */,
 				D45A7E0030C100000000000A /* Exceptions for "src" folder in "share-test-tests" target */,
+				D45C7E0030C2000000000009 /* Exceptions for "src" folder in "sync-test" target */,
 				D45C7E0030C200000000000A /* Exceptions for "src" folder in "sync-test-tests" target */,
+				D47A2B0030B1000000000005 /* Exceptions for "src" folder in "tarball" target */,
+				D47A2B0030B1000000000006 /* Exceptions for "src" folder in "tarball-tests" target */,
 				D4DEF126309FAED500B3F3CB /* Exceptions for "src" folder in "wrappers" target */,
 				D41B870A309FB43600136AE5 /* Exceptions for "src" folder in "wrappers-fakes" target */,
 				D4C0FFEE30A3000000000015 /* Exceptions for "src" folder in "wrappers-tests" target */,
@@ -1334,6 +1407,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4F5C00030E2000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4F5C00030E2000000000010 /* libfile-syncing.a in Frameworks */,
+				D4F5C00030E2000000000011 /* libwrappers-fakes.a in Frameworks */,
+				D4F5C00030E2000000000012 /* libwrappers.a in Frameworks */,
+				D4F5C00030E2000000000013 /* libmodel.a in Frameworks */,
+				D4F5C00030E2000000000014 /* libcsv.a in Frameworks */,
+				D4F5C00030E2000000000015 /* libtarball.a in Frameworks */,
+				D4F5C00030E2000000000016 /* libfile-transfer.a in Frameworks */,
+				D4F5C00030E2000000000017 /* libarchive.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1384,6 +1472,7 @@
 				D45A7E0030C1000000000002 /* share-test-tests.xctest */,
 				D45C7E0030C2000000000002 /* sync-test-tests.xctest */,
 				D43DC19330B3C78F00C6052F /* libfile-syncing.a */,
+				D4F5C00030E2000000000001 /* file-syncing-tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1957,6 +2046,30 @@
 			productReference = D4F7A00030D1000000000002 /* file-transfer-tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		D4F5C00030E2000000000002 /* file-syncing-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4F5C00030E2000000000008 /* Build configuration list for PBXNativeTarget "file-syncing-tests" */;
+			buildPhases = (
+				D4F5C00030E2000000000003 /* Sources */,
+				D4F5C00030E2000000000004 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D4F5C00030E2000000000030 /* PBXTargetDependency */,
+				D4F5C00030E2000000000031 /* PBXTargetDependency */,
+				D4F5C00030E2000000000032 /* PBXTargetDependency */,
+				D4F5C00030E2000000000033 /* PBXTargetDependency */,
+				D4F5C00030E2000000000034 /* PBXTargetDependency */,
+				D4F5C00030E2000000000035 /* PBXTargetDependency */,
+				D4F5C00030E2000000000036 /* PBXTargetDependency */,
+				D4F5C00030E2000000000037 /* PBXTargetDependency */,
+			);
+			name = "file-syncing-tests";
+			productName = "file-syncing-tests";
+			productReference = D4F5C00030E2000000000001 /* file-syncing-tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1998,12 +2111,11 @@
 				D3A5000000000000000000C0 /* app */,
 				D3A5000000000000000000F2 /* app-tests */,
 				D4C5A00030A400000000000A /* csv */,
-				D47A2B0030B100000000000A /* tarball */,
 				D4C5A00030A400000000000B /* csv-tests */,
-				D47A2B0030B100000000000B /* tarball-tests */,
 				D49BFC3D30A26EAF00AED804 /* file-sharing */,
 				D49BFC4830A26EBF00AED804 /* file-sharing-tests */,
 				D43DC17730B3C78F00C6052F /* file-syncing */,
+				D4F5C00030E2000000000002 /* file-syncing-tests */,
 				D4F7A00030D100000000000A /* file-transfer */,
 				D4F7A00030D100000000000B /* file-transfer-tests */,
 				D4E7A10030B0000000000001 /* libarchive */,
@@ -2012,9 +2124,11 @@
 				D4EAD83A309FF58900573748 /* snapshot */,
 				D48B390430A0016F00B21A13 /* snapshot-tests */,
 				D45A7E0030C100000000000F /* share-test */,
-				D45C7E0030C200000000000F /* sync-test */,
 				D45A7E0030C1000000000010 /* share-test-tests */,
+				D45C7E0030C200000000000F /* sync-test */,
 				D45C7E0030C2000000000010 /* sync-test-tests */,
+				D47A2B0030B100000000000A /* tarball */,
+				D47A2B0030B100000000000B /* tarball-tests */,
 				D4566B10309F9ECF0013DCF4 /* wrappers */,
 				D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */,
 				D4C0FFEE30A3000000000017 /* wrappers-tests */,
@@ -2203,6 +2317,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D4F7A00030D1000000000008 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4F5C00030E2000000000003 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2511,6 +2632,46 @@
 			isa = PBXTargetDependency;
 			target = D4F7A00030D100000000000A /* file-transfer */;
 			targetProxy = D4F7A00030D100000000012B /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000030 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D43DC17730B3C78F00C6052F /* file-syncing */;
+			targetProxy = D4F5C00030E2000000000020 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000031 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4DEF0BC309FA6D800B3F3CB /* wrappers-fakes */;
+			targetProxy = D4F5C00030E2000000000021 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000032 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4566B10309F9ECF0013DCF4 /* wrappers */;
+			targetProxy = D4F5C00030E2000000000022 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000033 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4DEF141309FB00900B3F3CB /* model */;
+			targetProxy = D4F5C00030E2000000000023 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000034 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4C5A00030A400000000000A /* csv */;
+			targetProxy = D4F5C00030E2000000000024 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000035 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D47A2B0030B100000000000A /* tarball */;
+			targetProxy = D4F5C00030E2000000000025 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000036 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4F7A00030D100000000000A /* file-transfer */;
+			targetProxy = D4F5C00030E2000000000026 /* PBXContainerItemProxy */;
+		};
+		D4F5C00030E2000000000037 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4E7A10030B0000000000001 /* libarchive */;
+			targetProxy = D4F5C00030E2000000000027 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3670,6 +3831,60 @@
 			};
 			name = Release;
 		};
+		D4F5C00030E2000000000006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.donm-mcmus-base-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4F5C00030E2000000000007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K39VF43BJL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.donm-mcmus-base-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3894,6 +4109,15 @@
 			buildConfigurations = (
 				D4F7A00030D100000000000E /* Debug */,
 				D4F7A00030D100000000000F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4F5C00030E2000000000008 /* Build configuration list for PBXNativeTarget "file-syncing-tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4F5C00030E2000000000006 /* Debug */,
+				D4F5C00030E2000000000007 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

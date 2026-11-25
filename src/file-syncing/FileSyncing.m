@@ -35,8 +35,9 @@
     _delegate = delegate;
     _delegateQueue = delegateQueue;
 
-    _serialQueue =
-        dispatch_queue_create(self.className.UTF8String, DISPATCH_QUEUE_SERIAL);
+    _serialQueue = dispatch_queue_create(
+        NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
+    );
 
     return self;
 }
