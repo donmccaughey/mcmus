@@ -673,8 +673,6 @@
 				"file-syncing/FileSyncing.h",
 				"file-syncing/FileSyncing.m",
 				"file-syncing/FileSyncingDelegate.h",
-				"file-syncing/find_file_shares.h",
-				"file-syncing/find_file_shares.m",
 				"file-syncing/NSError+FileSyncing.h",
 				"file-syncing/NSError+FileSyncing.m",
 				"file-syncing/Resolver.h",

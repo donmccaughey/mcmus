@@ -3,19 +3,14 @@
 
 
 #import <Foundation/Foundation.h>
-#import <net/if.h>
 
-#import "FileShare.h"
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
 #import "SyncTest.h"
 #import "SyncTestOptions.h"
 
 
-#define FILE_SHARES_CAPACITY 8
-
 static const int usageExitStatus = 2;
-static const NSUInteger findTimeoutSeconds = 3;
 
 static FileSyncing *fileSyncing;
 static SyncTest *syncTest;
@@ -59,54 +54,6 @@ static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
 }
 
 
-static const char *interface_name(NSUInteger interface_index, char *buffer)
-{
-    return if_indextoname((unsigned)interface_index, buffer) ?: "unknown";
-}
-
-
-static void print_file_shares(NSArray<FileShare *> *file_shares)
-{
-    char name_buffer[IF_NAMESIZE];
-    for (NSUInteger i = 0; i < file_shares.count; ++i) {
-        FileShare *fileShare = [file_shares objectAtIndex:i];
-        printf(
-            "%lu: name=\"%s\" type=%s domain=%s interface=%u (%s)\n",
-            i + 1,
-            fileShare.serviceName.UTF8String,
-            fileShare.serviceType.UTF8String,
-            fileShare.domain.UTF8String,
-            (unsigned)fileShare.interfaceIndex,
-            interface_name(fileShare.interfaceIndex, name_buffer)
-        );
-    }
-}
-
-
-static void print_file_shares_and_exit(
-    NSArray<FileShare *> *file_shares, DNSServiceErrorType error_code
-)
-{
-    if (kDNSServiceErr_NoError != error_code) {
-        fprintf(
-            stderr,
-            "sync-test: finding file shares failed with error %d\n",
-            error_code
-        );
-        exit(EXIT_FAILURE);
-    }
-
-    if (file_shares.count) {
-        print_file_shares(file_shares);
-        [fileSyncing resolveFileShare:file_shares.firstObject
-                          withTimeout:findTimeoutSeconds];
-    } else {
-        printf("No file sharing servers found.\n");
-        exit(EXIT_SUCCESS);
-    }
-}
-
-
 int main(int argc, const char *argv[])
 {
     @autoreleasepool {
@@ -123,9 +70,7 @@ int main(int argc, const char *argv[])
                                          delegate:syncTest
                                     delegateQueue:dispatch_get_main_queue()
                                        fileSystem:fileSystem];
-        [fileSyncing findFileSharesWithCallback:print_file_shares_and_exit
-                                        onQueue:dispatch_get_main_queue()
-                                  withinSeconds:findTimeoutSeconds];
+        [fileSyncing findFileSharesWithTimeout:3];
     }
     dispatch_main();
 }

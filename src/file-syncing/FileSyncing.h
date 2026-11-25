@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 
-#import "find_file_shares.h"
-
 
 @protocol FileSyncingDelegate;
 @protocol FileSystem;
+
+@class FileShare;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,9 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (void)findFileSharesWithCallback:(find_file_shares_callback)callback
-                           onQueue:(dispatch_queue_t)callbackQueue
-                     withinSeconds:(NSUInteger)timeoutSeconds;
+- (void)findFileSharesWithTimeout:(NSTimeInterval)timeout;
 
 - (void)resolveFileShare:(FileShare *)fileShare
              withTimeout:(NSTimeInterval)timeout;

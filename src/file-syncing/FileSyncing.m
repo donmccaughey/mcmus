@@ -1,11 +1,13 @@
 #import "FileSyncing.h"
 
+#import "Browser.h"
+#import "BrowserDelegate.h"
 #import "FileSyncingDelegate.h"
 #import "Resolver.h"
 #import "ResolverDelegate.h"
 
 
-@interface FileSyncing () <ResolverDelegate>
+@interface FileSyncing () <BrowserDelegate, ResolverDelegate>
 @end
 
 
@@ -14,7 +16,9 @@
     dispatch_queue_t _delegateQueue;
     dispatch_queue_t _serialQueue;
 
-    Resolver *_resolver; // lives on _serialQueue
+    // objects below live on _serialQueue
+    Browser *_browser;
+    Resolver *_resolver;
 }
 
 
@@ -45,17 +49,16 @@
 }
 
 
-- (void)findFileSharesWithCallback:(find_file_shares_callback)callback
-                           onQueue:(dispatch_queue_t)callbackQueue
-                     withinSeconds:(NSUInteger)timeoutSeconds;
+- (void)findFileSharesWithTimeout:(NSTimeInterval)timeout;
 {
-    NSAssert(
-        timeoutSeconds < INT_MAX, @"Expected timeoutSeconds less than INT_MAX"
-    );
     dispatch_async(_serialQueue, ^{
-        find_file_shares(
-            self->_serialQueue, callback, callbackQueue, (int)timeoutSeconds
-        );
+        NSAssert(!self->_browser, @"Expected only one active Browser");
+        self->_browser =
+            [[Browser alloc] initWithSerialQueue:self->_serialQueue
+                                         timeout:timeout
+                                        delegate:self
+                                   delegateQueue:self->_serialQueue];
+        [self->_browser start];
     });
 }
 
@@ -73,6 +76,32 @@
                                   delegateQueue:self->_serialQueue];
         [self->_resolver start];
     });
+}
+
+
+#pragma BrowserDelegate
+
+
+- (void)didFindFileShares:(NSArray<FileShare *> *)fileShares;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self didFindFileShares:fileShares];
+    });
+    _browser = nil;
+}
+
+
+- (void)didFailToBrowseWithError:(NSError *)error;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self
+            didFailToFindFileSharesWithError:error];
+    });
+    _browser = nil;
 }
 
 

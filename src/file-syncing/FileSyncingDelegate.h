@@ -8,6 +8,12 @@
 @protocol FileSyncingDelegate <NSObject>
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
+    didFindFileShares:(NSArray<FileShare *> *)fileShares;
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    didFailToFindFileSharesWithError:(NSError *)error;
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
     didResolveFileShare:(FileShare *)fileShare
                 withURL:(NSURL *)url;
 
