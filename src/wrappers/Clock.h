@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 // timer is cancelled first.
 - (id<ClockTimer>)after:(NSTimeInterval)delay run:(void (^)(void))block;
 
+// The block runs once, on the queue, unless the timer is cancelled first.
+- (id<ClockTimer>)after:(NSTimeInterval)delay
+                onQueue:(dispatch_queue_t)queue
+                    run:(void (^)(void))block;
+
 - (time_t)currentTime;
 
 @end

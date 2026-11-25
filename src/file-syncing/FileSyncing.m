@@ -16,6 +16,7 @@
     dispatch_queue_t _delegateQueue;
     dispatch_queue_t _serialQueue;
     id<DNS> _dns;
+    id<Clock> _clock;
 
     // objects below live on _serialQueue
     Browser *_browser;
@@ -29,7 +30,8 @@
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
                       fileSystem:(id<FileSystem>)fileSystem
-                             dns:(id<DNS>)dns;
+                             dns:(id<DNS>)dns
+                           clock:(id<Clock>)clock;
 {
     self = [super init];
     if (!self) return nil;
@@ -37,6 +39,7 @@
     _delegate = delegate;
     _delegateQueue = delegateQueue;
     _dns = dns;
+    _clock = clock;
 
     _serialQueue = dispatch_queue_create(
         NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
@@ -61,7 +64,8 @@
                                                       timeout:timeout
                                                      delegate:self
                                                 delegateQueue:self->_serialQueue
-                                                          dns:self->_dns];
+                                                          dns:self->_dns
+                                                        clock:self->_clock];
         [self->_browser start];
     });
 }

@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ClockReal.h"
 #import "DNSReal.h"
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
@@ -71,7 +72,8 @@ int main(int argc, const char *argv[])
                                          delegate:syncTest
                                     delegateQueue:dispatch_get_main_queue()
                                        fileSystem:fileSystem
-                                              dns:[DNSReal new]];
+                                              dns:[DNSReal new]
+                                            clock:[ClockReal new]];
         [fileSyncing findFileSharesWithTimeout:3];
     }
     dispatch_main();

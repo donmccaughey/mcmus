@@ -86,6 +86,37 @@
 }
 
 
+- (void)testQueueTimerRunsOnAdvance;
+{
+    NSMutableArray<NSString *> *fired = _fired;
+    dispatch_queue_t queue =
+        dispatch_queue_create("ClockFakeTests", DISPATCH_QUEUE_SERIAL);
+    [_clock after:10 onQueue:queue run:^{ [fired addObject:@"ten"]; }];
+
+    [_clock advance:10];
+
+    XCTAssertEqualObjects(_fired, @[@"ten"]);
+    XCTAssertEqual(_clock.pendingTimerCount, 0UL);
+}
+
+
+- (void)testCancelledQueueTimerDoesNotRun;
+{
+    NSMutableArray<NSString *> *fired = _fired;
+    dispatch_queue_t queue =
+        dispatch_queue_create("ClockFakeTests", DISPATCH_QUEUE_SERIAL);
+    id<ClockTimer> timer = [_clock after:10
+                                 onQueue:queue
+                                     run:^{ [fired addObject:@"ten"]; }];
+
+    [timer cancel];
+    [_clock advance:20];
+
+    XCTAssertEqualObjects(_fired, @[]);
+    XCTAssertEqual(_clock.pendingTimerCount, 0UL);
+}
+
+
 - (void)testTimerScheduledByARunningTimerIsMeasuredFromThatTimersDueTime;
 {
     ClockFake *clock = _clock;

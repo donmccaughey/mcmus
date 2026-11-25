@@ -68,6 +68,14 @@
 }
 
 
+- (id<ClockTimer>)after:(NSTimeInterval)delay
+                onQueue:(dispatch_queue_t)queue
+                    run:(void (^)(void))block;
+{
+    return [self after:delay run:block];
+}
+
+
 - (time_t)currentTime;
 {
     return _startTime + (time_t)_now;

@@ -889,6 +889,7 @@
 			membershipExceptions = (
 				wrappers/AudioDemoTests.m,
 				wrappers/ClockFakeTests.m,
+				wrappers/ClockRealTests.m,
 				wrappers/DNSRealTests.m,
 				wrappers/FileSystemDemoTests.m,
 				wrappers/NetworkRealTests.m,
