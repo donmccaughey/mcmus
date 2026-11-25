@@ -889,6 +889,7 @@
 			membershipExceptions = (
 				wrappers/AudioDemoTests.m,
 				wrappers/ClockFakeTests.m,
+				wrappers/DNSRealTests.m,
 				wrappers/FileSystemDemoTests.m,
 				wrappers/NetworkRealTests.m,
 			);
@@ -934,6 +935,9 @@
 				wrappers/Clock.h,
 				wrappers/ClockReal.h,
 				wrappers/ClockReal.m,
+				wrappers/DNS.h,
+				wrappers/DNSReal.h,
+				wrappers/DNSReal.m,
 				wrappers/FileSystem.h,
 				wrappers/FileSystem.m,
 				wrappers/FileSystemDemo.h,
@@ -953,6 +957,8 @@
 				wrappers/AudioReal.h,
 				wrappers/Clock.h,
 				wrappers/ClockReal.h,
+				wrappers/DNS.h,
+				wrappers/DNSReal.h,
 				wrappers/FileSystem.h,
 				wrappers/FileSystemDemo.h,
 				wrappers/FileSystemReal.h,
