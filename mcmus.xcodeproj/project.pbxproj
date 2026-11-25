@@ -1044,6 +1044,7 @@
 			membershipExceptions = (
 				"file-syncing/BrowserTests.m",
 				"file-syncing/FileShareTests.m",
+				"file-syncing/ResolverTests.m",
 			);
 			target = D4F5C00030E2000000000002 /* file-syncing-tests */;
 		};
