@@ -2,7 +2,6 @@
 
 
 @class FileShare;
-@class Resolver;
 
 
 @protocol ResolverDelegate <NSObject>

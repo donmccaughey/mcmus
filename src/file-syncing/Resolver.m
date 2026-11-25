@@ -21,6 +21,8 @@ static void resolveReply(
 
 @interface Resolver ()
 
+@property (nonatomic, readonly) dispatch_queue_t serialQueue;
+
 - (void)cleanup;
 
 - (void)finishWithErrorCode:(DNSServiceErrorType)errorCode;
@@ -90,8 +92,8 @@ static void resolveReply(
     if (_serviceRef) {
         DNSServiceRefDeallocate(_serviceRef);
         _serviceRef = NULL;
-        CFRelease((__bridge CFTypeRef)self
-        ); // balances __bridge_retained in -start
+        // balances CFRetain in -start
+        CFRelease((__bridge CFTypeRef)self);
     }
 }
 
@@ -100,10 +102,11 @@ static void resolveReply(
 {
     dispatch_assert_queue(_serialQueue);
 
+    __strong id<ResolverDelegate> delegate = _delegate;
+    __strong FileShare *fileShare = _fileShare;
     NSError *error = [NSError dnsServiceErrorWithCode:errorCode];
     dispatch_async(_delegateQueue, ^{
-        [self->_delegate didFailToResolveFileShare:self->_fileShare
-                                         withError:error];
+        [delegate didFailToResolveFileShare:fileShare withError:error];
     });
 
     [self cleanup];
@@ -114,8 +117,10 @@ static void resolveReply(
 {
     dispatch_assert_queue(_serialQueue);
 
+    __strong id<ResolverDelegate> delegate = _delegate;
+    __strong FileShare *fileShare = _fileShare;
     dispatch_async(_delegateQueue, ^{
-        [self->_delegate didResolveFileShare:self->_fileShare withURL:url];
+        [delegate didResolveFileShare:fileShare withURL:url];
     });
 
     [self cleanup];
@@ -168,12 +173,15 @@ static void resolveReply(
         _fileShare.serviceType.UTF8String,
         _fileShare.domain.UTF8String,
         resolveReply,
-        (__bridge_retained void *)self // DNSServiceResolve() retains self
+        (__bridge void *)self
     );
     if (kDNSServiceErr_NoError != errorCode) {
         [self finishWithErrorCode:errorCode];
         return;
     }
+    // retain self for DNSServiceResolve() callback
+    // balances CFRelease in -cleanup
+    CFRetain((__bridge CFTypeRef)self);
 
     errorCode = DNSServiceSetDispatchQueue(_serviceRef, _serialQueue);
     if (kDNSServiceErr_NoError != errorCode) {
@@ -205,6 +213,7 @@ static void resolveReply(
 )
 {
     Resolver *resolver = (__bridge Resolver *)context;
+    dispatch_assert_queue(resolver.serialQueue);
     [resolver resolveWithTargetHostname:targetHostname
                  portInNetworkByteOrder:portInNetworkByteOrder
                               errorCode:errorCode];

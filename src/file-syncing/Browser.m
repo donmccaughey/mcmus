@@ -1,0 +1,221 @@
+#import "Browser.h"
+
+#import "BrowserDelegate.h"
+#import "FileShare.h"
+#import "NSError+FileSyncing.h"
+
+
+static void browseReply(
+    DNSServiceRef serviceRef,
+    DNSServiceFlags flags,
+    uint32_t interfaceIndex,
+    DNSServiceErrorType errorCode,
+    const char *serviceName,
+    const char *regtype,
+    const char *replyDomain,
+    void *context
+);
+
+
+@interface Browser ()
+
+@property (nonatomic, readonly) dispatch_queue_t serialQueue;
+
+- (void)browseWithFlags:(DNSServiceFlags)flags
+         interfaceIndex:(uint32_t)interfaceIndex
+            serviceName:(char const *)serviceName
+                regtype:(char const *)regtype
+            replyDomain:(char const *)replyDomain
+              errorCode:(DNSServiceErrorType)errorCode;
+
+- (void)cleanup;
+
+- (void)finishWithErrorCode:(DNSServiceErrorType)errorCode;
+
+- (void)finishWithFileShares;
+
+@end
+
+
+@implementation Browser {
+    dispatch_queue_t _serialQueue;
+    NSTimeInterval _timeout;
+    dispatch_block_t _timeoutBlock;
+    __weak id<BrowserDelegate> _delegate;
+    dispatch_queue_t _delegateQueue;
+    NSMutableArray<FileShare *> *_fileShares;
+    DNSServiceRef _serviceRef;
+}
+
+- (instancetype)initWithSerialQueue:(dispatch_queue_t)serialQueue
+                            timeout:(NSTimeInterval)timeout
+                           delegate:(id<BrowserDelegate>)delegate
+                      delegateQueue:(dispatch_queue_t)delegateQueue;
+{
+    self = [super init];
+    if (!self) return nil;
+
+    _serialQueue = serialQueue;
+    _timeout = timeout;
+
+    dispatch_block_flags_t block_flags = 0;
+    __weak Browser *weakSelf = self;
+    _timeoutBlock = dispatch_block_create(block_flags, ^{
+        [weakSelf finishWithFileShares];
+    });
+    NSAssert(_timeoutBlock, @"Expected to create timeout_block");
+
+    _delegate = delegate;
+    _delegateQueue = delegateQueue;
+
+    _fileShares = [NSMutableArray new];
+
+    return self;
+}
+
+
+- (instancetype)init;
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+
+- (void)browseWithFlags:(DNSServiceFlags)flags
+         interfaceIndex:(uint32_t)interfaceIndex
+            serviceName:(char const *)serviceName
+                regtype:(char const *)regtype
+            replyDomain:(char const *)replyDomain
+              errorCode:(DNSServiceErrorType)errorCode;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    if (kDNSServiceErr_NoError != errorCode) {
+        if (_fileShares) {
+            [self finishWithFileShares];
+        } else {
+            [self finishWithErrorCode:errorCode];
+        }
+        return;
+    }
+
+    FileShare *fileShare =
+        [[FileShare alloc] initWithInterfaceIndex:interfaceIndex
+                                      serviceName:serviceName
+                                          regtype:regtype
+                                      replyDomain:replyDomain];
+    if (kDNSServiceFlagsAdd & flags) {
+        [_fileShares addObject:fileShare];
+    } else {
+        [_fileShares removeObject:fileShare];
+    }
+}
+
+
+- (void)cleanup;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    NSAssert(_timeoutBlock, @"Expected _timeoutBlock");
+    dispatch_block_cancel(_timeoutBlock);
+    _timeoutBlock = nil;
+
+    if (_serviceRef) {
+        DNSServiceRefDeallocate(_serviceRef);
+        _serviceRef = NULL;
+        // balances CFRetain in -start
+        CFRelease((__bridge CFTypeRef)self);
+    }
+}
+
+
+- (void)finishWithErrorCode:(DNSServiceErrorType)errorCode;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    __strong id<BrowserDelegate> delegate = _delegate;
+    NSError *error = [NSError dnsServiceErrorWithCode:errorCode];
+    dispatch_async(_delegateQueue, ^{
+        [delegate didFailToBrowseWithError:error];
+    });
+
+    [self cleanup];
+}
+
+
+- (void)finishWithFileShares;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    __strong id<BrowserDelegate> delegate = _delegate;
+    __strong NSArray<FileShare *> *fileShares = [_fileShares copy];
+    dispatch_async(_delegateQueue, ^{
+        [delegate didFindFileShares:fileShares];
+    });
+
+    [self cleanup];
+}
+
+
+- (void)start;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    DNSServiceErrorType errorCode;
+
+    DNSServiceFlags flags = 0;
+    char const *domain = NULL;
+    errorCode = DNSServiceBrowse(
+        &_serviceRef,
+        flags,
+        kDNSServiceInterfaceIndexAny,
+        "_mcmus._tcp",
+        domain,
+        browseReply,
+        (__bridge void *)self
+    );
+    if (kDNSServiceErr_NoError != errorCode) {
+        [self finishWithErrorCode:errorCode];
+        return;
+    }
+    // retain self for DNSServiceBrowse() callback
+    // balances CFRelease in -cleanup
+    CFRetain((__bridge CFTypeRef)self);
+
+    errorCode = DNSServiceSetDispatchQueue(_serviceRef, _serialQueue);
+    if (kDNSServiceErr_NoError != errorCode) {
+        [self finishWithErrorCode:errorCode];
+        return;
+    }
+
+    dispatch_time_t timeoutNanos =
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_timeout * NSEC_PER_SEC));
+    NSAssert(_timeoutBlock, @"Expected _timeoutBlock");
+    dispatch_after(timeoutNanos, _serialQueue, _timeoutBlock);
+}
+
+
+@end
+
+
+static void browseReply(
+    DNSServiceRef serviceRef,
+    DNSServiceFlags flags,
+    uint32_t interfaceIndex,
+    DNSServiceErrorType errorCode,
+    const char *serviceName,
+    const char *regtype,
+    const char *replyDomain,
+    void *context
+)
+{
+    Browser *browser = (__bridge Browser *)context;
+    NSCAssert(browser, @"Expected a Browser");
+    dispatch_assert_queue(browser.serialQueue);
+    [browser browseWithFlags:flags
+              interfaceIndex:interfaceIndex
+                 serviceName:serviceName
+                     regtype:regtype
+                 replyDomain:replyDomain
+                   errorCode:errorCode];
+}

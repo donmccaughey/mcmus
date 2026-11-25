@@ -80,4 +80,21 @@
 }
 
 
+- (NSUInteger)hash;
+{
+    return self.interfaceIndex ^ self.serviceName.hash ^ self.serviceType.hash
+        ^ self.domain.hash;
+}
+
+
+- (BOOL)isEqual:(id)object;
+{
+    if (self == object) return YES;
+    if (![object isKindOfClass:[FileShare class]]) return NO;
+
+    FileShare *other = object;
+    return self.interfaceIndex == other.interfaceIndex &&
+        [self isSameFileShare:other];
+}
+
 @end
