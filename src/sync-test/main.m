@@ -8,6 +8,7 @@
 #import "DNSReal.h"
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
+#import "Manifest.h"
 #import "SyncTest.h"
 #import "SyncTestOptions.h"
 
@@ -74,6 +75,10 @@ int main(int argc, const char *argv[])
                                        fileSystem:fileSystem
                                               dns:[DNSReal new]
                                             clock:[ClockReal new]];
+        printf(
+            "Local manifest contains %lu track(s)\n",
+            (unsigned long)fileSyncing.localManifest.trackCount
+        );
         [fileSyncing findFileSharesWithTimeout:3];
     }
     dispatch_main();

@@ -3,6 +3,7 @@
 #import "Browser.h"
 #import "BrowserDelegate.h"
 #import "FileSyncingDelegate.h"
+#import "Manifest.h"
 #import "Resolver.h"
 #import "ResolverDelegate.h"
 
@@ -11,12 +12,26 @@
 @end
 
 
+// A device that has never synced has no manifest file, so every failure to
+// load one reads as having no tracks yet.
+static Manifest *load_manifest_or_empty(
+    NSURL *manifestPath, id<FileSystem> fileSystem
+)
+{
+    return [Manifest newWithCSVPath:manifestPath
+                         fileSystem:fileSystem
+                              error:NULL]
+        ?: [Manifest new];
+}
+
+
 @implementation FileSyncing {
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     dispatch_queue_t _serialQueue;
     id<DNS> _dns;
     id<Clock> _clock;
+    Manifest *_localManifest;
 
     // objects below live on _serialQueue
     Browser *_browser;
@@ -40,6 +55,7 @@
     _delegateQueue = delegateQueue;
     _dns = dns;
     _clock = clock;
+    _localManifest = load_manifest_or_empty(manifestPath, fileSystem);
 
     _serialQueue = dispatch_queue_create(
         NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL

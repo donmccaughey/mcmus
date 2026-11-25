@@ -7,12 +7,15 @@
 @protocol FileSystem;
 
 @class FileShare;
+@class Manifest;
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 
 @interface FileSyncing : NSObject
+
+@property (nonatomic, readonly) Manifest *localManifest;
 
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
