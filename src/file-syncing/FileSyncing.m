@@ -115,7 +115,7 @@
     dispatch_async(_delegateQueue, ^{
         [self->_delegate fileSyncing:self
                  didResolveFileShare:fileShare
-                             withURL:url];
+                               toURL:url];
     });
     _resolver = nil;
 }

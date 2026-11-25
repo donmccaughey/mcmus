@@ -15,7 +15,7 @@
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
     didResolveFileShare:(FileShare *)fileShare
-                withURL:(NSURL *)url;
+                  toURL:(NSURL *)url;
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
     didFailToResolveFileShare:(FileShare *)fileShare

@@ -39,7 +39,7 @@ static void printFileShares(NSArray<FileShare *> *fileShares);
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
     didResolveFileShare:(FileShare *)fileShare
-                withURL:(NSURL *)url;
+                  toURL:(NSURL *)url;
 {
     printf("File sharing URL: %s.\n", url.description.UTF8String);
     exit(EXIT_SUCCESS);
