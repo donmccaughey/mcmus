@@ -8,14 +8,18 @@ TEST_FLAGS ?= -quiet
 
 arch := $(shell uname -m)
 objc_files := $(shell find src -type f \( -name '*.h' -o -name '*.m' \))
+scheme_files := $(wildcard mcmus.xcodeproj/xcshareddata/xcschemes/*.xcscheme)
+scheme_files_hash := $(shell cat $(scheme_files) | md5)
+ver := 1.0
+
 project_files := \
 		mcmus.xcodeproj/project.pbxproj \
-		$(wildcard mcmus.xcodeproj/xcshareddata/xcschemes/*.xcscheme)
+		$(TMP)/scheme-files-$(scheme_files_hash).stamp
+
 src_files := \
 		 .git/hooks/pre-commit \
 		$(shell find src -type f -not -name '.*') \
 		$(project_files)
-ver := 1.0
 
 
 .SECONDEXPANSION :
@@ -211,4 +215,11 @@ $(TMP)/made-disk-image.stamp : \
 		$(TMP)/built-release.stamp \
 		scripts/make-disk-image
 	scripts/make-disk-image "$(TMP)/app-release/MC Mus.app" $(TMP)
+	touch $@
+
+
+# Xcode touches the shared scheme files every time it opens
+# so track changes using a hash of the contents
+$(TMP)/scheme-files-$(scheme_files_hash).stamp : | $$(dir $$@)
+	rm -rf $(TMP)/scheme-files-*.stamp
 	touch $@
