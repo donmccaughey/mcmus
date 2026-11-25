@@ -1,6 +1,7 @@
 #import "Browser.h"
 
 #import "BrowserDelegate.h"
+#import "DNS.h"
 #import "FileShare.h"
 #import "NSError+FileSyncing.h"
 
@@ -44,13 +45,15 @@ static void browseReply(
     __weak id<BrowserDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     NSMutableArray<FileShare *> *_fileShares;
+    id<DNS> _dns;
     DNSServiceRef _serviceRef;
 }
 
 - (instancetype)initWithSerialQueue:(dispatch_queue_t)serialQueue
                             timeout:(NSTimeInterval)timeout
                            delegate:(id<BrowserDelegate>)delegate
-                      delegateQueue:(dispatch_queue_t)delegateQueue;
+                      delegateQueue:(dispatch_queue_t)delegateQueue
+                                dns:(id<DNS>)dns;
 {
     self = [super init];
     if (!self) return nil;
@@ -67,6 +70,7 @@ static void browseReply(
 
     _delegate = delegate;
     _delegateQueue = delegateQueue;
+    _dns = dns;
 
     _fileShares = [NSMutableArray new];
 
@@ -121,7 +125,7 @@ static void browseReply(
     _timeoutBlock = nil;
 
     if (_serviceRef) {
-        DNSServiceRefDeallocate(_serviceRef);
+        [_dns deallocateServiceRef:_serviceRef];
         _serviceRef = NULL;
         // balances CFRetain in -start
         CFRelease((__bridge CFTypeRef)self);
@@ -165,24 +169,22 @@ static void browseReply(
 
     DNSServiceFlags flags = 0;
     char const *domain = NULL;
-    errorCode = DNSServiceBrowse(
-        &_serviceRef,
-        flags,
-        kDNSServiceInterfaceIndexAny,
-        "_mcmus._tcp",
-        domain,
-        browseReply,
-        (__bridge void *)self
-    );
+    errorCode = [_dns browse:&_serviceRef
+                       flags:flags
+              interfaceIndex:kDNSServiceInterfaceIndexAny
+                     regtype:"_mcmus._tcp"
+                      domain:domain
+                    callBack:browseReply
+                     context:(__bridge void *)self];
     if (kDNSServiceErr_NoError != errorCode) {
         [self finishWithErrorCode:errorCode];
         return;
     }
-    // retain self for DNSServiceBrowse() callback
+    // retain self for the browse callback
     // balances CFRelease in -cleanup
     CFRetain((__bridge CFTypeRef)self);
 
-    errorCode = DNSServiceSetDispatchQueue(_serviceRef, _serialQueue);
+    errorCode = [_dns setDispatchQueue:_serialQueue forServiceRef:_serviceRef];
     if (kDNSServiceErr_NoError != errorCode) {
         [self finishWithErrorCode:errorCode];
         return;

@@ -15,6 +15,7 @@
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     dispatch_queue_t _serialQueue;
+    id<DNS> _dns;
 
     // objects below live on _serialQueue
     Browser *_browser;
@@ -27,13 +28,15 @@
                     manifestPath:(NSURL *)manifestPath
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
-                      fileSystem:(id<FileSystem>)fileSystem;
+                      fileSystem:(id<FileSystem>)fileSystem
+                             dns:(id<DNS>)dns;
 {
     self = [super init];
     if (!self) return nil;
 
     _delegate = delegate;
     _delegateQueue = delegateQueue;
+    _dns = dns;
 
     _serialQueue = dispatch_queue_create(
         NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
@@ -54,11 +57,11 @@
 {
     dispatch_async(_serialQueue, ^{
         NSAssert(!self->_browser, @"Expected only one active Browser");
-        self->_browser =
-            [[Browser alloc] initWithSerialQueue:self->_serialQueue
-                                         timeout:timeout
-                                        delegate:self
-                                   delegateQueue:self->_serialQueue];
+        self->_browser = [[Browser alloc] initWithSerialQueue:self->_serialQueue
+                                                      timeout:timeout
+                                                     delegate:self
+                                                delegateQueue:self->_serialQueue
+                                                          dns:self->_dns];
         [self->_browser start];
     });
 }

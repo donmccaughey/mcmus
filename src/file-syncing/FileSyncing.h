@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 
+@protocol DNS;
 @protocol FileSyncingDelegate;
 @protocol FileSystem;
 
@@ -18,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
                       fileSystem:(id<FileSystem>)fileSystem
-    NS_DESIGNATED_INITIALIZER;
+                             dns:(id<DNS>)dns NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

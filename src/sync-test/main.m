@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "DNSReal.h"
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
 #import "SyncTest.h"
@@ -69,7 +70,8 @@ int main(int argc, const char *argv[])
                                      manifestPath:options.manifestURL
                                          delegate:syncTest
                                     delegateQueue:dispatch_get_main_queue()
-                                       fileSystem:fileSystem];
+                                       fileSystem:fileSystem
+                                              dns:[DNSReal new]];
         [fileSyncing findFileSharesWithTimeout:3];
     }
     dispatch_main();
