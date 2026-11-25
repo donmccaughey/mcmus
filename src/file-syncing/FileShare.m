@@ -72,4 +72,12 @@
 }
 
 
+- (BOOL)isSameFileShare:(FileShare *)other;
+{
+    return [self.serviceName isEqualToString:other.serviceName] &&
+        [self.serviceType isEqualToString:other.serviceType] &&
+        [self.domain isEqualToString:other.domain];
+}
+
+
 @end

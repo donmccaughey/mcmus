@@ -4,6 +4,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+// A file sharing server located via Bonjour
 @interface FileShare : NSObject
 
 @property (nonatomic, readonly) NSUInteger interfaceIndex;
@@ -17,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
                            replyDomain:(char const *)replyDomain;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Compares (serviceName, serviceType, domain) as the same
+// file sharing server may appear on multiple interfaces
+- (BOOL)isSameFileShare:(FileShare *)other;
 
 @end
 
