@@ -8,6 +8,7 @@
 #import "FileShare.h"
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
+#import "SyncTest.h"
 #import "SyncTestOptions.h"
 
 
@@ -17,6 +18,7 @@ static const int usageExitStatus = 2;
 static const NSUInteger findTimeoutSeconds = 3;
 
 static FileSyncing *fileSyncing;
+static SyncTest *syncTest;
 
 
 static SyncTestOptions *parse_options_or_exit(void)
@@ -81,22 +83,6 @@ static void print_file_shares(NSArray<FileShare *> *file_shares)
 }
 
 
-static void get_url_callback(NSURL *url, DNSServiceErrorType error_code)
-{
-    if (kDNSServiceErr_NoError != error_code) {
-        fprintf(
-            stderr,
-            "sync-test: finding getting URL failed with error %d\n",
-            error_code
-        );
-        exit(EXIT_FAILURE);
-    }
-
-    printf("File sharing URL: %s.\n", url.description.UTF8String);
-    exit(EXIT_SUCCESS);
-}
-
-
 static void print_file_shares_and_exit(
     NSArray<FileShare *> *file_shares, DNSServiceErrorType error_code
 )
@@ -112,10 +98,8 @@ static void print_file_shares_and_exit(
 
     if (file_shares.count) {
         print_file_shares(file_shares);
-        [fileSyncing getURLForFileShare:file_shares.firstObject
-                           withCallback:get_url_callback
-                                onQueue:dispatch_get_main_queue()
-                          withinSeconds:findTimeoutSeconds];
+        [fileSyncing resolveFileShare:file_shares.firstObject
+                          withTimeout:findTimeoutSeconds];
     } else {
         printf("No file sharing servers found.\n");
         exit(EXIT_SUCCESS);
@@ -131,10 +115,13 @@ int main(int argc, const char *argv[])
         exit_unless_listable(options.musicDirectoryURL, fileSystem);
         exit_unless_listable(options.workingDirectoryURL, fileSystem);
 
+        syncTest = [SyncTest new];
         fileSyncing =
             [[FileSyncing alloc] initWithMusicDir:options.musicDirectoryURL
                                        workingDir:options.workingDirectoryURL
                                      manifestPath:options.manifestURL
+                                         delegate:syncTest
+                                    delegateQueue:dispatch_get_main_queue()
                                        fileSystem:fileSystem];
         [fileSyncing findFileSharesWithCallback:print_file_shares_and_exit
                                         onQueue:dispatch_get_main_queue()

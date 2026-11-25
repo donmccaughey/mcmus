@@ -50,6 +50,16 @@
             ReferencedContainer = "container:mcmus.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "$(PROJECT_DIR)/tmp/sync-test-music"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--workdir=$(PROJECT_DIR)/tmp/sync-test-work"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

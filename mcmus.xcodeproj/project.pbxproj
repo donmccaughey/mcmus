@@ -669,10 +669,19 @@
 				"file-syncing/FileShare.m",
 				"file-syncing/FileSyncing.h",
 				"file-syncing/FileSyncing.m",
+				"file-syncing/FileSyncingDelegate.h",
 				"file-syncing/find_file_shares.h",
 				"file-syncing/find_file_shares.m",
-				"file-syncing/get_url_for_file_share.h",
-				"file-syncing/get_url_for_file_share.m",
+				"file-syncing/NSError+FileSyncing.h",
+				"file-syncing/NSError+FileSyncing.m",
+				"file-syncing/Resolver.h",
+				"file-syncing/Resolver.m",
+				"file-syncing/ResolverDelegate.h",
+			);
+			publicHeaders = (
+				"file-syncing/FileShare.h",
+				"file-syncing/FileSyncing.h",
+				"file-syncing/FileSyncingDelegate.h",
 			);
 			target = D43DC17730B3C78F00C6052F /* file-syncing */;
 		};
@@ -697,6 +706,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"sync-test/main.m",
+				"sync-test/SyncTest.m",
 				"sync-test/SyncTestOptions.m",
 			);
 			target = D45C7E0030C200000000000F /* sync-test */;
@@ -704,6 +714,7 @@
 		D45C7E0030C200000000000A /* Exceptions for "src" folder in "sync-test-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"sync-test/SyncTest.m",
 				"sync-test/SyncTestOptions.m",
 				"sync-test/SyncTestOptionsTests.m",
 			);
