@@ -956,6 +956,8 @@
 				"file-syncing/FileSyncing.h",
 				"file-syncing/FileSyncing.m",
 				"file-syncing/FileSyncingDelegate.h",
+				"file-syncing/FileSyncingState.h",
+				"file-syncing/FileSyncingState.m",
 				"file-syncing/NSError+FileSyncing.h",
 				"file-syncing/NSError+FileSyncing.m",
 				"file-syncing/NSURL+FileSyncing.h",

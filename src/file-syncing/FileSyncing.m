@@ -3,6 +3,7 @@
 #import "Browser.h"
 #import "BrowserDelegate.h"
 #import "FileSyncingDelegate.h"
+#import "FileSyncingState.h"
 #import "Manifest.h"
 #import "NSError+FileSyncing.h"
 #import "NSURL+FileSyncing.h"
@@ -28,37 +29,20 @@ NSTimeInterval const resolveTimeout = 3.0;
 @end
 
 
-// A device that has never synced has no manifest file, so every failure to
-// load one reads as having no tracks yet.
-static Manifest *load_manifest_or_empty(
-    NSURL *manifestPath, id<FileSystem> fileSystem
-)
-{
-    return [Manifest newWithCSVPath:manifestPath
-                         fileSystem:fileSystem
-                              error:NULL]
-        ?: [Manifest new];
-}
-
-
 @implementation FileSyncing {
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     dispatch_queue_t _serialQueue;
     id<DNS> _dns;
     id<Clock> _clock;
-    Manifest *_localManifest;
     NSURLSession *_session;
-
-    // Assigned on _serialQueue before -fileSyncing:didGetManifest: is
-    // enqueued, so the delegate can read it from that call onwards.
-    Manifest *_serverManifest;
 
     // objects below live on _serialQueue
     Browser *_browser;
     Resolver *_resolver;
     NSURLSessionDataTask *_manifestTask;
     NSMutableData *_manifestData;
+    FileSyncingState *_state;
 }
 
 
@@ -78,7 +62,8 @@ static Manifest *load_manifest_or_empty(
     _delegateQueue = delegateQueue;
     _dns = dns;
     _clock = clock;
-    _localManifest = load_manifest_or_empty(manifestPath, fileSystem);
+    _state = [[FileSyncingState alloc] initWithLocalManifestPath:manifestPath
+                                                   andFileSystem:fileSystem];
 
     _serialQueue = dispatch_queue_create(
         NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
@@ -97,16 +82,28 @@ static Manifest *load_manifest_or_empty(
 }
 
 
+- (instancetype)init;
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+
 - (void)dealloc;
 {
     [_session finishTasksAndInvalidate];
 }
 
 
-- (instancetype)init;
+- (Manifest *)localManifest;
 {
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
+    return _state.localManifest;
+}
+
+
+- (nullable Manifest *)serverManifest;
+{
+    return _state.serverManifest;
 }
 
 
@@ -255,12 +252,13 @@ static Manifest *load_manifest_or_empty(
         return;
     }
 
-    _serverManifest = manifest;
     dispatch_async(_delegateQueue, ^{
         [self->_delegate fileSyncing:self didGetManifest:manifest];
     });
 
-    // TODO: compare local and server manifest
+    [_state updateWithServerManifest:manifest];
+
+    // TODO: remove old tracks, download new & updated tracks
 }
 
 
