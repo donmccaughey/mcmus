@@ -9,6 +9,12 @@
 @protocol FileSyncingDelegate <NSObject>
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
+    didCompleteWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    willSyncWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
     didFindFileShares:(NSArray<FileShare *> *)fileShares;
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing

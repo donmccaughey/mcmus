@@ -4,6 +4,7 @@
 @protocol FileSystem;
 
 @class Manifest;
+@class TrackMetadata;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) Manifest *localManifest;
 @property (nonatomic, readonly, nullable) Manifest *serverManifest;
+@property (nonatomic, copy) NSArray<TrackMetadata *> *removedTracks;
+@property (nonatomic, copy) NSArray<TrackMetadata *> *addedTracks;
+@property (nonatomic, copy) NSArray<TrackMetadata *> *changedTracks;
+@property (nonatomic, readonly) NSUInteger modifiedTrackCount;
+
 
 - (instancetype)initWithLocalManifestPath:(NSURL *)localManifestPath
                             andFileSystem:(id<FileSystem>)fileSystem

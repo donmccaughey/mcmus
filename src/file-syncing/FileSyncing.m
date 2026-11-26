@@ -153,6 +153,7 @@ NSTimeInterval const resolveTimeout = 3.0;
 
 - (void)syncWithFileShare:(FileShare *)fileShare;
 {
+    // TODO: validate local manifest against music dir
     [self resolveFileShare:fileShare withTimeout:resolveTimeout];
 }
 
@@ -258,7 +259,15 @@ NSTimeInterval const resolveTimeout = 3.0;
 
     [_state updateWithServerManifest:manifest];
 
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self
+            willSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
+    });
     // TODO: remove old tracks, download new & updated tracks
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self
+            didCompleteWithModifiedTrackCount:self->_state.modifiedTrackCount];
+    });
 }
 
 

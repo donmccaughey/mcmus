@@ -12,6 +12,10 @@
     self = [super init];
     if (!self) return nil;
 
+    _removedTracks = @[];
+    _addedTracks = @[];
+    _changedTracks = @[];
+
     _localManifest = [Manifest newWithCSVPath:localManifestPath
                                    fileSystem:fileSystem
                                         error:NULL]
@@ -32,7 +36,11 @@
 {
     _serverManifest = serverManifest;
 
-    // TODO: compare local and server manifest
+    _removedTracks = [_localManifest tracksMissingFrom:_serverManifest];
+    _addedTracks = [_serverManifest tracksMissingFrom:_localManifest];
+    _changedTracks = [_localManifest tracksChangedIn:_serverManifest];
+    _modifiedTrackCount =
+        _removedTracks.count + _addedTracks.count + _changedTracks.count;
 }
 
 

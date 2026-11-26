@@ -16,6 +16,25 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
+    didCompleteWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
+{
+    printf("%lu track(s) synced.\n", modifiedTrackCount);
+    exit(EXIT_SUCCESS);
+}
+
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    willSyncWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
+{
+    if (modifiedTrackCount) {
+        printf("Will sync %lu track(s).\n", modifiedTrackCount);
+    } else {
+        printf("Music library is up-to-date.\n");
+    }
+}
+
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
     didFindFileShares:(NSArray<FileShare *> *)fileShares;
 {
     if (!fileShares.count) {
@@ -71,7 +90,6 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
         "Server manifest contains %lu track(s)\n",
         (unsigned long)manifest.trackCount
     );
-    exit(EXIT_SUCCESS);
 }
 
 
