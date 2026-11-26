@@ -5,6 +5,7 @@
 #import "FileShare.h"
 #import "FileShareSelection.h"
 #import "FileSyncing.h"
+#import "Manifest.h"
 
 
 static void printFileShares(NSArray<FileShare *> *fileShares);
@@ -47,7 +48,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
                   toURL:(NSURL *)url;
 {
     printf("File sharing URL: %s.\n", url.description.UTF8String);
-    exit(EXIT_SUCCESS);
+    [fileSyncing getManifestFromServerAtURL:url];
 }
 
 
@@ -58,6 +59,30 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
     fprintf(
         stderr,
         "sync-test: finding getting URL failed with error %li\n",
+        error.code
+    );
+    exit(EXIT_FAILURE);
+}
+
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+     didGetManifest:(Manifest *)manifest;
+{
+    printf(
+        "Server manifest contains %lu track(s)\n",
+        (unsigned long)manifest.trackCount
+    );
+    exit(EXIT_SUCCESS);
+}
+
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    didFailToGetManifestWithError:(NSError *)error;
+{
+    fprintf(
+        stderr,
+        "sync-test: getting manifest failed with error %s %li\n",
+        error.domain.UTF8String,
         error.code
     );
     exit(EXIT_FAILURE);

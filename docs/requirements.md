@@ -1093,6 +1093,15 @@ When finding file shares succeeds, sync test shall write each file share found
 to `stdout` on a separate line, or the message "No file sharing servers found."
 if there are none, and exit with status 0.
 
+When a file share resolves to a URL, sync test shall ask the file syncing object
+to get the manifest from the server at that URL.
+
+When getting the manifest succeeds, sync test shall write the number of tracks
+in the server manifest to `stdout` and exit with status 0.
+
+If getting the manifest fails, sync test shall write the error domain and code
+to `stderr` and exit with a non-zero status.
+
 
 ## Test scripts
 

@@ -8,6 +8,9 @@
 #import "ResolverDelegate.h"
 
 
+NSErrorDomain const HTTPStatusErrorDomain = @"HTTPStatusErrorDomain";
+
+
 @interface FileSyncing () <BrowserDelegate, ResolverDelegate>
 @end
 
@@ -25,6 +28,40 @@ static Manifest *load_manifest_or_empty(
 }
 
 
+static NSURLSession *session_calling_back_on(dispatch_queue_t queue)
+{
+    NSOperationQueue *callbackQueue = [NSOperationQueue new];
+    callbackQueue.underlyingQueue = queue;
+    return [NSURLSession
+        sessionWithConfiguration:NSURLSessionConfiguration
+                                     .ephemeralSessionConfiguration
+                        delegate:nil
+                   delegateQueue:callbackQueue];
+}
+
+
+static NSURL *manifest_url(NSURL *serverURL)
+{
+    NSURLComponents *components = [NSURLComponents componentsWithURL:serverURL
+                                             resolvingAgainstBaseURL:YES];
+    components.path = @"/manifest";
+    return components.URL;
+}
+
+
+// A category on NSError would not do here: the linker drops a category's
+// object file from a static library unless something references a symbol in
+// it, and the method then fails at run time in sync-test.
+static NSError *_Nullable http_status_error(NSURLResponse *response)
+{
+    NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+    if (statusCode == 200) return nil;
+    return [NSError errorWithDomain:HTTPStatusErrorDomain
+                               code:statusCode
+                           userInfo:nil];
+}
+
+
 @implementation FileSyncing {
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
@@ -32,10 +69,16 @@ static Manifest *load_manifest_or_empty(
     id<DNS> _dns;
     id<Clock> _clock;
     Manifest *_localManifest;
+    NSURLSession *_session;
+
+    // Assigned on _serialQueue before -fileSyncing:didGetManifest: is
+    // enqueued, so the delegate can read it from that call onwards.
+    Manifest *_serverManifest;
 
     // objects below live on _serialQueue
     Browser *_browser;
     Resolver *_resolver;
+    NSURLSessionDataTask *_manifestTask;
 }
 
 
@@ -60,8 +103,15 @@ static Manifest *load_manifest_or_empty(
     _serialQueue = dispatch_queue_create(
         NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
     );
+    _session = session_calling_back_on(_serialQueue);
 
     return self;
+}
+
+
+- (void)dealloc;
+{
+    [_session finishTasksAndInvalidate];
 }
 
 
@@ -100,6 +150,64 @@ static Manifest *load_manifest_or_empty(
                                                           dns:self->_dns
                                                         clock:self->_clock];
         [self->_resolver start];
+    });
+}
+
+
+- (void)getManifestFromServerAtURL:(NSURL *)serverURL;
+{
+    dispatch_async(_serialQueue, ^{
+        NSAssert(
+            !self->_manifestTask, @"Expected only one active manifest request"
+        );
+        self->_manifestTask = [self->_session
+              dataTaskWithURL:manifest_url(serverURL)
+            completionHandler:^(
+                NSData *data, NSURLResponse *response, NSError *error
+            ) {
+                [self didCompleteManifestRequestWithData:data
+                                                response:response
+                                                   error:error];
+            }];
+        [self->_manifestTask resume];
+    });
+}
+
+
+- (void)didCompleteManifestRequestWithData:(nullable NSData *)data
+                                  response:(nullable NSURLResponse *)response
+                                     error:(nullable NSError *)error;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    _manifestTask = nil;
+
+    error = error ?: http_status_error(response);
+    if (error) {
+        [self didFailToGetManifestWithError:error];
+        return;
+    }
+
+    NSError *parseError;
+    Manifest *manifest = [[Manifest alloc] initWithCSV:data error:&parseError];
+    if (!manifest) {
+        [self didFailToGetManifestWithError:parseError];
+        return;
+    }
+
+    _serverManifest = manifest;
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self didGetManifest:manifest];
+    });
+}
+
+
+- (void)didFailToGetManifestWithError:(NSError *)error;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self didFailToGetManifestWithError:error];
     });
 }
 

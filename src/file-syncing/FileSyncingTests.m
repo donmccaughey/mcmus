@@ -41,6 +41,18 @@
 }
 
 
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+     didGetManifest:(Manifest *)manifest;
+{
+}
+
+
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    didFailToGetManifestWithError:(NSError *)error;
+{
+}
+
+
 @end
 
 
@@ -121,6 +133,15 @@ static FileSystemFake *file_system_with_manifest(NSString *csv)
 
     XCTAssertNotNil(fileSyncing.localManifest);
     XCTAssertEqual(fileSyncing.localManifest.trackCount, 0UL);
+}
+
+
+- (void)testServerManifestIsNilBeforeGettingTheManifest;
+{
+    FileSyncing *fileSyncing =
+        [self fileSyncingWithFileSystem:[FileSystemFake new]];
+
+    XCTAssertNil(fileSyncing.serverManifest);
 }
 
 

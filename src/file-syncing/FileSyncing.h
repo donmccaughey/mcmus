@@ -13,9 +13,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+// The error code is the HTTP status code of the response.
+extern NSErrorDomain const HTTPStatusErrorDomain;
+
+
 @interface FileSyncing : NSObject
 
 @property (nonatomic, readonly) Manifest *localManifest;
+@property (nonatomic, readonly, nullable) Manifest *serverManifest;
 
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
@@ -32,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)resolveFileShare:(FileShare *)fileShare
              withTimeout:(NSTimeInterval)timeout;
+
+- (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 
 @end
 
