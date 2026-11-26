@@ -1263,6 +1263,7 @@
 			membershipExceptions = (
 				"file-syncing/BrowserTests.m",
 				"file-syncing/FileShareTests.m",
+				"file-syncing/FileSyncingStateTests.m",
 				"file-syncing/FileSyncingTests.m",
 				"file-syncing/ResolverTests.m",
 			);
