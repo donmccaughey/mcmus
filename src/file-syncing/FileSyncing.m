@@ -4,11 +4,11 @@
 #import "BrowserDelegate.h"
 #import "FileSyncingDelegate.h"
 #import "Manifest.h"
+#import "NSError+FileSyncing.h"
 #import "Resolver.h"
 #import "ResolverDelegate.h"
 
 
-NSErrorDomain const HTTPStatusErrorDomain = @"HTTPStatusErrorDomain";
 NSTimeInterval const resolveTimeout = 3.0;
 
 
@@ -53,19 +53,6 @@ static NSURL *manifest_url(NSURL *serverURL)
                                              resolvingAgainstBaseURL:YES];
     components.path = @"/manifest";
     return components.URL;
-}
-
-
-// A category on NSError would not do here: the linker drops a category's
-// object file from a static library unless something references a symbol in
-// it, and the method then fails at run time in sync-test.
-static NSError *_Nullable http_status_error(NSURLResponse *response)
-{
-    NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-    if (statusCode == 200) return nil;
-    return [NSError errorWithDomain:HTTPStatusErrorDomain
-                               code:statusCode
-                           userInfo:nil];
 }
 
 
@@ -195,9 +182,15 @@ static NSError *_Nullable http_status_error(NSURLResponse *response)
 
     _manifestTask = nil;
 
-    error = error ?: http_status_error(response);
     if (error) {
         [self didFailToGetManifestWithError:error];
+        return;
+    }
+
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    if (200 != httpResponse.statusCode) {
+        NSError *httpError = [NSError httpStatusErrorForResponse:httpResponse];
+        [self didFailToGetManifestWithError:httpError];
         return;
     }
 

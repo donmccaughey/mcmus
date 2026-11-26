@@ -13,10 +13,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-// The error code is the HTTP status code of the response.
-extern NSErrorDomain const HTTPStatusErrorDomain;
-
-
 @interface FileSyncing : NSObject
 
 @property (nonatomic, readonly) Manifest *localManifest;
