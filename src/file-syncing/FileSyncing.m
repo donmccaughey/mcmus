@@ -131,23 +131,6 @@ static NSURL *manifest_url(NSURL *serverURL)
 }
 
 
-- (void)resolveFileShare:(FileShare *)fileShare
-             withTimeout:(NSTimeInterval)timeout;
-{
-    dispatch_async(_serialQueue, ^{
-        NSAssert(!self->_resolver, @"Expected only one active Resolver");
-        self->_resolver = [[Resolver alloc] initWithFileShare:fileShare
-                                                  serialQueue:self->_serialQueue
-                                                      timeout:timeout
-                                                     delegate:self
-                                                delegateQueue:self->_serialQueue
-                                                          dns:self->_dns
-                                                        clock:self->_clock];
-        [self->_resolver start];
-    });
-}
-
-
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 {
     dispatch_async(_serialQueue, ^{
@@ -164,6 +147,23 @@ static NSURL *manifest_url(NSURL *serverURL)
                                                    error:error];
             }];
         [self->_manifestTask resume];
+    });
+}
+
+
+- (void)resolveFileShare:(FileShare *)fileShare
+             withTimeout:(NSTimeInterval)timeout;
+{
+    dispatch_async(_serialQueue, ^{
+        NSAssert(!self->_resolver, @"Expected only one active Resolver");
+        self->_resolver = [[Resolver alloc] initWithFileShare:fileShare
+                                                  serialQueue:self->_serialQueue
+                                                      timeout:timeout
+                                                     delegate:self
+                                                delegateQueue:self->_serialQueue
+                                                          dns:self->_dns
+                                                        clock:self->_clock];
+        [self->_resolver start];
     });
 }
 
@@ -205,6 +205,8 @@ static NSURL *manifest_url(NSURL *serverURL)
     dispatch_async(_delegateQueue, ^{
         [self->_delegate fileSyncing:self didGetManifest:manifest];
     });
+
+    // TODO: compare local and server manifest
 }
 
 
