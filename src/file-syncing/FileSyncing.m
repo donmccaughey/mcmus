@@ -13,7 +13,12 @@
 NSTimeInterval const resolveTimeout = 3.0;
 
 
-@interface FileSyncing () <BrowserDelegate, ResolverDelegate>
+@interface FileSyncing () <
+    BrowserDelegate,
+    NSURLSessionDelegate,
+    NSURLSessionDataDelegate,
+    NSURLSessionTaskDelegate,
+    ResolverDelegate>
 
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 
@@ -53,6 +58,7 @@ static Manifest *load_manifest_or_empty(
     Browser *_browser;
     Resolver *_resolver;
     NSURLSessionDataTask *_manifestTask;
+    NSMutableData *_manifestData;
 }
 
 
@@ -80,10 +86,11 @@ static Manifest *load_manifest_or_empty(
 
     NSOperationQueue *serialOperationQueue = [NSOperationQueue new];
     serialOperationQueue.underlyingQueue = _serialQueue;
-    NSURLSessionConfiguration *configuration =
-        [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    NSString *identifier = NSStringFromClass([self class]);
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration
+        backgroundSessionConfigurationWithIdentifier:identifier];
     _session = [NSURLSession sessionWithConfiguration:configuration
-                                             delegate:nil
+                                             delegate:self
                                         delegateQueue:serialOperationQueue];
 
     return self;
@@ -120,21 +127,13 @@ static Manifest *load_manifest_or_empty(
 
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 {
-    dispatch_async(_serialQueue, ^{
-        NSAssert(
-            !self->_manifestTask, @"Expected only one active manifest request"
-        );
-        self->_manifestTask = [self->_session
-              dataTaskWithURL:serverURL.manifestURL
-            completionHandler:^(
-                NSData *data, NSURLResponse *response, NSError *error
-            ) {
-                [self didCompleteManifestRequestWithData:data
-                                                response:response
-                                                   error:error];
-            }];
-        [self->_manifestTask resume];
-    });
+    dispatch_assert_queue(_serialQueue);
+
+    NSAssert(!_manifestTask, @"Expected only one active manifest request");
+
+    _manifestData = [NSMutableData new];
+    _manifestTask = [_session dataTaskWithURL:serverURL.manifestURL];
+    [_manifestTask resume];
 }
 
 
@@ -158,42 +157,6 @@ static Manifest *load_manifest_or_empty(
 - (void)syncWithFileShare:(FileShare *)fileShare;
 {
     [self resolveFileShare:fileShare withTimeout:resolveTimeout];
-}
-
-
-- (void)didCompleteManifestRequestWithData:(nullable NSData *)data
-                                  response:(nullable NSURLResponse *)response
-                                     error:(nullable NSError *)error;
-{
-    dispatch_assert_queue(_serialQueue);
-
-    _manifestTask = nil;
-
-    if (error) {
-        [self didFailToGetManifestWithError:error];
-        return;
-    }
-
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    if (200 != httpResponse.statusCode) {
-        NSError *httpError = [NSError httpStatusErrorForResponse:httpResponse];
-        [self didFailToGetManifestWithError:httpError];
-        return;
-    }
-
-    NSError *parseError;
-    Manifest *manifest = [[Manifest alloc] initWithCSV:data error:&parseError];
-    if (!manifest) {
-        [self didFailToGetManifestWithError:parseError];
-        return;
-    }
-
-    _serverManifest = manifest;
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self didGetManifest:manifest];
-    });
-
-    // TODO: compare local and server manifest
 }
 
 
@@ -230,6 +193,74 @@ static Manifest *load_manifest_or_empty(
             didFailToFindFileSharesWithError:error];
     });
     _browser = nil;
+}
+
+
+#pragma NSURLSessionDelegate
+
+
+- (void)URLSession:(NSURLSession *)session
+    didBecomeInvalidWithError:(NSError *)error;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    // TODO: determine how to handle this
+    NSLog(@"URL session failed: %@", error);
+}
+
+
+#pragma NSURLSessionDataDelegate
+
+
+- (void)URLSession:(NSURLSession *)session
+          dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    NSAssert(_manifestData, @"Expected _manifestData");
+    [_manifestData appendData:data];
+}
+
+
+#pragma NSURLSessionTaskDelegate
+
+
+- (void)URLSession:(NSURLSession *)session
+                    task:(NSURLSessionTask *)task
+    didCompleteWithError:(NSError *)error;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    // TODO: also handle `/files` tasks
+
+    _manifestTask = nil;
+    if (error) {
+        [self didFailToGetManifestWithError:error];
+        return;
+    }
+
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+    if (200 != httpResponse.statusCode) {
+        NSError *httpError = [NSError httpStatusErrorForResponse:httpResponse];
+        [self didFailToGetManifestWithError:httpError];
+        return;
+    }
+
+    NSError *parseError;
+    Manifest *manifest = [[Manifest alloc] initWithCSV:_manifestData
+                                                 error:&parseError];
+    if (!manifest) {
+        [self didFailToGetManifestWithError:parseError];
+        return;
+    }
+
+    _serverManifest = manifest;
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self didGetManifest:manifest];
+    });
+
+    // TODO: compare local and server manifest
 }
 
 
