@@ -5,6 +5,7 @@
 #import "FileSyncingDelegate.h"
 #import "Manifest.h"
 #import "NSError+FileSyncing.h"
+#import "NSURL+FileSyncing.h"
 #import "Resolver.h"
 #import "ResolverDelegate.h"
 
@@ -44,15 +45,6 @@ static NSURLSession *session_calling_back_on(dispatch_queue_t queue)
                                      .ephemeralSessionConfiguration
                         delegate:nil
                    delegateQueue:callbackQueue];
-}
-
-
-static NSURL *manifest_url(NSURL *serverURL)
-{
-    NSURLComponents *components = [NSURLComponents componentsWithURL:serverURL
-                                             resolvingAgainstBaseURL:YES];
-    components.path = @"/manifest";
-    return components.URL;
 }
 
 
@@ -138,7 +130,7 @@ static NSURL *manifest_url(NSURL *serverURL)
             !self->_manifestTask, @"Expected only one active manifest request"
         );
         self->_manifestTask = [self->_session
-              dataTaskWithURL:manifest_url(serverURL)
+              dataTaskWithURL:serverURL.manifestURL
             completionHandler:^(
                 NSData *data, NSURLResponse *response, NSError *error
             ) {

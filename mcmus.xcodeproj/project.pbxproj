@@ -958,6 +958,8 @@
 				"file-syncing/FileSyncingDelegate.h",
 				"file-syncing/NSError+FileSyncing.h",
 				"file-syncing/NSError+FileSyncing.m",
+				"file-syncing/NSURL+FileSyncing.h",
+				"file-syncing/NSURL+FileSyncing.m",
 				"file-syncing/Resolver.h",
 				"file-syncing/Resolver.m",
 				"file-syncing/ResolverDelegate.h",
