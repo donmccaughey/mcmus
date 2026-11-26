@@ -11,15 +11,20 @@
 #import "ResolverDelegate.h"
 
 
-NSTimeInterval const resolveTimeout = 3.0;
-
-
+// these delegates run on _serialQueue
 @interface FileSyncing () <
     BrowserDelegate,
     NSURLSessionDelegate,
     NSURLSessionDataDelegate,
     NSURLSessionTaskDelegate,
     ResolverDelegate>
+@end
+
+
+// these methods run on _serialQueue
+@interface FileSyncing (Internal)
+
+- (void)didFailToGetManifestWithError:(NSError *)error;
 
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 
@@ -122,6 +127,28 @@ NSTimeInterval const resolveTimeout = 3.0;
 }
 
 
+- (void)syncWithFileShare:(FileShare *)fileShare;
+{
+    // TODO: validate local manifest against music dir
+    dispatch_async(_serialQueue, ^{
+        [self resolveFileShare:fileShare withTimeout:3.0];
+    });
+}
+
+
+#pragma Internal
+
+
+- (void)didFailToGetManifestWithError:(NSError *)error;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self didFailToGetManifestWithError:error];
+    });
+}
+
+
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 {
     dispatch_assert_queue(_serialQueue);
@@ -137,34 +164,17 @@ NSTimeInterval const resolveTimeout = 3.0;
 - (void)resolveFileShare:(FileShare *)fileShare
              withTimeout:(NSTimeInterval)timeout;
 {
-    dispatch_async(_serialQueue, ^{
-        NSAssert(!self->_resolver, @"Expected only one active Resolver");
-        self->_resolver = [[Resolver alloc] initWithFileShare:fileShare
-                                                  serialQueue:self->_serialQueue
-                                                      timeout:timeout
-                                                     delegate:self
-                                                delegateQueue:self->_serialQueue
-                                                          dns:self->_dns
-                                                        clock:self->_clock];
-        [self->_resolver start];
-    });
-}
-
-
-- (void)syncWithFileShare:(FileShare *)fileShare;
-{
-    // TODO: validate local manifest against music dir
-    [self resolveFileShare:fileShare withTimeout:resolveTimeout];
-}
-
-
-- (void)didFailToGetManifestWithError:(NSError *)error;
-{
     dispatch_assert_queue(_serialQueue);
 
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self didFailToGetManifestWithError:error];
-    });
+    NSAssert(!self->_resolver, @"Expected only one active Resolver");
+    self->_resolver = [[Resolver alloc] initWithFileShare:fileShare
+                                              serialQueue:self->_serialQueue
+                                                  timeout:timeout
+                                                 delegate:self
+                                            delegateQueue:self->_serialQueue
+                                                      dns:self->_dns
+                                                    clock:self->_clock];
+    [self->_resolver start];
 }
 
 
