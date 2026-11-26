@@ -35,10 +35,7 @@ extern NSErrorDomain const HTTPStatusErrorDomain;
 
 - (void)findFileSharesWithTimeout:(NSTimeInterval)timeout;
 
-- (void)resolveFileShare:(FileShare *)fileShare
-             withTimeout:(NSTimeInterval)timeout;
-
-- (void)getManifestFromServerAtURL:(NSURL *)serverURL;
+- (void)syncWithFileShare:(FileShare *)fileShare;
 
 @end
 

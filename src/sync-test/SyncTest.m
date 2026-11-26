@@ -27,7 +27,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
     FileShare *fileShare = fileShares.count == 1
         ? fileShares.firstObject
         : promptForFileShareOrExit(fileShares);
-    [fileSyncing resolveFileShare:fileShare withTimeout:3];
+    [fileSyncing syncWithFileShare:fileShare];
 }
 
 
@@ -48,7 +48,6 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
                   toURL:(NSURL *)url;
 {
     printf("File sharing URL: %s.\n", url.description.UTF8String);
-    [fileSyncing getManifestFromServerAtURL:url];
 }
 
 

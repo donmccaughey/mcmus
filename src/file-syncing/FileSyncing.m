@@ -9,9 +9,16 @@
 
 
 NSErrorDomain const HTTPStatusErrorDomain = @"HTTPStatusErrorDomain";
+NSTimeInterval const resolveTimeout = 3.0;
 
 
 @interface FileSyncing () <BrowserDelegate, ResolverDelegate>
+
+- (void)getManifestFromServerAtURL:(NSURL *)serverURL;
+
+- (void)resolveFileShare:(FileShare *)fileShare
+             withTimeout:(NSTimeInterval)timeout;
+
 @end
 
 
@@ -174,6 +181,12 @@ static NSError *_Nullable http_status_error(NSURLResponse *response)
 }
 
 
+- (void)syncWithFileShare:(FileShare *)fileShare;
+{
+    [self resolveFileShare:fileShare withTimeout:resolveTimeout];
+}
+
+
 - (void)didCompleteManifestRequestWithData:(nullable NSData *)data
                                   response:(nullable NSURLResponse *)response
                                      error:(nullable NSError *)error;
@@ -251,6 +264,8 @@ static NSError *_Nullable http_status_error(NSURLResponse *response)
                                toURL:url];
     });
     _resolver = nil;
+
+    [self getManifestFromServerAtURL:url];
 }
 
 
