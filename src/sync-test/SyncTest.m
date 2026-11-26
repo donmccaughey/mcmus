@@ -58,7 +58,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 {
     fprintf(
         stderr,
-        "sync-test: finding getting URL failed with error %li\n",
+        "sync-test: finding file share failed with error %li\n",
         error.code
     );
     exit(EXIT_FAILURE);
