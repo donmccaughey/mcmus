@@ -36,18 +36,6 @@ static Manifest *load_manifest_or_empty(
 }
 
 
-static NSURLSession *session_calling_back_on(dispatch_queue_t queue)
-{
-    NSOperationQueue *callbackQueue = [NSOperationQueue new];
-    callbackQueue.underlyingQueue = queue;
-    return [NSURLSession
-        sessionWithConfiguration:NSURLSessionConfiguration
-                                     .ephemeralSessionConfiguration
-                        delegate:nil
-                   delegateQueue:callbackQueue];
-}
-
-
 @implementation FileSyncing {
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
@@ -89,7 +77,14 @@ static NSURLSession *session_calling_back_on(dispatch_queue_t queue)
     _serialQueue = dispatch_queue_create(
         NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
     );
-    _session = session_calling_back_on(_serialQueue);
+
+    NSOperationQueue *serialOperationQueue = [NSOperationQueue new];
+    serialOperationQueue.underlyingQueue = _serialQueue;
+    NSURLSessionConfiguration *configuration =
+        [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    _session = [NSURLSession sessionWithConfiguration:configuration
+                                             delegate:nil
+                                        delegateQueue:serialOperationQueue];
 
     return self;
 }
