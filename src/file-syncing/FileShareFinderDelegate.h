@@ -4,7 +4,7 @@
 @class FileShare;
 
 
-@protocol BrowserDelegate <NSObject>
+@protocol FileShareFinderDelegate <NSObject>
 
 - (void)didFindFileShares:(NSArray<FileShare *> *)fileShares;
 

@@ -1,10 +1,10 @@
 #import <XCTest/XCTest.h>
 
-#import "Browser.h"
-#import "BrowserDelegate.h"
 #import "ClockFake.h"
 #import "DNSFake.h"
 #import "FileShare.h"
+#import "FileShareFinder.h"
+#import "FileShareFinderDelegate.h"
 #import "NSError+FileSyncing.h"
 
 
@@ -27,7 +27,7 @@ static NSString *current_queue_label(void)
 }
 
 
-@interface BrowserDelegateSpy : NSObject <BrowserDelegate>
+@interface BrowserDelegateSpy : NSObject <FileShareFinderDelegate>
 
 @property (nonatomic, readonly) NSMutableArray<NSArray<FileShare *> *> *found;
 @property (nonatomic, readonly) NSMutableArray<NSError *> *errors;
@@ -69,17 +69,17 @@ static NSString *current_queue_label(void)
 @end
 
 
-@interface BrowserTests : XCTestCase
+@interface FileShareFinderTests : XCTestCase
 @end
 
 
-@implementation BrowserTests {
+@implementation FileShareFinderTests {
     dispatch_queue_t _serialQueue;
     dispatch_queue_t _delegateQueue;
     BrowserDelegateSpy *_delegate;
     DNSFake *_dns;
     ClockFake *_clock;
-    Browser *_browser;
+    FileShareFinder *_browser;
 }
 
 
@@ -93,12 +93,12 @@ static NSString *current_queue_label(void)
     _delegate = [BrowserDelegateSpy new];
     _dns = [DNSFake new];
     _clock = [ClockFake new];
-    _browser = [[Browser alloc] initWithSerialQueue:_serialQueue
-                                            timeout:Timeout
-                                           delegate:_delegate
-                                      delegateQueue:_delegateQueue
-                                                dns:_dns
-                                              clock:_clock];
+    _browser = [[FileShareFinder alloc] initWithSerialQueue:_serialQueue
+                                                    timeout:Timeout
+                                                   delegate:_delegate
+                                              delegateQueue:_delegateQueue
+                                                        dns:_dns
+                                                      clock:_clock];
 }
 
 
@@ -355,7 +355,7 @@ static NSString *current_queue_label(void)
 
 - (void)testBrowserKeepsItselfAliveUntilItFinishes;
 {
-    __weak Browser *weakBrowser = _browser;
+    __weak FileShareFinder *weakBrowser = _browser;
     @autoreleasepool {
         [self start];
         _browser = nil;
@@ -373,7 +373,7 @@ static NSString *current_queue_label(void)
 
 - (void)testUnstartedBrowserIsReleasedWithItsOwner;
 {
-    __weak Browser *weakBrowser = _browser;
+    __weak FileShareFinder *weakBrowser = _browser;
 
     @autoreleasepool {
         _browser = nil;

@@ -3,7 +3,7 @@
 
 @class FileShare;
 
-@protocol BrowserDelegate;
+@protocol FileShareFinderDelegate;
 @protocol Clock;
 @protocol DNS;
 
@@ -11,11 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-@interface Browser : NSObject
+@interface FileShareFinder : NSObject
 
 - (instancetype)initWithSerialQueue:(dispatch_queue_t)serialQueue
                             timeout:(NSTimeInterval)timeout
-                           delegate:(id<BrowserDelegate>)delegate
+                           delegate:(id<FileShareFinderDelegate>)delegate
                       delegateQueue:(dispatch_queue_t)delegateQueue
                                 dns:(id<DNS>)dns
                               clock:(id<Clock>)clock;

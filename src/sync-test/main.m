@@ -4,9 +4,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Browser.h"
 #import "ClockReal.h"
 #import "DNSReal.h"
+#import "FileShareFinder.h"
 #import "FileSyncing.h"
 #import "FileSystemReal.h"
 #import "Manifest.h"
@@ -15,10 +15,6 @@
 
 
 static const int usageExitStatus = 2;
-
-static Browser *browser;
-static FileSyncing *fileSyncing;
-static SyncTest *syncTest;
 
 
 static SyncTestOptions *parse_options_or_exit(void)
@@ -61,6 +57,11 @@ static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
 
 int main(int argc, const char *argv[])
 {
+    FileShareFinder *finder;
+    FileSyncing *fileSyncing;
+    SyncTest *syncTest;
+
+
     @autoreleasepool {
         SyncTestOptions *options = parse_options_or_exit();
         id<FileSystem> fileSystem = [FileSystemReal new];
@@ -84,16 +85,17 @@ int main(int argc, const char *argv[])
             (unsigned long)fileSyncing.localManifest.trackCount
         );
         syncTest.fileSyncing = fileSyncing;
-        // [fileSyncing findFileSharesWithTimeout:3];
+
         dispatch_queue_t serialQueue =
             dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
-        browser = [[Browser alloc] initWithSerialQueue:serialQueue
-                                               timeout:3
-                                              delegate:syncTest
-                                         delegateQueue:dispatch_get_main_queue()
-                                                   dns:dns
-                                                 clock:clock];
-        [browser start];
+        finder = [[FileShareFinder alloc]
+            initWithSerialQueue:serialQueue
+                        timeout:3
+                       delegate:syncTest
+                  delegateQueue:dispatch_get_main_queue()
+                            dns:dns
+                          clock:clock];
+        [finder start];
     }
     dispatch_main();
 }

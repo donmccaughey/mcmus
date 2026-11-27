@@ -1,9 +1,9 @@
-#import "Browser.h"
+#import "FileShareFinder.h"
 
-#import "BrowserDelegate.h"
 #import "Clock.h"
 #import "DNS.h"
 #import "FileShare.h"
+#import "FileShareFinderDelegate.h"
 #import "NSError+FileSyncing.h"
 
 
@@ -19,7 +19,7 @@ static void browseReply(
 );
 
 
-@interface Browser ()
+@interface FileShareFinder ()
 
 @property (nonatomic, readonly) dispatch_queue_t serialQueue;
 
@@ -41,11 +41,11 @@ static void browseReply(
 @end
 
 
-@implementation Browser {
+@implementation FileShareFinder {
     dispatch_queue_t _serialQueue;
     NSTimeInterval _timeout;
     id<ClockTimer> _Nullable _timeoutTimer;
-    __weak id<BrowserDelegate> _delegate;
+    __weak id<FileShareFinderDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     NSMutableArray<FileShare *> *_fileShares;
     id<DNS> _dns;
@@ -55,7 +55,7 @@ static void browseReply(
 
 - (instancetype)initWithSerialQueue:(dispatch_queue_t)serialQueue
                             timeout:(NSTimeInterval)timeout
-                           delegate:(id<BrowserDelegate>)delegate
+                           delegate:(id<FileShareFinderDelegate>)delegate
                       delegateQueue:(dispatch_queue_t)delegateQueue
                                 dns:(id<DNS>)dns
                               clock:(id<Clock>)clock;
@@ -134,7 +134,7 @@ static void browseReply(
 {
     dispatch_assert_queue(_serialQueue);
 
-    __strong id<BrowserDelegate> delegate = _delegate;
+    __strong id<FileShareFinderDelegate> delegate = _delegate;
     NSError *error = [NSError dnsServiceErrorWithCode:errorCode];
     dispatch_async(_delegateQueue, ^{
         [delegate didFailToBrowseWithError:error];
@@ -148,7 +148,7 @@ static void browseReply(
 {
     dispatch_assert_queue(_serialQueue);
 
-    __strong id<BrowserDelegate> delegate = _delegate;
+    __strong id<FileShareFinderDelegate> delegate = _delegate;
     __strong NSArray<FileShare *> *fileShares = [_fileShares copy];
     dispatch_async(_delegateQueue, ^{
         [delegate didFindFileShares:fileShares];
@@ -192,7 +192,7 @@ static void browseReply(
         return;
     }
 
-    __weak Browser *weakSelf = self;
+    __weak FileShareFinder *weakSelf = self;
     _timeoutTimer = [_clock after:_timeout
                           onQueue:_serialQueue
                               run:^{ [weakSelf finishWithFileShares]; }];
@@ -213,7 +213,7 @@ static void browseReply(
     void *context
 )
 {
-    Browser *browser = (__bridge Browser *)context;
+    FileShareFinder *browser = (__bridge FileShareFinder *)context;
     NSCAssert(browser, @"Expected a Browser");
     dispatch_assert_queue(browser.serialQueue);
     [browser browseWithFlags:flags

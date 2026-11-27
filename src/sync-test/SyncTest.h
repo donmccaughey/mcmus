@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "BrowserDelegate.h"
+#import "FileShareFinderDelegate.h"
 #import "FileSyncingDelegate.h"
 
 
@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-@interface SyncTest : NSObject <BrowserDelegate, FileSyncingDelegate>
+@interface SyncTest : NSObject <FileShareFinderDelegate, FileSyncingDelegate>
 
 @property (nonatomic) FileSyncing *fileSyncing;
 
