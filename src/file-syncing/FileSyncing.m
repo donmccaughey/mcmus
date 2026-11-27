@@ -50,6 +50,7 @@
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
+                     serialQueue:(dispatch_queue_t)serialQueue
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
                       fileSystem:(id<FileSystem>)fileSystem
@@ -59,16 +60,13 @@
     self = [super init];
     if (!self) return nil;
 
+    _serialQueue = serialQueue;
     _delegate = delegate;
     _delegateQueue = delegateQueue;
     _dns = dns;
     _clock = clock;
     _state = [[FileSyncingState alloc] initWithLocalManifestPath:manifestPath
                                                    andFileSystem:fileSystem];
-
-    _serialQueue = dispatch_queue_create(
-        NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
-    );
 
     NSOperationQueue *serialOperationQueue = [NSOperationQueue new];
     serialOperationQueue.underlyingQueue = _serialQueue;

@@ -88,12 +88,16 @@ static FileSystemFake *file_system_with_manifest(NSString *csv)
 
 
 @implementation FileSyncingTests {
+    dispatch_queue_t _serialQueue;
     FileSyncingDelegateStub *_delegate;
 }
 
 
 - (void)setUp;
 {
+    _serialQueue = dispatch_queue_create(
+        NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
+    );
     _delegate = [FileSyncingDelegateStub new];
 }
 
@@ -104,6 +108,7 @@ static FileSystemFake *file_system_with_manifest(NSString *csv)
         initWithMusicDir:[NSURL fileURLWithPath:@"/Music" isDirectory:YES]
               workingDir:[NSURL fileURLWithPath:@"/Working" isDirectory:YES]
             manifestPath:manifest_path()
+             serialQueue:_serialQueue
                 delegate:_delegate
            delegateQueue:dispatch_get_main_queue()
               fileSystem:fileSystem

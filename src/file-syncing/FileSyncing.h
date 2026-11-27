@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
+                     serialQueue:(dispatch_queue_t)serialQueue
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
                       fileSystem:(id<FileSystem>)fileSystem

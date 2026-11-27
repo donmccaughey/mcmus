@@ -68,6 +68,8 @@ int main(int argc, const char *argv[])
         exit_unless_listable(options.musicDirectoryURL, fileSystem);
         exit_unless_listable(options.workingDirectoryURL, fileSystem);
 
+        dispatch_queue_t serialQueue =
+            dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
         syncTest = [SyncTest new];
         id<DNS> dns = [DNSReal new];
         id<Clock> clock = [ClockReal new];
@@ -75,6 +77,7 @@ int main(int argc, const char *argv[])
             [[FileSyncing alloc] initWithMusicDir:options.musicDirectoryURL
                                        workingDir:options.workingDirectoryURL
                                      manifestPath:options.manifestURL
+                                      serialQueue:serialQueue
                                          delegate:syncTest
                                     delegateQueue:dispatch_get_main_queue()
                                        fileSystem:fileSystem
@@ -86,8 +89,6 @@ int main(int argc, const char *argv[])
         );
         syncTest.fileSyncing = fileSyncing;
 
-        dispatch_queue_t serialQueue =
-            dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
         finder =
             [[FileShareFinder alloc] initWithTimeout:3
                                          serialQueue:serialQueue
