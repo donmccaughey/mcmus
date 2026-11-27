@@ -248,7 +248,7 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
 }
 
 
-- (NSArray<TrackMetadata *> *)tracksChangedIn:(Manifest *)other;
+- (NSArray<TrackMetadata *> *)tracksChangedFrom:(Manifest *)other;
 {
     NSMutableArray<TrackMetadata *> *changed = [NSMutableArray array];
     for (NSString *relativePath in sorted_relative_paths(_metadataByRelativePath

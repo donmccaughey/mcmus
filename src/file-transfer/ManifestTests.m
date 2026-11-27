@@ -461,7 +461,7 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
         make_metadata(@"only-there.mp3", 6, 60),
     ]);
 
-    NSArray<TrackMetadata *> *changed = [manifest tracksChangedIn:other];
+    NSArray<TrackMetadata *> *changed = [manifest tracksChangedFrom:other];
 
     XCTAssertEqual(changed.count, 2UL);
     XCTAssertEqual(changed[0], changedA);
@@ -476,8 +476,8 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
     Manifest *manifest = make_manifest(@[mine]);
     Manifest *other = make_manifest(@[theirs]);
 
-    XCTAssertEqual([manifest tracksChangedIn:other].firstObject, mine);
-    XCTAssertEqual([other tracksChangedIn:manifest].firstObject, theirs);
+    XCTAssertEqual([manifest tracksChangedFrom:other].firstObject, mine);
+    XCTAssertEqual([other tracksChangedFrom:manifest].firstObject, theirs);
 }
 
 
@@ -492,7 +492,7 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
         make_metadata(@"one-zero.mp3", 2, 20),
     ]);
 
-    NSArray<TrackMetadata *> *changed = [manifest tracksChangedIn:other];
+    NSArray<TrackMetadata *> *changed = [manifest tracksChangedFrom:other];
 
     XCTAssertEqual(changed.count, 1UL);
     XCTAssertEqualObjects(changed[0].relativePath, @"one-zero.mp3");
@@ -595,12 +595,12 @@ static NSError *error_from_csv_path(FileSystemFake *fileSystem)
     [manifest addOrReplaceTracksFromArray:@[added, replacement]];
 
     XCTAssertEqualObjects([manifest tracksMissingFrom:other], @[added]);
-    XCTAssertEqualObjects([manifest tracksChangedIn:other], @[replacement]);
+    XCTAssertEqualObjects([manifest tracksChangedFrom:other], @[replacement]);
 
     [other addOrReplaceTracksFromArray:@[added, replacement]];
 
     XCTAssertEqualObjects([manifest tracksMissingFrom:other], @[]);
-    XCTAssertEqualObjects([manifest tracksChangedIn:other], @[]);
+    XCTAssertEqualObjects([manifest tracksChangedFrom:other], @[]);
 }
 
 

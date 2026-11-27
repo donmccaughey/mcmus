@@ -42,6 +42,27 @@ static Manifest *manifest_with_track(NSString *relativePath)
 }
 
 
+static const unsigned long long megabyte = 1024ULL * 1024;
+static const NSUInteger serverFileHash = 7;
+
+
+static Manifest *server_manifest_with_sizes(
+    NSDictionary<NSString *, NSNumber *> *sizesByPath
+)
+{
+    NSMutableArray<TrackMetadata *> *metadata = [NSMutableArray array];
+    for (NSString *relativePath in sizesByPath) {
+        unsigned long long size =
+            sizesByPath[relativePath].unsignedLongLongValue;
+        [metadata addObject:[[TrackMetadata alloc]
+                                initWithRelativePath:relativePath
+                                                size:size
+                                            fileHash:serverFileHash]];
+    }
+    return [[Manifest alloc] initWithTrackMetadata:metadata];
+}
+
+
 static NSString *csv_text(Manifest *manifest)
 {
     return [[NSString alloc] initWithData:manifest.csv
@@ -113,6 +134,14 @@ static NSString *csv_text(Manifest *manifest)
 }
 
 
+- (void)testInitStartsWithEmptyTarballs;
+{
+    FileSyncingState *state = state_with_file_system([FileSystemFake new]);
+
+    XCTAssertEqualObjects(state.tarballs, @[]);
+}
+
+
 #pragma mark - updateWithServerManifest: tests
 
 
@@ -148,6 +177,153 @@ static NSString *csv_text(Manifest *manifest)
     [state updateWithServerManifest:manifest_with_track(@"Server.m4a")];
 
     XCTAssertEqualObjects(csv_text(state.localManifest), csv);
+}
+
+
+- (void)testUpdateKeepsServerMetadataForChangedTrack;
+{
+    FileSyncingState *state = state_with_file_system(
+        file_system_with_local_manifest(@"path,size,hash\r\nTune.m4a,9,11\r\n")
+    );
+
+    [state
+        updateWithServerManifest:server_manifest_with_sizes(@{@"Tune.m4a": @20}
+                                 )];
+
+    XCTAssertEqual(state.changedTracks.count, 1UL);
+    XCTAssertEqual(state.changedTracks.firstObject.size, 20ULL);
+    XCTAssertEqual(state.changedTracks.firstObject.fileHash, serverFileHash);
+}
+
+
+#pragma mark - tarballs tests
+
+
+- (void)testTarballsAreEmptyWhenNothingToDownload;
+{
+    NSString *csv = @"path,size,hash\r\nSame.m4a,5,7\r\nRemoved.m4a,9,11\r\n";
+    FileSyncingState *state =
+        state_with_file_system(file_system_with_local_manifest(csv));
+
+    [state updateWithServerManifest:manifest_with_track(@"Same.m4a")];
+
+    XCTAssertEqualObjects(state.tarballs, @[]);
+}
+
+
+- (void)testTarballsPutSmallAddedTracksInOneTarballSortedByPath;
+{
+    FileSyncingState *state = state_with_file_system([FileSystemFake new]);
+
+    [state updateWithServerManifest:server_manifest_with_sizes(@{
+               @"C.m4a": @5,
+               @"A.m4a": @5,
+               @"B.m4a": @5,
+           })];
+
+    XCTAssertEqualObjects(state.tarballs, (@[@[@"A.m4a", @"B.m4a", @"C.m4a"]]));
+}
+
+
+- (void)testTarballsMergeAddedAndChangedTracksSortedByPath;
+{
+    NSString *csv = @"path,size,hash\r\nB.m4a,9,11\r\nD.m4a,9,11\r\n";
+    FileSyncingState *state =
+        state_with_file_system(file_system_with_local_manifest(csv));
+
+    [state updateWithServerManifest:server_manifest_with_sizes(@{
+               @"A.m4a": @5,
+               @"B.m4a": @5,
+               @"C.m4a": @5,
+               @"D.m4a": @5,
+           })];
+
+    XCTAssertEqualObjects(
+        state.tarballs, (@[@[@"A.m4a", @"B.m4a", @"C.m4a", @"D.m4a"]])
+    );
+}
+
+
+- (void)testTarballsLeaveOutRemovedTracks;
+{
+    NSString *csv = @"path,size,hash\r\nRemoved.m4a,9,11\r\n";
+    FileSyncingState *state =
+        state_with_file_system(file_system_with_local_manifest(csv));
+
+    [state updateWithServerManifest:manifest_with_track(@"Added.m4a")];
+
+    XCTAssertEqualObjects(state.tarballs, (@[@[@"Added.m4a"]]));
+}
+
+
+- (void)testTarballsKeepTracksTotallingExactlyTheLimitTogether;
+{
+    FileSyncingState *state = state_with_file_system([FileSystemFake new]);
+
+    [state updateWithServerManifest:server_manifest_with_sizes(@{
+               @"A.m4a": @(60 * megabyte),
+               @"B.m4a": @(40 * megabyte),
+           })];
+
+    XCTAssertEqualObjects(state.tarballs, (@[@[@"A.m4a", @"B.m4a"]]));
+}
+
+
+- (void)testTarballsStartNewTarballWhenTotalWouldExceedTheLimit;
+{
+    FileSyncingState *state = state_with_file_system([FileSystemFake new]);
+
+    [state updateWithServerManifest:server_manifest_with_sizes(@{
+               @"A.m4a": @(60 * megabyte),
+               @"B.m4a": @(40 * megabyte + 1),
+               @"C.m4a": @(10 * megabyte),
+           })];
+
+    XCTAssertEqualObjects(
+        state.tarballs, (@[@[@"A.m4a"], @[@"B.m4a", @"C.m4a"]])
+    );
+}
+
+
+- (void)testTarballsPutTrackOverTheLimitAlone;
+{
+    FileSyncingState *state = state_with_file_system([FileSystemFake new]);
+
+    [state updateWithServerManifest:server_manifest_with_sizes(@{
+               @"A.m4a": @5,
+               @"B.m4a": @(150 * megabyte),
+               @"C.m4a": @5,
+           })];
+
+    XCTAssertEqualObjects(
+        state.tarballs, (@[@[@"A.m4a"], @[@"B.m4a"], @[@"C.m4a"]])
+    );
+}
+
+
+- (void)testTarballsSizeChangedTrackFromServerManifest;
+{
+    NSString *csv = @"path,size,hash\r\nB.m4a,9,11\r\n";
+    FileSyncingState *state =
+        state_with_file_system(file_system_with_local_manifest(csv));
+
+    [state updateWithServerManifest:server_manifest_with_sizes(@{
+               @"A.m4a": @(60 * megabyte),
+               @"B.m4a": @(60 * megabyte),
+           })];
+
+    XCTAssertEqualObjects(state.tarballs, (@[@[@"A.m4a"], @[@"B.m4a"]]));
+}
+
+
+- (void)testTarballsAreReplacedByLaterUpdate;
+{
+    FileSyncingState *state = state_with_file_system([FileSystemFake new]);
+    [state updateWithServerManifest:manifest_with_track(@"Earlier.m4a")];
+
+    [state updateWithServerManifest:manifest_with_track(@"Later.m4a")];
+
+    XCTAssertEqualObjects(state.tarballs, (@[@[@"Later.m4a"]]));
 }
 
 
