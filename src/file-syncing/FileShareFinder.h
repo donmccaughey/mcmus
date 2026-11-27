@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                            delegate:(id<FileShareFinderDelegate>)delegate
                       delegateQueue:(dispatch_queue_t)delegateQueue
                                 dns:(id<DNS>)dns
-                              clock:(id<Clock>)clock;
+                              clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

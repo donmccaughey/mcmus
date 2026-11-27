@@ -19,9 +19,7 @@ static void browseReply(
 );
 
 
-@interface FileShareFinder ()
-
-@property (nonatomic, readonly) dispatch_queue_t serialQueue;
+@interface FileShareFinder (OnSerialQueue)
 
 - (void)browseWithFlags:(DNSServiceFlags)flags
          interfaceIndex:(uint32_t)interfaceIndex
@@ -37,6 +35,13 @@ static void browseReply(
 - (void)finishWithFileShares;
 
 - (void)startBrowsing;
+
+@end
+
+
+@interface FileShareFinder ()
+
+@property (nonatomic, readonly) dispatch_queue_t serialQueue;
 
 @end
 
@@ -83,6 +88,15 @@ static void browseReply(
 }
 
 
+- (void)start;
+{
+    dispatch_async(_serialQueue, ^{ [self startBrowsing]; });
+}
+
+
+#pragma OnSerialQueue
+
+
 - (void)browseWithFlags:(DNSServiceFlags)flags
          interfaceIndex:(uint32_t)interfaceIndex
             serviceName:(char const *)serviceName
@@ -124,7 +138,7 @@ static void browseReply(
     if (_serviceRef) {
         [_dns deallocateServiceRef:_serviceRef];
         _serviceRef = NULL;
-        // balances CFRetain in -start
+        // balances CFRetain in -startBrowsing
         CFRelease((__bridge CFTypeRef)self);
     }
 }
@@ -157,11 +171,6 @@ static void browseReply(
     [self cleanup];
 }
 
-
-- (void)start;
-{
-    dispatch_async(_serialQueue, ^{ [self startBrowsing]; });
-}
 
 - (void)startBrowsing;
 {
