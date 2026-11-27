@@ -79,7 +79,7 @@ static NSString *current_queue_label(void)
     BrowserDelegateSpy *_delegate;
     DNSFake *_dns;
     ClockFake *_clock;
-    FileShareFinder *_browser;
+    FileShareFinder *_fileShareFinder;
 }
 
 
@@ -93,12 +93,12 @@ static NSString *current_queue_label(void)
     _delegate = [BrowserDelegateSpy new];
     _dns = [DNSFake new];
     _clock = [ClockFake new];
-    _browser = [[FileShareFinder alloc] initWithSerialQueue:_serialQueue
-                                                    timeout:Timeout
-                                                   delegate:_delegate
-                                              delegateQueue:_delegateQueue
-                                                        dns:_dns
-                                                      clock:_clock];
+    _fileShareFinder = [[FileShareFinder alloc] initWithTimeout:Timeout
+                                                    serialQueue:_serialQueue
+                                                       delegate:_delegate
+                                                  delegateQueue:_delegateQueue
+                                                            dns:_dns
+                                                          clock:_clock];
 }
 
 
@@ -114,7 +114,7 @@ static NSString *current_queue_label(void)
 
 - (void)start;
 {
-    [_browser start];
+    [_fileShareFinder start];
     [self onSerialQueue:^{}];
 }
 
@@ -355,10 +355,10 @@ static NSString *current_queue_label(void)
 
 - (void)testBrowserKeepsItselfAliveUntilItFinishes;
 {
-    __weak FileShareFinder *weakBrowser = _browser;
+    __weak FileShareFinder *weakBrowser = _fileShareFinder;
     @autoreleasepool {
         [self start];
-        _browser = nil;
+        _fileShareFinder = nil;
     }
     XCTAssertNotNil(weakBrowser);
 
@@ -373,10 +373,10 @@ static NSString *current_queue_label(void)
 
 - (void)testUnstartedBrowserIsReleasedWithItsOwner;
 {
-    __weak FileShareFinder *weakBrowser = _browser;
+    __weak FileShareFinder *weakBrowser = _fileShareFinder;
 
     @autoreleasepool {
-        _browser = nil;
+        _fileShareFinder = nil;
     }
 
     XCTAssertNil(weakBrowser);

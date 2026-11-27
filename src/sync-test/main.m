@@ -88,13 +88,13 @@ int main(int argc, const char *argv[])
 
         dispatch_queue_t serialQueue =
             dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
-        finder = [[FileShareFinder alloc]
-            initWithSerialQueue:serialQueue
-                        timeout:3
-                       delegate:syncTest
-                  delegateQueue:dispatch_get_main_queue()
-                            dns:dns
-                          clock:clock];
+        finder =
+            [[FileShareFinder alloc] initWithTimeout:3
+                                         serialQueue:serialQueue
+                                            delegate:syncTest
+                                       delegateQueue:dispatch_get_main_queue()
+                                                 dns:dns
+                                               clock:clock];
         [finder start];
     }
     dispatch_main();

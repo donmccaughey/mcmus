@@ -58,12 +58,12 @@ static void browseReply(
     DNSServiceRef _serviceRef;
 }
 
-- (instancetype)initWithSerialQueue:(dispatch_queue_t)serialQueue
-                            timeout:(NSTimeInterval)timeout
-                           delegate:(id<FileShareFinderDelegate>)delegate
-                      delegateQueue:(dispatch_queue_t)delegateQueue
-                                dns:(id<DNS>)dns
-                              clock:(id<Clock>)clock;
+- (instancetype)initWithTimeout:(NSTimeInterval)timeout
+                    serialQueue:(dispatch_queue_t)serialQueue
+                       delegate:(id<FileShareFinderDelegate>)delegate
+                  delegateQueue:(dispatch_queue_t)delegateQueue
+                            dns:(id<DNS>)dns
+                          clock:(id<Clock>)clock;
 {
     self = [super init];
     if (!self) return nil;
