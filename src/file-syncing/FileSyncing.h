@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (void)findFileSharesWithTimeout:(NSTimeInterval)timeout;
-
 - (void)syncWithFileShare:(FileShare *)fileShare;
 
 @end

@@ -16,7 +16,7 @@
 
 
 - (void)fileSyncing:(FileSyncing *)fileSyncing
-    didCompleteWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
+    didSyncWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
 {
 }
 

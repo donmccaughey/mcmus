@@ -15,6 +15,9 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 @implementation SyncTest
 
 
+#pragma BrowserDelegate
+
+
 - (void)didFindFileShares:(NSArray<FileShare *> *)fileShares;
 {
     if (!fileShares.count) {
@@ -41,8 +44,11 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 }
 
 
+#pragma FileSyncingDelegate
+
+
 - (void)fileSyncing:(FileSyncing *)fileSyncing
-    didCompleteWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
+    didSyncWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
 {
     printf("%lu track(s) synced.\n", modifiedTrackCount);
     exit(EXIT_SUCCESS);
@@ -57,34 +63,6 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
     } else {
         printf("Music library is up-to-date.\n");
     }
-}
-
-
-- (void)fileSyncing:(FileSyncing *)fileSyncing
-    didFindFileShares:(NSArray<FileShare *> *)fileShares;
-{
-    if (!fileShares.count) {
-        printf("No file sharing servers found.\n");
-        exit(EXIT_SUCCESS);
-    }
-
-    printFileShares(fileShares);
-    FileShare *fileShare = fileShares.count == 1
-        ? fileShares.firstObject
-        : promptForFileShareOrExit(fileShares);
-    [fileSyncing syncWithFileShare:fileShare];
-}
-
-
-- (void)fileSyncing:(FileSyncing *)fileSyncing
-    didFailToFindFileSharesWithError:(NSError *)error;
-{
-    fprintf(
-        stderr,
-        "sync-test: finding file shares failed with error %li\n",
-        error.code
-    );
-    exit(EXIT_FAILURE);
 }
 
 

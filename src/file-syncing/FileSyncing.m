@@ -1,7 +1,5 @@
 #import "FileSyncing.h"
 
-#import "Browser.h"
-#import "BrowserDelegate.h"
 #import "FileSyncingDelegate.h"
 #import "FileSyncingState.h"
 #import "Manifest.h"
@@ -13,7 +11,6 @@
 
 // these delegates run on _serialQueue
 @interface FileSyncing () <
-    BrowserDelegate,
     NSURLSessionDelegate,
     NSURLSessionDataDelegate,
     NSURLSessionTaskDelegate,
@@ -43,7 +40,6 @@
     NSURLSession *_session;
 
     // objects below live on _serialQueue
-    Browser *_browser;
     Resolver *_resolver;
     NSURLSessionDataTask *_manifestTask;
     NSMutableData *_manifestData;
@@ -112,21 +108,6 @@
 }
 
 
-- (void)findFileSharesWithTimeout:(NSTimeInterval)timeout;
-{
-    dispatch_async(_serialQueue, ^{
-        NSAssert(!self->_browser, @"Expected only one active Browser");
-        self->_browser = [[Browser alloc] initWithSerialQueue:self->_serialQueue
-                                                      timeout:timeout
-                                                     delegate:self
-                                                delegateQueue:self->_serialQueue
-                                                          dns:self->_dns
-                                                        clock:self->_clock];
-        [self->_browser start];
-    });
-}
-
-
 - (void)syncWithFileShare:(FileShare *)fileShare;
 {
     // TODO: validate local manifest against music dir
@@ -175,32 +156,6 @@
                                                       dns:self->_dns
                                                     clock:self->_clock];
     [self->_resolver start];
-}
-
-
-#pragma BrowserDelegate
-
-
-- (void)didFindFileShares:(NSArray<FileShare *> *)fileShares;
-{
-    dispatch_assert_queue(_serialQueue);
-
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self didFindFileShares:fileShares];
-    });
-    _browser = nil;
-}
-
-
-- (void)didFailToBrowseWithError:(NSError *)error;
-{
-    dispatch_assert_queue(_serialQueue);
-
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self
-            didFailToFindFileSharesWithError:error];
-    });
-    _browser = nil;
 }
 
 
@@ -276,7 +231,7 @@
     // TODO: remove old tracks, download new & updated tracks
     dispatch_async(_delegateQueue, ^{
         [self->_delegate fileSyncing:self
-            didCompleteWithModifiedTrackCount:self->_state.modifiedTrackCount];
+            didSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
     });
 }
 
