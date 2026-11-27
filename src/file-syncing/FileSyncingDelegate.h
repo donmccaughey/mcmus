@@ -28,4 +28,7 @@
 - (void)fileSyncing:(FileSyncing *)fileSyncing
     didFailToGetManifestWithError:(NSError *)error;
 
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    didFailToWriteManifestWithError:(NSError *)error;
+
 @end

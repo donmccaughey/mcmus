@@ -192,6 +192,19 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 }
 
 
+- (void)fileSyncing:(FileSyncing *)fileSyncing
+    didFailToWriteManifestWithError:(NSError *)error;
+{
+    fprintf(
+        stderr,
+        "sync-test: writing manifest failed with error %s %li\n",
+        error.domain.UTF8String,
+        error.code
+    );
+    exit(EXIT_FAILURE);
+}
+
+
 @end
 
 

@@ -2,11 +2,13 @@
 
 #import "FileSyncingDelegate.h"
 #import "FileSyncingState.h"
+#import "FileSystem.h"
 #import "Manifest.h"
 #import "NSError+FileSyncing.h"
 #import "NSURL+FileSyncing.h"
 #import "Resolver.h"
 #import "ResolverDelegate.h"
+#import "TrackMetadata.h"
 
 
 // delegates also run on _serialQueue
@@ -29,11 +31,15 @@
 
 
 @implementation FileSyncing {
+    NSURL *_musicDir;
+    NSURL *_workingDir;
+    NSURL *_manifestPath;
     dispatch_queue_serial_t _serialQueue;
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     id<DNS> _dns;
     id<Clock> _clock;
+    id<FileSystem> _fileSystem;
     NSURLSession *_session;
 
     // objects below live on _serialQueue
@@ -57,11 +63,15 @@
     self = [super init];
     if (!self) return nil;
 
+    _musicDir = musicDir;
+    _workingDir = workingDir;
+    _manifestPath = manifestPath;
     _serialQueue = serialQueue;
     _delegate = delegate;
     _delegateQueue = delegateQueue;
     _dns = dns;
     _clock = clock;
+    _fileSystem = fileSystem;
     _state = [[FileSyncingState alloc] initWithLocalManifestPath:manifestPath
                                                    andFileSystem:fileSystem];
 
@@ -140,7 +150,38 @@
             willSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
     });
 
-    // TODO: remove old tracks, update local manifest
+    NSMutableArray<TrackMetadata *> *unremovedTracks = [NSMutableArray new];
+    for (TrackMetadata *trackMetadata in _state.removedTracks) {
+        NSURL *track = [NSURL fileURLWithPath:trackMetadata.relativePath
+                                relativeToURL:_musicDir];
+        NSError *error;
+        BOOL removed = [_fileSystem removeItemAtURL:track error:&error];
+        if (removed) {
+            [_state.localManifest
+                removeTrackWithRelativePath:trackMetadata.relativePath];
+        } else {
+            [unremovedTracks addObject:trackMetadata];
+            NSLog(
+                @"Unable to remove track '%@': %@",
+                trackMetadata.relativePath,
+                error
+            );
+        }
+    }
+    _state.removedTracks = unremovedTracks;
+
+    NSData *localManifestCSV = _state.localManifest.csv;
+    NSError *error;
+    BOOL wrote = [_fileSystem writeData:localManifestCSV
+                                 toFile:_manifestPath
+                                  error:&error];
+    if (!wrote) {
+        dispatch_async(_delegateQueue, ^{
+            [self->_delegate fileSyncing:self
+                didFailToWriteManifestWithError:error];
+        });
+        return;
+    }
 
     // TODO: download tarballs, update local manifest after each download
 
