@@ -114,8 +114,8 @@ static NSString *current_queue_label(void)
 
 - (void)start;
 {
-    Browser *browser = _browser;
-    [self onSerialQueue:^{ [browser start]; }];
+    [_browser start];
+    [self onSerialQueue:^{}];
 }
 
 

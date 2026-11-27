@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "Browser.h"
 #import "ClockReal.h"
 #import "DNSReal.h"
 #import "FileSyncing.h"
@@ -15,6 +16,7 @@
 
 static const int usageExitStatus = 2;
 
+static Browser *browser;
 static FileSyncing *fileSyncing;
 static SyncTest *syncTest;
 
@@ -66,6 +68,8 @@ int main(int argc, const char *argv[])
         exit_unless_listable(options.workingDirectoryURL, fileSystem);
 
         syncTest = [SyncTest new];
+        id<DNS> dns = [DNSReal new];
+        id<Clock> clock = [ClockReal new];
         fileSyncing =
             [[FileSyncing alloc] initWithMusicDir:options.musicDirectoryURL
                                        workingDir:options.workingDirectoryURL
@@ -73,13 +77,23 @@ int main(int argc, const char *argv[])
                                          delegate:syncTest
                                     delegateQueue:dispatch_get_main_queue()
                                        fileSystem:fileSystem
-                                              dns:[DNSReal new]
-                                            clock:[ClockReal new]];
+                                              dns:dns
+                                            clock:clock];
         printf(
             "Local manifest contains %lu track(s)\n",
             (unsigned long)fileSyncing.localManifest.trackCount
         );
-        [fileSyncing findFileSharesWithTimeout:3];
+        syncTest.fileSyncing = fileSyncing;
+        // [fileSyncing findFileSharesWithTimeout:3];
+        dispatch_queue_t serialQueue =
+            dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
+        browser = [[Browser alloc] initWithSerialQueue:serialQueue
+                                               timeout:3
+                                              delegate:syncTest
+                                         delegateQueue:dispatch_get_main_queue()
+                                                   dns:dns
+                                                 clock:clock];
+        [browser start];
     }
     dispatch_main();
 }

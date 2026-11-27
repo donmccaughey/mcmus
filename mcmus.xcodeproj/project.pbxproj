@@ -967,6 +967,8 @@
 				"file-syncing/ResolverDelegate.h",
 			);
 			publicHeaders = (
+				"file-syncing/Browser.h",
+				"file-syncing/BrowserDelegate.h",
 				"file-syncing/FileShare.h",
 				"file-syncing/FileSyncing.h",
 				"file-syncing/FileSyncingDelegate.h",

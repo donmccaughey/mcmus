@@ -15,6 +15,32 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 @implementation SyncTest
 
 
+- (void)didFindFileShares:(NSArray<FileShare *> *)fileShares;
+{
+    if (!fileShares.count) {
+        printf("No file sharing servers found.\n");
+        exit(EXIT_SUCCESS);
+    }
+
+    printFileShares(fileShares);
+    FileShare *fileShare = fileShares.count == 1
+        ? fileShares.firstObject
+        : promptForFileShareOrExit(fileShares);
+    [_fileSyncing syncWithFileShare:fileShare];
+}
+
+
+- (void)didFailToBrowseWithError:(NSError *)error;
+{
+    fprintf(
+        stderr,
+        "sync-test: finding file shares failed with error %li\n",
+        error.code
+    );
+    exit(EXIT_FAILURE);
+}
+
+
 - (void)fileSyncing:(FileSyncing *)fileSyncing
     didCompleteWithModifiedTrackCount:(NSUInteger)modifiedTrackCount;
 {

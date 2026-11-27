@@ -36,6 +36,8 @@ static void browseReply(
 
 - (void)finishWithFileShares;
 
+- (void)startBrowsing;
+
 @end
 
 
@@ -157,6 +159,11 @@ static void browseReply(
 
 
 - (void)start;
+{
+    dispatch_async(_serialQueue, ^{ [self startBrowsing]; });
+}
+
+- (void)startBrowsing;
 {
     dispatch_assert_queue(_serialQueue);
 
