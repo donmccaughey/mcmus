@@ -18,8 +18,7 @@
 @end
 
 
-// these methods run on _serialQueue
-@interface FileSyncing (Internal)
+@interface FileSyncing (OnSerialQueue)
 
 - (void)didFailToGetManifestWithError:(NSError *)error;
 
@@ -32,9 +31,9 @@
 
 
 @implementation FileSyncing {
+    dispatch_queue_t _serialQueue;
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
-    dispatch_queue_t _serialQueue;
     id<DNS> _dns;
     id<Clock> _clock;
     NSURLSession *_session;
@@ -115,7 +114,7 @@
 }
 
 
-#pragma Internal
+#pragma OnSerialQueue
 
 
 - (void)didFailToGetManifestWithError:(NSError *)error;
@@ -226,7 +225,11 @@
         [self->_delegate fileSyncing:self
             willSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
     });
-    // TODO: remove old tracks, download new & updated tracks
+
+    // TODO: remove old tracks, update local manifest
+
+    // TODO: download tarballs, update local manifest after each download
+
     dispatch_async(_delegateQueue, ^{
         [self->_delegate fileSyncing:self
             didSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
