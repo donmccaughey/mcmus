@@ -47,7 +47,7 @@ static void browseReply(
 
 
 @implementation FileShareFinder {
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     NSTimeInterval _timeout;
     id<ClockTimer> _Nullable _timeoutTimer;
     __weak id<FileShareFinderDelegate> _delegate;
@@ -59,7 +59,7 @@ static void browseReply(
 }
 
 - (instancetype)initWithTimeout:(NSTimeInterval)timeout
-                    serialQueue:(dispatch_queue_t)serialQueue
+                    serialQueue:(dispatch_queue_serial_t)serialQueue
                        delegate:(id<FileShareFinderDelegate>)delegate
                   delegateQueue:(dispatch_queue_t)delegateQueue
                             dns:(id<DNS>)dns

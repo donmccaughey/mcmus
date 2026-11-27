@@ -23,7 +23,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
     NSURL *_musicDir;
     NSURL *_workingDir;
     NSURL *_manifestPath;
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     id<Clock> _clock;
     id<DNS> _dns;
     id<FileSystem> _fileSystem;
@@ -36,7 +36,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
-                     serialQueue:(dispatch_queue_t)serialQueue
+                     serialQueue:(dispatch_queue_serial_t)serialQueue
                            clock:(id<Clock>)clock
                              dns:(id<DNS>)dns
                       fileSystem:(id<FileSystem>)fileSystem;

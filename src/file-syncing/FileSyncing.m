@@ -31,7 +31,7 @@
 
 
 @implementation FileSyncing {
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     __weak id<FileSyncingDelegate> _delegate;
     dispatch_queue_t _delegateQueue;
     id<DNS> _dns;
@@ -49,7 +49,7 @@
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
-                     serialQueue:(dispatch_queue_t)serialQueue
+                     serialQueue:(dispatch_queue_serial_t)serialQueue
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
                            clock:(id<Clock>)clock

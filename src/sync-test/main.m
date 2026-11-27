@@ -62,8 +62,10 @@ int main(int argc, const char *argv[])
         exit_unless_listable(options.musicDirectoryURL, fileSystem);
         exit_unless_listable(options.workingDirectoryURL, fileSystem);
 
-        dispatch_queue_t serialQueue =
-            dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_serial_t serialQueue =
+            (dispatch_queue_serial_t)dispatch_queue_create(
+                "sync-test", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+            );
         id<Clock> clock = [ClockReal new];
         id<DNS> dns = [DNSReal new];
 

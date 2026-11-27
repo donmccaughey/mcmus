@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FileShareFinder : NSObject
 
 - (instancetype)initWithTimeout:(NSTimeInterval)timeout
-                    serialQueue:(dispatch_queue_t)serialQueue
+                    serialQueue:(dispatch_queue_serial_t)serialQueue
                        delegate:(id<FileShareFinderDelegate>)delegate
                   delegateQueue:(dispatch_queue_t)delegateQueue
                             dns:(id<DNS>)dns

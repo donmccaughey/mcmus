@@ -74,7 +74,7 @@ static NSString *current_queue_label(void)
 
 
 @implementation FileShareFinderTests {
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     dispatch_queue_t _delegateQueue;
     BrowserDelegateSpy *_delegate;
     DNSFake *_dns;
@@ -86,10 +86,12 @@ static NSString *current_queue_label(void)
 - (void)setUp;
 {
     [super setUp];
-    _serialQueue =
-        dispatch_queue_create("BrowserTests serial", DISPATCH_QUEUE_SERIAL);
-    _delegateQueue =
-        dispatch_queue_create(DelegateQueueLabel, DISPATCH_QUEUE_SERIAL);
+    _serialQueue = (dispatch_queue_serial_t)dispatch_queue_create(
+        "BrowserTests serial", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
+    _delegateQueue = dispatch_queue_create(
+        DelegateQueueLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
     _delegate = [BrowserDelegateSpy new];
     _dns = [DNSFake new];
     _clock = [ClockFake new];

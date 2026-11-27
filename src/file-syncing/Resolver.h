@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Resolver : NSObject
 
 - (instancetype)initWithFileShare:(FileShare *)fileShare
-                      serialQueue:(dispatch_queue_t)serialQueue
+                      serialQueue:(dispatch_queue_serial_t)serialQueue
                           timeout:(NSTimeInterval)timeout
                          delegate:(id<ResolverDelegate>)delegate
                     delegateQueue:(dispatch_queue_t)delegateQueue

@@ -88,15 +88,16 @@ static FileSystemFake *file_system_with_manifest(NSString *csv)
 
 
 @implementation FileSyncingTests {
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     FileSyncingDelegateStub *_delegate;
 }
 
 
 - (void)setUp;
 {
-    _serialQueue = dispatch_queue_create(
-        NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_SERIAL
+    _serialQueue = (dispatch_queue_serial_t)dispatch_queue_create(
+        NSStringFromClass(self.class).UTF8String,
+        DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
     );
     _delegate = [FileSyncingDelegateStub new];
 }

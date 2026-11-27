@@ -71,7 +71,7 @@ static NSString *current_queue_label(void)
 
 @implementation ResolverTests {
     FileShare *_fileShare;
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     dispatch_queue_t _delegateQueue;
     ResolverDelegateSpy *_delegate;
     DNSFake *_dns;
@@ -87,10 +87,12 @@ static NSString *current_queue_label(void)
                                                serviceName:"Den Mac"
                                                    regtype:"_mcmus._tcp."
                                                replyDomain:"local."];
-    _serialQueue =
-        dispatch_queue_create("ResolverTests serial", DISPATCH_QUEUE_SERIAL);
-    _delegateQueue =
-        dispatch_queue_create(DelegateQueueLabel, DISPATCH_QUEUE_SERIAL);
+    _serialQueue = (dispatch_queue_serial_t)dispatch_queue_create(
+        "ResolverTests serial", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
+    _delegateQueue = dispatch_queue_create(
+        DelegateQueueLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
     _delegate = [ResolverDelegateSpy new];
     _dns = [DNSFake new];
     _clock = [ClockFake new];

@@ -89,8 +89,9 @@
 - (void)testQueueTimerRunsOnAdvance;
 {
     NSMutableArray<NSString *> *fired = _fired;
-    dispatch_queue_t queue =
-        dispatch_queue_create("ClockFakeTests", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue = dispatch_queue_create(
+        "ClockFakeTests", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
     [_clock after:10 onQueue:queue run:^{ [fired addObject:@"ten"]; }];
 
     [_clock advance:10];
@@ -103,8 +104,9 @@
 - (void)testCancelledQueueTimerDoesNotRun;
 {
     NSMutableArray<NSString *> *fired = _fired;
-    dispatch_queue_t queue =
-        dispatch_queue_create("ClockFakeTests", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue = dispatch_queue_create(
+        "ClockFakeTests", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
     id<ClockTimer> timer = [_clock after:10
                                  onQueue:queue
                                      run:^{ [fired addObject:@"ten"]; }];

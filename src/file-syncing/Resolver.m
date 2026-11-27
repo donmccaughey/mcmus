@@ -40,7 +40,7 @@ static void resolveReply(
 
 @implementation Resolver {
     FileShare *_fileShare;
-    dispatch_queue_t _serialQueue;
+    dispatch_queue_serial_t _serialQueue;
     NSTimeInterval _timeout;
     id<ClockTimer> _Nullable _timeoutTimer;
     __weak id<ResolverDelegate> _delegate;
@@ -52,7 +52,7 @@ static void resolveReply(
 
 
 - (instancetype)initWithFileShare:(FileShare *)fileShare
-                      serialQueue:(dispatch_queue_t)serialQueue
+                      serialQueue:(dispatch_queue_serial_t)serialQueue
                           timeout:(NSTimeInterval)timeout
                          delegate:(id<ResolverDelegate>)delegate
                     delegateQueue:(dispatch_queue_t)delegateQueue

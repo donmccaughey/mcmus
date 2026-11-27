@@ -70,8 +70,9 @@ static void ignoreResolveReply(
     XCTAssertTrue(_serviceRef != NULL);
     if (!_serviceRef) return;
 
-    dispatch_queue_t queue =
-        dispatch_queue_create("DNSRealTests", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue = dispatch_queue_create(
+        "DNSRealTests", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
     errorCode = [_dns setDispatchQueue:queue forServiceRef:_serviceRef];
 
     XCTAssertEqual(errorCode, kDNSServiceErr_NoError);

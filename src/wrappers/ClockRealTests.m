@@ -20,7 +20,9 @@ static const void *queueKey = &queueKey;
 {
     [super setUp];
     _clock = [ClockReal new];
-    _queue = dispatch_queue_create("ClockRealTests", DISPATCH_QUEUE_SERIAL);
+    _queue = dispatch_queue_create(
+        "ClockRealTests", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
+    );
     dispatch_queue_set_specific(_queue, queueKey, (void *)queueKey, NULL);
 }
 

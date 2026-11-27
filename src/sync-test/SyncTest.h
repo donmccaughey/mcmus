@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
-                     serialQueue:(dispatch_queue_t)serialQueue
+                     serialQueue:(dispatch_queue_serial_t)serialQueue
                            clock:(id<Clock>)clock
                              dns:(id<DNS>)dns
                       fileSystem:(id<FileSystem>)fileSystem
