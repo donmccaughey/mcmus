@@ -9,18 +9,16 @@
 #import "ResolverDelegate.h"
 
 
-// these delegates run on _serialQueue
-@interface FileSyncing () <
-    NSURLSessionDelegate,
-    NSURLSessionDataDelegate,
-    NSURLSessionTaskDelegate,
-    ResolverDelegate>
-@end
-
-
-@interface FileSyncing (OnSerialQueue)
+// delegates also run on _serialQueue
+@interface FileSyncing (OnSerialQueue
+) <NSURLSessionDelegate,
+   NSURLSessionDataDelegate,
+   NSURLSessionTaskDelegate,
+   ResolverDelegate>
 
 - (void)didFailToGetManifestWithError:(NSError *)error;
+
+- (void)didGetManifest:(Manifest *)manifest;
 
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 
@@ -127,6 +125,32 @@
 }
 
 
+- (void)didGetManifest:(Manifest *)manifest;
+{
+    dispatch_assert_queue(_serialQueue);
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self didGetManifest:manifest];
+    });
+
+    [_state updateWithServerManifest:manifest];
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self
+            willSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
+    });
+
+    // TODO: remove old tracks, update local manifest
+
+    // TODO: download tarballs, update local manifest after each download
+
+    dispatch_async(_delegateQueue, ^{
+        [self->_delegate fileSyncing:self
+            didSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
+    });
+}
+
+
 - (void)getManifestFromServerAtURL:(NSURL *)serverURL;
 {
     dispatch_assert_queue(_serialQueue);
@@ -215,25 +239,7 @@
         return;
     }
 
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self didGetManifest:manifest];
-    });
-
-    [_state updateWithServerManifest:manifest];
-
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self
-            willSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
-    });
-
-    // TODO: remove old tracks, update local manifest
-
-    // TODO: download tarballs, update local manifest after each download
-
-    dispatch_async(_delegateQueue, ^{
-        [self->_delegate fileSyncing:self
-            didSyncWithModifiedTrackCount:self->_state.modifiedTrackCount];
-    });
+    [self didGetManifest:manifest];
 }
 
 
