@@ -1007,7 +1007,6 @@
 			membershipExceptions = (
 				"sync-test/FileShareSelection.m",
 				"sync-test/FileShareSelectionTests.m",
-				"sync-test/SyncTest.m",
 				"sync-test/SyncTestOptions.m",
 				"sync-test/SyncTestOptionsTests.m",
 			);

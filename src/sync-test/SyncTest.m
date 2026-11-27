@@ -3,8 +3,11 @@
 #import <net/if.h>
 
 #import "FileShare.h"
+#import "FileShareFinder.h"
+#import "FileShareFinderDelegate.h"
 #import "FileShareSelection.h"
 #import "FileSyncing.h"
+#import "FileSyncingDelegate.h"
 #import "Manifest.h"
 
 
@@ -12,7 +15,66 @@ static void printFileShares(NSArray<FileShare *> *fileShares);
 static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 
 
-@implementation SyncTest
+@interface SyncTest () <FileShareFinderDelegate, FileSyncingDelegate>
+@end
+
+
+@implementation SyncTest {
+    NSURL *_musicDir;
+    NSURL *_workingDir;
+    NSURL *_manifestPath;
+    dispatch_queue_t _serialQueue;
+    id<Clock> _clock;
+    id<DNS> _dns;
+    id<FileSystem> _fileSystem;
+
+    FileShareFinder *_fileShareFinder;
+    FileSyncing *_fileSyncing;
+}
+
+
+- (instancetype)initWithMusicDir:(NSURL *)musicDir
+                      workingDir:(NSURL *)workingDir
+                    manifestPath:(NSURL *)manifestPath
+                     serialQueue:(dispatch_queue_t)serialQueue
+                           clock:(id<Clock>)clock
+                             dns:(id<DNS>)dns
+                      fileSystem:(id<FileSystem>)fileSystem;
+{
+    self = [super init];
+    if (!self) return nil;
+
+    _musicDir = musicDir;
+    _workingDir = workingDir;
+    _manifestPath = manifestPath;
+
+    _clock = clock;
+    _dns = dns;
+    _fileSystem = fileSystem;
+    _serialQueue = serialQueue;
+
+    return self;
+}
+
+
+- (instancetype)init;
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+
+- (void)run;
+{
+    _fileShareFinder =
+        [[FileShareFinder alloc] initWithTimeout:3
+                                     serialQueue:_serialQueue
+                                        delegate:self
+                                   delegateQueue:dispatch_get_main_queue()
+                                             dns:_dns
+                                           clock:_clock];
+    [_fileShareFinder start];
+}
 
 
 #pragma BrowserDelegate
@@ -25,16 +87,36 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
         exit(EXIT_SUCCESS);
     }
 
+    _fileShareFinder = nil;
+
     printFileShares(fileShares);
     FileShare *fileShare = fileShares.count == 1
         ? fileShares.firstObject
         : promptForFileShareOrExit(fileShares);
+
+    _fileSyncing =
+        [[FileSyncing alloc] initWithMusicDir:_musicDir
+                                   workingDir:_workingDir
+                                 manifestPath:_manifestPath
+                                  serialQueue:_serialQueue
+                                     delegate:self
+                                delegateQueue:dispatch_get_main_queue()
+                                        clock:_clock
+                                          dns:_dns
+                                   fileSystem:_fileSystem];
+    printf(
+        "Local manifest contains %lu track(s)\n",
+        (unsigned long)_fileSyncing.localManifest.trackCount
+    );
+
     [_fileSyncing syncWithFileShare:fileShare];
 }
 
 
 - (void)didFailToBrowseWithError:(NSError *)error;
 {
+    dispatch_assert_queue(_serialQueue);
+
     fprintf(
         stderr,
         "sync-test: finding file shares failed with error %li\n",

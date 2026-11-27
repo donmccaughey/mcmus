@@ -6,10 +6,7 @@
 
 #import "ClockReal.h"
 #import "DNSReal.h"
-#import "FileShareFinder.h"
-#import "FileSyncing.h"
 #import "FileSystemReal.h"
-#import "Manifest.h"
 #import "SyncTest.h"
 #import "SyncTestOptions.h"
 
@@ -57,10 +54,7 @@ static void exit_unless_listable(NSURL *directoryURL, id<FileSystem> fileSystem)
 
 int main(int argc, const char *argv[])
 {
-    FileShareFinder *finder;
-    FileSyncing *fileSyncing;
     SyncTest *syncTest;
-
 
     @autoreleasepool {
         SyncTestOptions *options = parse_options_or_exit();
@@ -70,33 +64,18 @@ int main(int argc, const char *argv[])
 
         dispatch_queue_t serialQueue =
             dispatch_queue_create("sync-test", DISPATCH_QUEUE_SERIAL);
-        syncTest = [SyncTest new];
-        id<DNS> dns = [DNSReal new];
         id<Clock> clock = [ClockReal new];
-        fileSyncing =
-            [[FileSyncing alloc] initWithMusicDir:options.musicDirectoryURL
-                                       workingDir:options.workingDirectoryURL
-                                     manifestPath:options.manifestURL
-                                      serialQueue:serialQueue
-                                         delegate:syncTest
-                                    delegateQueue:dispatch_get_main_queue()
-                                            clock:clock
-                                              dns:dns
-                                       fileSystem:fileSystem];
-        printf(
-            "Local manifest contains %lu track(s)\n",
-            (unsigned long)fileSyncing.localManifest.trackCount
-        );
-        syncTest.fileSyncing = fileSyncing;
+        id<DNS> dns = [DNSReal new];
 
-        finder =
-            [[FileShareFinder alloc] initWithTimeout:3
-                                         serialQueue:serialQueue
-                                            delegate:syncTest
-                                       delegateQueue:dispatch_get_main_queue()
-                                                 dns:dns
-                                               clock:clock];
-        [finder start];
+        syncTest =
+            [[SyncTest alloc] initWithMusicDir:options.musicDirectoryURL
+                                    workingDir:options.workingDirectoryURL
+                                  manifestPath:options.manifestURL
+                                   serialQueue:serialQueue
+                                         clock:clock
+                                           dns:dns
+                                    fileSystem:fileSystem];
+        [syncTest run];
     }
     dispatch_main();
 }
