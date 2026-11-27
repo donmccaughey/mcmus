@@ -118,8 +118,15 @@ static NSString *current_queue_label(void)
 
 - (void)start;
 {
-    Resolver *resolver = _resolver;
-    [self onSerialQueue:^{ [resolver start]; }];
+    [_resolver start];
+    [self waitForStartToFinish];
+}
+
+
+// -start only enqueues its work on the serial queue.
+- (void)waitForStartToFinish;
+{
+    [self onSerialQueue:^{}];
 }
 
 

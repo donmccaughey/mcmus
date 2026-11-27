@@ -21,9 +21,7 @@ static void resolveReply(
 );
 
 
-@interface Resolver ()
-
-@property (nonatomic, readonly) dispatch_queue_t serialQueue;
+@interface Resolver (OnSerialQueue)
 
 - (void)cleanup;
 
@@ -34,6 +32,15 @@ static void resolveReply(
 - (void)resolveWithTargetHostname:(char const *)targetHostname
            portInNetworkByteOrder:(uint16_t)portInNetworkByteOrder
                         errorCode:(DNSServiceErrorType)errorCode;
+
+- (void)startResolving;
+
+@end
+
+
+@interface Resolver ()
+
+@property (nonatomic, readonly) dispatch_queue_t serialQueue;
 
 @end
 
@@ -79,6 +86,15 @@ static void resolveReply(
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
+
+
+- (void)start;
+{
+    dispatch_async(_serialQueue, ^{ [self startResolving]; });
+}
+
+
+#pragma OnSerialQueue
 
 
 - (void)cleanup;
@@ -157,7 +173,7 @@ static void resolveReply(
 }
 
 
-- (void)start;
+- (void)startResolving;
 {
     dispatch_assert_queue(_serialQueue);
 

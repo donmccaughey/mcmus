@@ -45,7 +45,7 @@ completed operation uses `dispatch_async()` on the main queue to communicate its
 results.
 
 
-## Asynchronous interfaces
+## Asynchronous interface patterns
 
 
 ### Callbacks and context pointers
@@ -79,3 +79,28 @@ When the asynchronous operation runs on a different thread or queue than the
 caller, explicitly specify both the delegate and delegate queue; the
 asynchronous operation then uses `dispatch_async()` to run delegate methods on
 the delegate queue.
+
+
+## Code design
+
+
+### Public façade
+
+Isolate complex background processing behind a public façade class where public
+methods may be called from any thread or queue.
+
+Public methods of the façade should do minimal work before invoking methods in
+the background.
+
+
+### Serial queues
+
+Where background operations use a serial queue, create that queue outside of the
+façade instance and pass it in at initialization time. Share the serial queue
+among background subsystems where it doesn't impact performance. For Objective-C
+code, create the queue with the `DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL`
+flag so that temporary objects get released quickly.
+
+Declare internal method of the façade class in a category named
+`(OnSerialQueue)` and call `dispatch_assert_queue(_serialQueue)` in those
+methods to document where they run.
