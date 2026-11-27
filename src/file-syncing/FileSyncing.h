@@ -24,9 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
                      serialQueue:(dispatch_queue_t)serialQueue
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
-                      fileSystem:(id<FileSystem>)fileSystem
+                           clock:(id<Clock>)clock
                              dns:(id<DNS>)dns
-                           clock:(id<Clock>)clock NS_DESIGNATED_INITIALIZER;
+                      fileSystem:(id<FileSystem>)fileSystem
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

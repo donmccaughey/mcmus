@@ -53,9 +53,9 @@
                      serialQueue:(dispatch_queue_t)serialQueue
                         delegate:(id<FileSyncingDelegate>)delegate
                    delegateQueue:(dispatch_queue_t)delegateQueue
-                      fileSystem:(id<FileSystem>)fileSystem
+                           clock:(id<Clock>)clock
                              dns:(id<DNS>)dns
-                           clock:(id<Clock>)clock;
+                      fileSystem:(id<FileSystem>)fileSystem;
 {
     self = [super init];
     if (!self) return nil;

@@ -111,9 +111,9 @@ static FileSystemFake *file_system_with_manifest(NSString *csv)
              serialQueue:_serialQueue
                 delegate:_delegate
            delegateQueue:dispatch_get_main_queue()
-              fileSystem:fileSystem
+                   clock:[ClockFake new]
                      dns:[DNSFake new]
-                   clock:[ClockFake new]];
+              fileSystem:fileSystem];
 }
 
 

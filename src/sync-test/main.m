@@ -80,9 +80,9 @@ int main(int argc, const char *argv[])
                                       serialQueue:serialQueue
                                          delegate:syncTest
                                     delegateQueue:dispatch_get_main_queue()
-                                       fileSystem:fileSystem
+                                            clock:clock
                                               dns:dns
-                                            clock:clock];
+                                       fileSystem:fileSystem];
         printf(
             "Local manifest contains %lu track(s)\n",
             (unsigned long)fileSyncing.localManifest.trackCount
