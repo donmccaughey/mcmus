@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# Check the given files with clang-format, and reformat them if needed.
+#
+# usage: check-format.sh --style-file=STYLE_FILE FILE...
+#
+# Exit status:
+#   0  every file was already formatted
+#   1  at least one file needed formatting and was rewritten in place
+#   2  usage error, or clang-format itself failed
+
+set -u
+
+usage() {
+	echo "usage: $0 --style-file=STYLE_FILE FILE..." >&2
+	exit 2
+}
+
+style_file=
+
+while [ $# -gt 0 ]; do
+	case $1 in
+		--style-file=*)
+			style_file=${1#--style-file=}
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		-*)
+			echo "$0: unknown option: $1" >&2
+			usage
+			;;
+		*)
+			break
+			;;
+	esac
+done
+
+if [ -z "$style_file" ]; then
+	echo "$0: missing --style-file=STYLE_FILE" >&2
+	usage
+fi
+
+# Nothing to check.
+if [ $# -eq 0 ]; then
+	exit 0
+fi
+
+style="--style=file:$style_file"
+
+if xcrun clang-format --dry-run --Werror "$style" "$@"; then
+	exit 0
+fi
+
+if ! xcrun clang-format -i "$style" "$@"; then
+	echo "$0: clang-format failed" >&2
+	exit 2
+fi
+
+echo "error: clang-format reformatted files; review the changes and rebuild" >&2
+exit 1

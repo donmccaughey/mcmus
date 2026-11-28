@@ -35,9 +35,9 @@ check : \
 		$(TMP)/built-create-manifest.stamp \
 		$(TMP)/built-share-test.stamp \
 		$(TMP)/built-sync-test.stamp \
-		$(TMP)/checked-format.stamp \
 		$(TMP)/checked-iOS.stamp \
-		$(TMP)/checked-macOS.stamp
+		$(TMP)/checked-macOS.stamp \
+		$(TMP)/formatted.stamp
 
 
 .PHONY : analyze
@@ -51,8 +51,7 @@ check-format : $(TMP)/checked-format.stamp
 
 
 .PHONY : format
-format :
-	xcrun clang-format -i --style=file:.clang-format $(objc_files)
+format : $(TMP)/formatted.stamp
 
 
 .PHONY : full-sync
@@ -232,6 +231,12 @@ $(TMP)/checked-macOS.stamp : $(src_files) | $$(dir $$@)
 		-destination 'platform=macOS,arch=$(arch)' \
 		-derivedDataPath $(TMP)/check-macOS \
 		$(TEST_FLAGS)
+	touch $@
+
+
+$(TMP)/formatted.stamp : $(objc_files) | $$(dir $$@)
+	# xcrun clang-format -i --style=file:.clang-format $?
+	scripts/fix-format --style-file=.clang-format $?
 	touch $@
 
 
