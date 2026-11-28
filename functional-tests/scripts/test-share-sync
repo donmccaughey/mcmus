@@ -1,0 +1,298 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = []
+# ///
+"""Share MUSIC_DIR with the share-test tool, sync it into a work directory
+with the sync-test tool and compare the synced music files with the originals.
+"""
+
+import argparse
+import filecmp
+import os
+import re
+import signal
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+from typing import NamedTuple, Optional
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SHARE_TEST = REPO_ROOT / "tmp" / "share-test" / "share-test"
+SYNC_TEST = REPO_ROOT / "tmp" / "sync-test" / "sync-test"
+BUILD_HINT = "make tmp/built-share-test.stamp tmp/built-sync-test.stamp"
+
+SHARE_NAME_PATTERN = re.compile(r'^Share name is "(.*)"$')
+SHARE_NAME_TIMEOUT_SECONDS = 60
+SHARE_STOP_TIMEOUT_SECONDS = 60
+POLL_SECONDS = 0.1
+MUSIC_FILE_EXTENSIONS = {".mp3", ".m4a"}
+
+
+class TestShareSyncError(Exception):
+    pass
+
+
+class Arguments(NamedTuple):
+    music_dir: Path
+    workdir: Path
+
+
+class WorkDirs(NamedTuple):
+    share_test_work: Path
+    sync_test_work: Path
+    sync_test_music: Path
+
+
+class Differences(NamedTuple):
+    only_in_source: list[str]
+    only_in_synced: list[str]
+    differing: list[str]
+
+
+def parse_arguments(argv: list[str]) -> Arguments:
+    parser = argparse.ArgumentParser(
+        prog="test-share-sync",
+        description=(
+            "Share MUSIC_DIR with share-test, sync it with sync-test and "
+            "compare the synced music files with the originals."
+        ),
+    )
+    parser.add_argument(
+        "music_dir",
+        metavar="MUSIC_DIR",
+        help="music directory that share-test shares",
+    )
+    parser.add_argument(
+        "--workdir",
+        metavar="DIR",
+        default=os.getcwd(),
+        help="directory where the share-test-work/, sync-test-work/ and "
+        "sync-test-music/ subdirectories are created (default: the current "
+        "directory)",
+    )
+    namespace = parser.parse_args(argv)
+    return Arguments(
+        music_dir=Path(namespace.music_dir).resolve(),
+        workdir=Path(namespace.workdir).resolve(),
+    )
+
+
+def check_tools_are_built() -> None:
+    for tool in (SHARE_TEST, SYNC_TEST):
+        if not os.access(tool, os.X_OK):
+            raise TestShareSyncError(
+                f"{tool} is not built; run `{BUILD_HINT}`"
+            )
+
+
+def check_music_dir(music_dir: Path) -> None:
+    if not music_dir.is_dir():
+        raise TestShareSyncError(f"{music_dir} is not a directory")
+
+
+def create_work_dirs(workdir: Path) -> WorkDirs:
+    work_dirs = WorkDirs(
+        share_test_work=workdir / "share-test-work",
+        sync_test_work=workdir / "sync-test-work",
+        sync_test_music=workdir / "sync-test-music",
+    )
+    for work_dir in work_dirs:
+        try:
+            work_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as error:
+            raise TestShareSyncError(
+                f"creating {work_dir} failed: {error.strerror}"
+            )
+    return work_dirs
+
+
+class ShareTest:
+    def __init__(self, music_dir: Path, workdir: Path) -> None:
+        self.output: list[str] = []
+        self.share_name: Optional[str] = None
+        self._has_share_name = threading.Event()
+        self._process = subprocess.Popen(
+            [str(SHARE_TEST), str(music_dir), f"--workdir={workdir}"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        self._reader = threading.Thread(target=self._read_output, daemon=True)
+        self._reader.start()
+
+    # Reads to end of file even after the share name is found, so that
+    # share-test never blocks writing to a full pipe.
+    def _read_output(self) -> None:
+        assert self._process.stdout is not None
+        for line in self._process.stdout:
+            self.output.append(line)
+            match = SHARE_NAME_PATTERN.match(line.rstrip("\n"))
+            if match and self.share_name is None:
+                self.share_name = match.group(1)
+                self._has_share_name.set()
+
+    def exit_status(self) -> Optional[int]:
+        return self._process.poll()
+
+    def wait_for_share_name(self) -> str:
+        deadline = time.monotonic() + SHARE_NAME_TIMEOUT_SECONDS
+        while not self._has_share_name.wait(POLL_SECONDS):
+            status = self.exit_status()
+            if status is not None:
+                raise TestShareSyncError(
+                    "share-test exited before printing its share name "
+                    f"with exit status {status}"
+                )
+            if time.monotonic() > deadline:
+                raise TestShareSyncError(
+                    "share-test did not print its share name within "
+                    f"{SHARE_NAME_TIMEOUT_SECONDS} seconds"
+                )
+        assert self.share_name is not None
+        return self.share_name
+
+    def stop(self) -> int:
+        if self.exit_status() is None:
+            self._process.send_signal(signal.SIGINT)
+            try:
+                self._process.wait(timeout=SHARE_STOP_TIMEOUT_SECONDS)
+            except subprocess.TimeoutExpired:
+                self._process.kill()
+                self._process.wait()
+        self._reader.join()
+        return self._process.returncode
+
+    def print_output(self) -> None:
+        print("share-test output:")
+        sys.stdout.writelines(self.output)
+        sys.stdout.flush()
+
+
+def run_sync_test(work_dirs: WorkDirs, share_name: str) -> int:
+    # sync-test inherits stdout and stderr, which echoes its output to the
+    # terminal; an empty stdin keeps it from waiting at its selection prompt.
+    return subprocess.run(
+        [
+            str(SYNC_TEST),
+            str(work_dirs.sync_test_music),
+            f"--workdir={work_dirs.sync_test_work}",
+            f"--share-name={share_name}",
+        ],
+        stdin=subprocess.DEVNULL,
+    ).returncode
+
+
+def is_hidden(name: str) -> bool:
+    return name.startswith(".")
+
+
+def is_music_file(path: Path) -> bool:
+    return (
+        not is_hidden(path.name)
+        and path.suffix.lower() in MUSIC_FILE_EXTENSIONS
+        and path.is_file()
+    )
+
+
+# Matches what share-test shares: only non-hidden .mp3 and .m4a files, so
+# cover art and other files in the music directory are not differences.
+def music_files(root: Path) -> set[str]:
+    paths = set()
+    for dir_path, dir_names, file_names in os.walk(root):
+        dir_names[:] = [name for name in dir_names if not is_hidden(name)]
+        for file_name in file_names:
+            path = Path(dir_path) / file_name
+            if is_music_file(path):
+                paths.add(path.relative_to(root).as_posix())
+    return paths
+
+
+def compare_music_dirs(source: Path, synced: Path) -> Differences:
+    source_files = music_files(source)
+    synced_files = music_files(synced)
+    return Differences(
+        only_in_source=sorted(source_files - synced_files),
+        only_in_synced=sorted(synced_files - source_files),
+        differing=sorted(
+            path
+            for path in source_files & synced_files
+            if not filecmp.cmp(source / path, synced / path, shallow=False)
+        ),
+    )
+
+
+def print_differences(
+    differences: Differences, source: Path, synced: Path
+) -> None:
+    for path in differences.only_in_source:
+        print(f"Only in {source}: {path}")
+    for path in differences.only_in_synced:
+        print(f"Only in {synced}: {path}")
+    for path in differences.differing:
+        print(f"Differs: {path}")
+    print(
+        f"Music directories differ: {len(differences.only_in_source)} "
+        f"missing, {len(differences.only_in_synced)} unexpected, "
+        f"{len(differences.differing)} differing."
+    )
+
+
+def share_and_sync(music_dir: Path, work_dirs: WorkDirs) -> None:
+    share_test = ShareTest(music_dir, work_dirs.share_test_work)
+    try:
+        share_name = share_test.wait_for_share_name()
+        sync_status = run_sync_test(work_dirs, share_name)
+        share_exited_on_its_own = share_test.exit_status() is not None
+    except BaseException:
+        share_test.stop()
+        share_test.print_output()
+        raise
+    share_status = share_test.stop()
+    if share_status != 0:
+        share_test.print_output()
+        how = "on its own " if share_exited_on_its_own else ""
+        raise TestShareSyncError(
+            f"share-test exited {how}with exit status {share_status}"
+        )
+    if sync_status != 0:
+        raise TestShareSyncError(
+            f"sync-test failed with exit status {sync_status}"
+        )
+
+
+def run(arguments: Arguments) -> int:
+    check_tools_are_built()
+    check_music_dir(arguments.music_dir)
+    work_dirs = create_work_dirs(arguments.workdir)
+    share_and_sync(arguments.music_dir, work_dirs)
+
+    differences = compare_music_dirs(
+        arguments.music_dir, work_dirs.sync_test_music
+    )
+    if any(differences):
+        print_differences(
+            differences, arguments.music_dir, work_dirs.sync_test_music
+        )
+        return 1
+    track_count = len(music_files(arguments.music_dir))
+    print(f"Music directories match ({track_count} tracks).")
+    return 0
+
+
+def main() -> int:
+    arguments = parse_arguments(sys.argv[1:])
+    try:
+        return run(arguments)
+    except TestShareSyncError as error:
+        print(f"test-share-sync: {error}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        return 130
+
+
+if __name__ == "__main__":
+    sys.exit(main())
