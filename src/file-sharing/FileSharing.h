@@ -42,6 +42,10 @@ typedef NS_ENUM(NSInteger, FileSharingState) {
 // The port the server is listening on, or zero unless sharing.
 @property (nonatomic, readonly) uint16_t port;
 
+// The name Bonjour advertises the server under, or nil until Bonjour has
+// registered it and whenever sharing is off.
+@property (nonatomic, readonly, copy, nullable) NSString *shareName;
+
 // The snapshot and the manifest CSV are placed inside the working directory;
 // the working directory itself is never removed.
 - (instancetype

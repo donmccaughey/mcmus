@@ -167,6 +167,7 @@ static NSError *no_working_directory_error(void)
     _metadataTracksLoaded = 0;
     _metadataTotalTracks = 0;
     _connectedDeviceName = nil;
+    _shareName = nil;
     [self postDidChange];
 }
 
@@ -189,6 +190,17 @@ static NSError *no_working_directory_error(void)
         if (FileSharingStateStarting != self->_state) return;
         self->_metadataTracksLoaded = tracksLoaded;
         self->_metadataTotalTracks = totalTracks;
+        [self postDidChange];
+    });
+}
+
+
+- (void)serverDidAdvertiseShareName:(NSString *)shareName;
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (FileSharingStateSharing != self->_state) return;
+        if ([shareName isEqual:self->_shareName]) return;
+        self->_shareName = [shareName copy];
         [self postDidChange];
     });
 }

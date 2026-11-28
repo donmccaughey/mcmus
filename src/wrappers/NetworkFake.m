@@ -134,6 +134,7 @@
 
 @implementation NetworkAdvertisementFake
 
+@synthesize onRegistered = _onRegistered;
 @synthesize onFailed = _onFailed;
 
 
@@ -149,6 +150,13 @@
 }
 
 
+- (void)registerWithName:(NSString *)name;
+{
+    void (^onRegistered)(NSString *) = _onRegistered;
+    if (onRegistered) onRegistered(name);
+}
+
+
 - (void)fail:(NSError *)error;
 {
     void (^onFailed)(NSError *) = _onFailed;
@@ -160,6 +168,7 @@
 - (void)close;
 {
     _isClosed = YES;
+    _onRegistered = nil;
     _onFailed = nil;
 }
 

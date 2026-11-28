@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint16_t port;
 @property (nonatomic, readonly) BOOL isClosed;
 
+- (void)registerWithName:(NSString *)name;
 - (void)fail:(NSError *)error;
 
 @end

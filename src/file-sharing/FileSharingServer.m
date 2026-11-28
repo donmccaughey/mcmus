@@ -135,6 +135,8 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     __weak typeof(self) weakSelf = self;
     _listener.onConnection =
         ^(id<NetworkConnection> connection) { [weakSelf accept:connection]; };
+    _advertisement.onRegistered =
+        ^(NSString *name) { [weakSelf didAdvertiseShareName:name]; };
     _advertisement.onFailed = ^(NSError *advertisementError) {
         os_log_error(
             server_log(), "Advertising failed: %{public}@", advertisementError
@@ -164,6 +166,13 @@ static NSData *_Nullable next_tarball_buffer(TarballWriter *writer)
     _clientAddress = nil;
     _deviceName = nil;
     _state = FileSharingServerStateWaitingForClient;
+}
+
+
+- (void)didAdvertiseShareName:(NSString *)shareName;
+{
+    os_log(server_log(), "Advertised as %{public}@", shareName);
+    if (_onAdvertised) _onAdvertised(shareName);
 }
 
 

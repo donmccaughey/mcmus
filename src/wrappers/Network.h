@@ -35,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol NetworkAdvertisement <NSObject>
 
+// Runs once Bonjour registers the service, and again if Bonjour renames the
+// service after a name conflict.
+@property (nonatomic, copy, nullable) void (^onRegistered)(NSString *name);
 // Runs when the service cannot be registered or stops being advertised.
 @property (nonatomic, copy, nullable) void (^onFailed)(NSError *error);
 

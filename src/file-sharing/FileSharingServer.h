@@ -28,6 +28,9 @@ typedef NS_ENUM(NSInteger, FileSharingServerState) {
 @property (nonatomic, readonly) FileSharingServerState state;
 // Zero unless the server is started.
 @property (nonatomic, readonly) uint16_t port;
+// Runs with the name Bonjour advertises the server under, and again if
+// Bonjour renames it after a name conflict.
+@property (nonatomic, copy, nullable) void (^onAdvertised)(NSString *shareName);
 @property (nonatomic, copy, nullable) void (^onWaitingForClient)(void);
 @property (nonatomic, copy, nullable) void (^onClientConnected)
     (NSString *deviceName);

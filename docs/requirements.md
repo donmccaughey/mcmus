@@ -1042,6 +1042,9 @@ Share test shall write each status message to a separate line.
 Share test shall write a status message with the port it is listening on at
 startup.
 
+Share test shall write a status message with the Bonjour share name once the
+file sharing server is advertised.
+
 Share test shall shut down gracefully when it receives `SIGINT` by calling the
 appropriate stop method of the file sharing object and waiting for it to
 complete before exiting with status 0.

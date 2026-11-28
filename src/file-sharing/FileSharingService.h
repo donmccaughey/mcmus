@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didLoadMetadataForTracks:(NSUInteger)tracksLoaded
                          ofTotal:(NSUInteger)totalTracks;
+- (void)serverDidAdvertiseShareName:(NSString *)shareName;
 - (void)serverIsWaitingForClient;
 - (void)serverDidConnectClient:(NSString *)deviceName;
 

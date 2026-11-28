@@ -220,4 +220,25 @@ static NSData *read_bytes(int fd, NSUInteger length)
 }
 
 
+- (void)testAdvertisementReportsItsRegisteredName;
+{
+    id<NetworkAdvertisement> advertisement =
+        [_network advertiseServiceOfType:@"_mcmus-test._tcp"
+                                    port:_listener.port
+                                   error:NULL];
+    XCTestExpectation *registered =
+        [self expectationWithDescription:@"registered"];
+    __block NSString *registeredName = nil;
+    advertisement.onRegistered = ^(NSString *name) {
+        registeredName = name;
+        [registered fulfill];
+    };
+
+    [self waitForExpectations:@[registered] timeout:5];
+
+    XCTAssertGreaterThan(registeredName.length, 0UL);
+    [advertisement close];
+}
+
+
 @end

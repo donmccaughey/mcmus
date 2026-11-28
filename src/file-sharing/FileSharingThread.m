@@ -342,6 +342,9 @@ static NSURL *_Nullable take_snapshot_and_log_time(
                                           manifest:manifest
                              musicLibraryDirectory:musicLibraryDir
                                       snapshotTime:snapshotTime];
+    server.onAdvertised = ^(NSString *shareName) {
+        [self->_client serverDidAdvertiseShareName:shareName];
+    };
     server.onWaitingForClient = ^{ [self->_client serverIsWaitingForClient]; };
     server.onClientConnected = ^(NSString *deviceName) {
         [self->_client serverDidConnectClient:deviceName];

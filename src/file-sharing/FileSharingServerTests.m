@@ -213,6 +213,9 @@ static NSUInteger count_of(NSString *part, NSString *text)
                                             snapshotTime:snapshotTime];
     NSMutableArray<NSString *> *events = [NSMutableArray new];
     _events = events;
+    _server.onAdvertised = ^(NSString *shareName) {
+        [events addObject:[@"advertised: " stringByAppendingString:shareName]];
+    };
     _server.onWaitingForClient = ^{ [events addObject:@"waiting"]; };
     _server.onClientConnected = ^(NSString *deviceName) {
         [events addObject:[@"connected: " stringByAppendingString:deviceName]];
@@ -278,6 +281,16 @@ static NSUInteger count_of(NSString *part, NSString *text)
     XCTAssertNotNil(_network.listener);
     XCTAssertEqualObjects(_network.advertisement.type, @"_mcmus._tcp");
     XCTAssertEqual(_network.advertisement.port, 51234);
+}
+
+
+- (void)testRegisteredAdvertisementNotifiesAdvertisedWithItsName;
+{
+    [self start];
+
+    [_network.advertisement registerWithName:@"Den Mac"];
+
+    XCTAssertEqualObjects(_events, @[@"advertised: Den Mac"]);
 }
 
 

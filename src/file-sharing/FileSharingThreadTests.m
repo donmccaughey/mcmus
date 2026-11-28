@@ -38,6 +38,12 @@
                                                     totalTracks]];
 }
 
+- (void)serverDidAdvertiseShareName:(NSString *)shareName;
+{
+    [_serverEvents
+        addObject:[@"advertised: " stringByAppendingString:shareName]];
+}
+
 - (void)serverIsWaitingForClient;
 {
     [_serverEvents addObject:@"waiting"];
@@ -362,6 +368,23 @@ static NSData *tarball_in(NSData *response)
 
     XCTAssertTrue(_network.listener.isClosed);
     XCTAssertTrue(_network.advertisement.isClosed);
+    [self waitForExpectations:@[_threadExited] timeout:5];
+}
+
+
+- (void)testServerReportsShareNameToClient;
+{
+    [self startAndWait];
+
+    [self onThread:^{
+        [self->_network.advertisement registerWithName:@"Den Mac"];
+    }];
+
+    XCTAssertEqualObjects(
+        _client.serverEvents, (@[@"waiting", @"advertised: Den Mac"])
+    );
+
+    [self stopAndWait];
     [self waitForExpectations:@[_threadExited] timeout:5];
 }
 

@@ -250,9 +250,6 @@
 }
 
 
-#pragma mark - connected device tests
-
-
 // The server's reports reach the file sharing object on the main queue, so
 // the tests wait for a block queued behind them.
 - (void)waitForMainQueue;
@@ -261,6 +258,83 @@
     dispatch_async(dispatch_get_main_queue(), ^{ [drained fulfill]; });
     [self waitForExpectations:@[drained] timeout:5];
 }
+
+
+#pragma mark - share name tests
+
+
+- (void)reportShareName:(NSString *)shareName;
+{
+    id<FileSharingClient> client = (id<FileSharingClient>)_fileSharing;
+    [client serverDidAdvertiseShareName:shareName];
+    [self waitForMainQueue];
+}
+
+
+- (void)testShareNameIsNilUntilTheServerIsAdvertised;
+{
+    [self startAndWait:_fileSharing];
+    [self waitForMainQueue];
+
+    XCTAssertNil(_fileSharing.shareName);
+}
+
+
+- (void)testAdvertisedServerSetsShareName;
+{
+    [self startAndWait:_fileSharing];
+
+    [self reportShareName:@"Den Mac"];
+
+    XCTAssertEqualObjects(_fileSharing.shareName, @"Den Mac");
+    XCTAssertEqual(_changes.count, 3UL);
+}
+
+
+- (void)testRepeatedReportOfSameShareNameIsNotAChange;
+{
+    [self startAndWait:_fileSharing];
+    [self reportShareName:@"Den Mac"];
+
+    [self reportShareName:@"Den Mac"];
+
+    XCTAssertEqual(_changes.count, 3UL);
+}
+
+
+- (void)testRenamedServerChangesShareName;
+{
+    [self startAndWait:_fileSharing];
+    [self reportShareName:@"Den Mac"];
+
+    [self reportShareName:@"Den Mac (2)"];
+
+    XCTAssertEqualObjects(_fileSharing.shareName, @"Den Mac (2)");
+    XCTAssertEqual(_changes.count, 4UL);
+}
+
+
+- (void)testShareNameIsIgnoredUnlessSharing;
+{
+    [self reportShareName:@"Den Mac"];
+
+    XCTAssertNil(_fileSharing.shareName);
+    XCTAssertEqual(_changes.count, 0UL);
+}
+
+
+- (void)testStopClearsShareName;
+{
+    [self startAndWait:_fileSharing];
+    [self reportShareName:@"Den Mac"];
+
+    [self stopAndWait:_fileSharing];
+
+    XCTAssertNil(_fileSharing.shareName);
+}
+
+
+#pragma mark - connected device tests
 
 
 - (void)reportClient:(nullable NSString *)deviceName;

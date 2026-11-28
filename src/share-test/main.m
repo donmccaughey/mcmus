@@ -83,10 +83,9 @@ static void end_progress_line(void)
 }
 
 
-static void print_changes(FileSharing *fileSharing)
+static void print_port_change(FileSharing *fileSharing)
 {
     static uint16_t printedPort;
-    static NSString *printedStatus;
 
     uint16_t port = fileSharing.port;
     if (port && port != printedPort) {
@@ -94,6 +93,28 @@ static void print_changes(FileSharing *fileSharing)
         printf("Listening on port %d\n", port);
     }
     printedPort = port;
+}
+
+
+static void print_share_name_change(FileSharing *fileSharing)
+{
+    static NSString *printedShareName;
+
+    NSString *shareName = fileSharing.shareName;
+    if (shareName && ![shareName isEqual:printedShareName]) {
+        end_progress_line();
+        printf("Share name is \"%s\"\n", shareName.UTF8String);
+    }
+    printedShareName = shareName;
+}
+
+
+static void print_changes(FileSharing *fileSharing)
+{
+    static NSString *printedStatus;
+
+    print_port_change(fileSharing);
+    print_share_name_change(fileSharing);
 
     NSString *status = share_test_status_text(fileSharing);
     if ([status isEqual:printedStatus]) return;

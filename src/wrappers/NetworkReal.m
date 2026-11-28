@@ -380,6 +380,7 @@ static void listener_callback(
 @interface NetworkAdvertisementReal : NSObject <NetworkAdvertisement>
 
 - (void)processResult;
+- (void)didRegisterWithName:(NSString *)name;
 - (void)failWithCode:(DNSServiceErrorType)code;
 
 @end
@@ -411,7 +412,11 @@ static void advertisement_registered(
 {
     NetworkAdvertisementReal *advertisement =
         (__bridge NetworkAdvertisementReal *)context;
-    if (code != kDNSServiceErr_NoError) [advertisement failWithCode:code];
+    if (code != kDNSServiceErr_NoError) {
+        [advertisement failWithCode:code];
+    } else if (flags & kDNSServiceFlagsAdd) {
+        [advertisement didRegisterWithName:@(name)];
+    }
 }
 
 
@@ -420,6 +425,7 @@ static void advertisement_registered(
     CFSocketRef _socket;
 }
 
+@synthesize onRegistered = _onRegistered;
 @synthesize onFailed = _onFailed;
 
 
@@ -487,6 +493,13 @@ static void advertisement_registered(
 }
 
 
+- (void)didRegisterWithName:(NSString *)name;
+{
+    void (^onRegistered)(NSString *) = _onRegistered;
+    if (onRegistered) onRegistered(name);
+}
+
+
 - (void)failWithCode:(DNSServiceErrorType)code;
 {
     void (^onFailed)(NSError *) = _onFailed;
@@ -505,6 +518,7 @@ static void advertisement_registered(
         DNSServiceRefDeallocate(_service);
         _service = NULL;
     }
+    _onRegistered = nil;
     _onFailed = nil;
 }
 
