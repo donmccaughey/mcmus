@@ -37,7 +37,7 @@ static BOOL has_content(HTTPRequest *request)
 
 static NSArray<NSString *> *_Nullable requested_paths(NSData *tarballCSV)
 {
-    NSArray<NSArray<NSString *> *> *records = parseCSV(tarballCSV, NULL);
+    CSVRecords records = parseCSV(tarballCSV, NULL);
     if (records.count < 2) return nil;
     if (![records.firstObject isEqual:@[@"path"]]) return nil;
 

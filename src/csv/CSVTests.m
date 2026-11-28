@@ -28,7 +28,7 @@ static NSString *string(NSData *data)
 - (void)testParseRecords;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV(utf8(@"a,b\r\nc,d\r\n"), &error);
+    CSVRecords records = parseCSV(utf8(@"a,b\r\nc,d\r\n"), &error);
 
     XCTAssertNil(error);
     XCTAssertEqualObjects((@[@[@"a", @"b"], @[@"c", @"d"]]), records);
@@ -37,7 +37,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseWithoutTrailingLineEnding;
 {
-    NSArray *records = parseCSV(utf8(@"a,b\r\nc,d"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a,b\r\nc,d"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a", @"b"], @[@"c", @"d"]]), records);
 }
@@ -45,7 +45,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseLFEndings;
 {
-    NSArray *records = parseCSV(utf8(@"a\nb\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a\nb\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a"], @[@"b"]]), records);
 }
@@ -53,7 +53,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseCREndings;
 {
-    NSArray *records = parseCSV(utf8(@"a\rb\r"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a\rb\r"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a"], @[@"b"]]), records);
 }
@@ -61,7 +61,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseMixedEndings;
 {
-    NSArray *records = parseCSV(utf8(@"a\r\nb\nc\rd"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a\r\nb\nc\rd"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a"], @[@"b"], @[@"c"], @[@"d"]]), records);
 }
@@ -69,7 +69,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseLFCRIsTwoEndings;
 {
-    NSArray *records = parseCSV(utf8(@"a\n\rb"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a\n\rb"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a"], @[@""], @[@"b"]]), records);
 }
@@ -78,7 +78,7 @@ static NSString *string(NSData *data)
 - (void)testParseEmptyData;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV([NSData data], &error);
+    CSVRecords records = parseCSV([NSData data], &error);
 
     XCTAssertNil(error);
     XCTAssertEqualObjects((@[]), records);
@@ -87,7 +87,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseLoneLineEndingIsOneEmptyField;
 {
-    NSArray *records = parseCSV(utf8(@"\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@""]]), records);
 }
@@ -95,7 +95,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseBlankLine;
 {
-    NSArray *records = parseCSV(utf8(@"a\n\nb\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a\n\nb\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a"], @[@""], @[@"b"]]), records);
 }
@@ -103,7 +103,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseEmptyFields;
 {
-    NSArray *records = parseCSV(utf8(@"a,,b\n,,\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a,,b\n,,\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a", @"", @"b"], @[@"", @"", @""]]), records);
 }
@@ -111,7 +111,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseTrailingComma;
 {
-    NSArray *records = parseCSV(utf8(@"a,"), NULL);
+    CSVRecords records = parseCSV(utf8(@"a,"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a", @""]]), records);
 }
@@ -119,7 +119,7 @@ static NSString *string(NSData *data)
 
 - (void)testParsePreservesSpaces;
 {
-    NSArray *records = parseCSV(utf8(@" a , b \n"), NULL);
+    CSVRecords records = parseCSV(utf8(@" a , b \n"), NULL);
 
     XCTAssertEqualObjects((@[@[@" a ", @" b "]]), records);
 }
@@ -127,7 +127,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseQuotedFieldWithComma;
 {
-    NSArray *records = parseCSV(utf8(@"\"a,b\",c\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"\"a,b\",c\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a,b", @"c"]]), records);
 }
@@ -135,7 +135,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseQuotedFieldWithDoubledQuote;
 {
-    NSArray *records = parseCSV(utf8(@"\"say \"\"hi\"\"\",\"\"\"\"\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"\"say \"\"hi\"\"\",\"\"\"\"\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"say \"hi\"", @"\""]]), records);
 }
@@ -143,7 +143,8 @@ static NSString *string(NSData *data)
 
 - (void)testParseQuotedFieldWithLineBreaks;
 {
-    NSArray *records = parseCSV(utf8(@"\"a\nb\",\"c\rd\",\"e\r\nf\"\n"), NULL);
+    CSVRecords records =
+        parseCSV(utf8(@"\"a\nb\",\"c\rd\",\"e\r\nf\"\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"a\nb", @"c\rd", @"e\r\nf"]]), records);
 }
@@ -151,7 +152,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseQuotedEmptyField;
 {
-    NSArray *records = parseCSV(utf8(@"\"\",a\n"), NULL);
+    CSVRecords records = parseCSV(utf8(@"\"\",a\n"), NULL);
 
     XCTAssertEqualObjects((@[@[@"", @"a"]]), records);
 }
@@ -159,7 +160,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseQuotedFieldAtEndOfInput;
 {
-    NSArray *records = parseCSV(utf8(@"a,\"b\""), NULL);
+    CSVRecords records = parseCSV(utf8(@"a,\"b\""), NULL);
 
     XCTAssertEqualObjects((@[@[@"a", @"b"]]), records);
 }
@@ -167,7 +168,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseNonASCII;
 {
-    NSArray *records =
+    CSVRecords records =
         parseCSV(utf8(@"Björk,Sigur Rós\n東京,\"日本,語\"\n"), NULL);
 
     XCTAssertEqualObjects(
@@ -181,7 +182,7 @@ static NSString *string(NSData *data)
     NSMutableData *data = [NSMutableData dataWithBytes:"\xEF\xBB\xBF" length:3];
     [data appendData:utf8(@"a,b\n")];
 
-    NSArray *records = parseCSV(data, NULL);
+    CSVRecords records = parseCSV(data, NULL);
 
     XCTAssertEqualObjects((@[@[@"a", @"b"]]), records);
 }
@@ -190,7 +191,7 @@ static NSString *string(NSData *data)
 - (void)testParseUnterminatedQuotedField;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV(utf8(@"a,b\nc,\"d\ne"), &error);
+    CSVRecords records = parseCSV(utf8(@"a,b\nc,\"d\ne"), &error);
 
     XCTAssertNil(records);
     XCTAssertEqualObjects(CSVErrorDomain, error.domain);
@@ -203,7 +204,7 @@ static NSString *string(NSData *data)
 - (void)testParseQuoteInUnquotedField;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV(utf8(@"a,b\"c\n"), &error);
+    CSVRecords records = parseCSV(utf8(@"a,b\"c\n"), &error);
 
     XCTAssertNil(records);
     XCTAssertEqualObjects(CSVErrorDomain, error.domain);
@@ -216,7 +217,7 @@ static NSString *string(NSData *data)
 - (void)testParseTextAfterClosingQuote;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV(utf8(@"\"a\"b,c\n"), &error);
+    CSVRecords records = parseCSV(utf8(@"\"a\"b,c\n"), &error);
 
     XCTAssertNil(records);
     XCTAssertEqualObjects(CSVErrorDomain, error.domain);
@@ -233,7 +234,7 @@ static NSString *string(NSData *data)
     [data appendData:utf8(@"\n")];
 
     NSError *error = nil;
-    NSArray *records = parseCSV(data, &error);
+    CSVRecords records = parseCSV(data, &error);
 
     XCTAssertNil(records);
     XCTAssertEqualObjects(CSVErrorDomain, error.domain);
@@ -246,7 +247,7 @@ static NSString *string(NSData *data)
 - (void)testParseInconsistentFieldCount;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV(utf8(@"a,b\n\"c\nd\"\ne,f,g\n"), &error);
+    CSVRecords records = parseCSV(utf8(@"a,b\n\"c\nd\"\ne,f,g\n"), &error);
 
     XCTAssertNil(records);
     XCTAssertEqualObjects(CSVErrorDomain, error.domain);
@@ -258,7 +259,7 @@ static NSString *string(NSData *data)
 
 - (void)testParseErrorWithNullErrorPointer;
 {
-    NSArray *records = parseCSV(utf8(@"\"a"), NULL);
+    CSVRecords records = parseCSV(utf8(@"\"a"), NULL);
 
     XCTAssertNil(records);
 }
@@ -267,7 +268,7 @@ static NSString *string(NSData *data)
 - (void)testParseColumnCountsCharactersNotBytes;
 {
     NSError *error = nil;
-    NSArray *records = parseCSV(utf8(@"東京,a\"\n"), &error);
+    CSVRecords records = parseCSV(utf8(@"東京,a\"\n"), &error);
 
     XCTAssertNil(records);
     XCTAssertEqualObjects(@5, error.userInfo[CSVErrorColumnKey]);
@@ -346,7 +347,7 @@ static NSString *string(NSData *data)
 
 - (void)testGenerateThenParseYieldsEqualRecords;
 {
-    NSArray *source = @[
+    CSVRecords source = @[
         @[@"path", @"size", @"hash"],
         @[@"Björk/Debut/Human Behaviour.mp3", @"12345", @"abc"],
         @[@"a,b", @"say \"hi\"", @""],
@@ -356,7 +357,7 @@ static NSString *string(NSData *data)
     ];
 
     NSError *error = nil;
-    NSArray *records = parseCSV(generateCSV(source), &error);
+    CSVRecords records = parseCSV(generateCSV(source), &error);
 
     XCTAssertNil(error);
     XCTAssertEqualObjects(source, records);
@@ -365,9 +366,9 @@ static NSString *string(NSData *data)
 
 - (void)testGenerateThenParseSingleEmptyField;
 {
-    NSArray *source = @[@[@""], @[@""]];
+    CSVRecords source = @[@[@""], @[@""]];
 
-    NSArray *records = parseCSV(generateCSV(source), NULL);
+    CSVRecords records = parseCSV(generateCSV(source), NULL);
 
     XCTAssertEqualObjects(source, records);
 }

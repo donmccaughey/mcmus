@@ -31,11 +31,11 @@ static NSArray<NSString *> *sorted_relative_paths(
 }
 
 
-static NSArray<NSArray<NSString *> *> *manifest_records(
+static CSVRecords manifest_records(
     NSDictionary<NSString *, TrackMetadata *> *metadataByRelativePath
 )
 {
-    NSMutableArray<NSArray<NSString *> *> *records =
+    NSMutableArray<CSVRecord> *records =
         [NSMutableArray arrayWithCapacity:metadataByRelativePath.count + 1];
     [records addObject:@[@"path", @"size", @"hash"]];
     for (NSString *relativePath in sorted_relative_paths(metadataByRelativePath
@@ -77,7 +77,7 @@ static BOOL parse_decimal_uint64(NSString *text, unsigned long long *value)
 
 
 static TrackMetadata *_Nullable metadata_for_record(
-    NSArray<NSString *> *record, NSUInteger recordNumber, NSError **error
+    CSVRecord record, NSUInteger recordNumber, NSError **error
 )
 {
     unsigned long long size = 0;
@@ -114,7 +114,7 @@ static NSArray<TrackMetadata *> *_Nullable metadata_for_csv(
     NSData *csv, NSError **error
 )
 {
-    NSArray<NSArray<NSString *> *> *records = parseCSV(csv, error);
+    CSVRecords records = parseCSV(csv, error);
     if (!records) return nil;
 
     if (![records.firstObject isEqual:@[@"path", @"size", @"hash"]]) {
