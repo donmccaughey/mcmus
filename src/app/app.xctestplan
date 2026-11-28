@@ -78,6 +78,13 @@
     {
       "target" : {
         "containerPath" : "container:mcmus.xcodeproj",
+        "identifier" : "D45E7E0030C3000000000010",
+        "name" : "create-manifest-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:mcmus.xcodeproj",
         "identifier" : "D47A2B0030B100000000000B",
         "name" : "tarball-tests"
       }

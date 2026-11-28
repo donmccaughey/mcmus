@@ -32,6 +32,7 @@ src_files := \
 check : \
 		$(TMP)/analyzed-iOS.stamp \
 		$(TMP)/analyzed-macOS.stamp \
+		$(TMP)/built-create-manifest.stamp \
 		$(TMP)/built-share-test.stamp \
 		$(TMP)/built-sync-test.stamp \
 		$(TMP)/checked-format.stamp \
@@ -71,6 +72,15 @@ list-simulators :
 release : $(TMP)/made-disk-image.stamp
 
 
+.PHONY : create-manifest
+create-manifest : \
+		$(TMP)/built-create-manifest.stamp \
+		| $(TMP)/create-manifest-work
+	$(TMP)/create-manifest/create-manifest \
+		functional-tests/music \
+		--workdir=$(TMP)/create-manifest-work
+
+
 .PHONY : share-test
 share-test : $(TMP)/built-share-test.stamp | $(TMP)/share-test-work
 	$(TMP)/share-test/share-test \
@@ -103,6 +113,8 @@ clean :
 
 $(TMP)/ \
 $(TMP)/app-release \
+$(TMP)/create-manifest \
+$(TMP)/create-manifest-work \
 $(TMP)/full-sync-work \
 $(TMP)/share-test \
 $(TMP)/share-test-work \
@@ -140,6 +152,7 @@ $(TMP)/analyzed-macOS.stamp : $(src_files) | $$(dir $$@)
 $(TMP)/built-release.stamp : \
 		$(TMP)/analyzed-iOS.stamp \
 		$(TMP)/analyzed-macOS.stamp \
+		$(TMP)/built-create-manifest.stamp \
 		$(TMP)/built-share-test.stamp \
 		$(TMP)/built-sync-test.stamp \
 		$(TMP)/checked-format.stamp \
@@ -154,6 +167,19 @@ $(TMP)/built-release.stamp : \
 		-destination 'generic/platform=macOS' \
 		-derivedDataPath $(TMP)/build-release \
 		CONFIGURATION_BUILD_DIR=$(TMP)/app-release \
+		$(BUILD_FLAGS)
+	touch $@
+
+
+$(TMP)/built-create-manifest.stamp : $(src_files) | $(TMP)/create-manifest
+	rm -rf $(TMP)/create-manifest
+	xcodebuild build \
+		-project mcmus.xcodeproj \
+		-scheme create-manifest \
+		-configuration Debug \
+		-destination 'platform=macOS,arch=$(arch)' \
+		-derivedDataPath $(TMP)/build-create-manifest \
+		CONFIGURATION_BUILD_DIR=$(TMP)/create-manifest \
 		$(BUILD_FLAGS)
 	touch $@
 

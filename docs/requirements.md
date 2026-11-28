@@ -212,6 +212,11 @@ The MC Mus project shall place code for the **sync test client** in the
 
 The sync test tool shall depend on the file-syncing library.
 
+The MC Mus project shall place code for the **create manifest tool** in the
+`src/create-manifest/` subdirectory.
+
+The create manifest tool shall depend on the file-transfer library.
+
 
 ## Third-party code
 
@@ -1101,6 +1106,64 @@ in the server manifest to `stdout` and exit with status 0.
 
 If getting the manifest fails, sync test shall write the error domain and code
 to `stderr` and exit with a non-zero status.
+
+
+## Create manifest tool
+
+**Create manifest** is a stand-alone command line tool for macOS only that
+writes the manifest for a music root directory without running the file sharing
+server.
+
+Create manifest shall link to the file-transfer and wrappers libraries.
+
+Create manifest shall accept one required positional command line arguments:
+`MUSIC_DIR` specifies the location of the music root directory.
+
+If the `MUSIC_DIR` command line argument is missing, create manifest shall exit
+with an error and a usage message.
+
+If the `MUSIC_DIR` command line argument is a relative path, create manifest
+shall resolve it against the current working directory.
+
+If the music root directory is missing or unreadable, create manifest shall exit
+with an error.
+
+Create manifest shall accept the command line option: `--workdir=DIR`, where the
+`DIR` value is required, specifies the working directory where the manifest is
+written.
+
+If the `DIR` value of the `--workdir` option is a relative path, create manifest
+shall resolve it against the current working directory.
+
+When the `--workdir=DIR` option is not given, create manifest shall use the
+current working directory as the working directory.
+
+If the working directory is missing or unreadable, create manifest shall exit
+with an error.
+
+Create manifest shall load the music library from the music root directory and
+load track metadata for its tracks.
+
+While loading track metadata, create manifest shall write progress messages to
+`stdout` giving the number of tracks loaded and the total number of tracks,
+ending with a message for the total.
+
+When `stdout` is a terminal, each progress message shall overwrite the previous
+one; otherwise create manifest shall write each progress message to a separate
+line.
+
+If loading the music library or loading track metadata reports errors, create
+manifest shall write each error to `stderr` and continue.
+
+When loading track metadata is done, create manifest shall create a manifest
+from the track metadata and write it to `manifest.csv` in the working directory,
+overwriting any previous manifest.
+
+When writing the manifest succeeds, create manifest shall write the number of
+tracks in the manifest and the manifest path to `stdout` and exit with status 0.
+
+If writing the manifest fails, create manifest shall write the error to `stderr`
+and exit with a non-zero status.
 
 
 ## Test scripts
