@@ -172,6 +172,43 @@
 }
 
 
+- (void)testShareNameDefaultsToNil;
+{
+    SyncTestOptions *options = [self parse:@[@"/Some/Music"] error:NULL];
+
+    XCTAssertNil(options.shareName);
+}
+
+
+- (void)testShareNameIsUsedAsGiven;
+{
+    SyncTestOptions *options =
+        [self parse:@[@"--share-name= My Mac ", @"/Some/Music"] error:NULL];
+
+    XCTAssertEqualObjects(options.shareName, @" My Mac ");
+    XCTAssertEqualObjects(options.musicDirectoryURL.path, @"/Some/Music");
+}
+
+
+- (void)testShareNameMayFollowMusicDir;
+{
+    SyncTestOptions *options =
+        [self parse:@[@"/Some/Music", @"--share-name=My Mac"] error:NULL];
+
+    XCTAssertEqualObjects(options.shareName, @"My Mac");
+    XCTAssertEqualObjects(options.musicDirectoryURL.path, @"/Some/Music");
+}
+
+
+- (void)testShareNameWithoutValueFails;
+{
+    [self assertParsing:@[@"--share-name=", @"/Some/Music"]
+         failsWithError:@"--share-name requires a SHARE_NAME value"];
+    [self assertParsing:@[@"--share-name", @"/Some/Music"]
+         failsWithError:@"--share-name requires a SHARE_NAME value"];
+}
+
+
 - (void)testMissingMusicDirFails;
 {
     [self assertParsing:@[] failsWithError:@"missing MUSIC_DIR"];

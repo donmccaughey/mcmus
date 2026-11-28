@@ -16,6 +16,7 @@ extern NSString *const SyncTestUsage;
 @property (nonatomic, readonly) NSURL *musicDirectoryURL;
 @property (nonatomic, readonly) NSURL *workingDirectoryURL;
 @property (nonatomic, readonly) NSURL *manifestURL;
+@property (nonatomic, readonly, copy, nullable) NSString *shareName;
 
 // `arguments` starts with the program name, as `NSProcessInfo` gives it.
 // Relative paths are resolved against the current directory, which is also

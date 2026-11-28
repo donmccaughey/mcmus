@@ -4,10 +4,20 @@
 
 #import <XCTest/XCTest.h>
 
+#import "FileShare.h"
 #import "FileShareSelection.h"
 
 
 static const NSUInteger fileShareCount = 3;
+
+
+static FileShare *file_share(uint32_t interfaceIndex, const char *serviceName)
+{
+    return [[FileShare alloc] initWithInterfaceIndex:interfaceIndex
+                                         serviceName:serviceName
+                                             regtype:"_mcmus._tcp."
+                                         replyDomain:"local."];
+}
 
 
 @interface FileShareSelectionTests : XCTestCase
@@ -91,6 +101,47 @@ static const NSUInteger fileShareCount = 3;
 - (void)testEndOfInputCancels;
 {
     [self assertInput:nil hasKind:FileShareSelectionKindCancelled];
+}
+
+
+- (void)testFirstFileShareNamedReturnsMatchingFileShare;
+{
+    NSArray<FileShare *> *fileShares =
+        @[file_share(1, "Den"), file_share(1, "Office")];
+
+    XCTAssertIdentical(
+        first_file_share_named(fileShares, @"Office"), fileShares[1]
+    );
+}
+
+
+- (void)testFirstFileShareNamedReturnsFirstOfSeveralMatches;
+{
+    NSArray<FileShare *> *fileShares = @[
+        file_share(1, "Den"),
+        file_share(4, "Office"),
+        file_share(7, "Office"),
+    ];
+
+    XCTAssertIdentical(
+        first_file_share_named(fileShares, @"Office"), fileShares[1]
+    );
+}
+
+
+- (void)testFirstFileShareNamedMatchesExactly;
+{
+    NSArray<FileShare *> *fileShares = @[file_share(1, "Office")];
+
+    XCTAssertNil(first_file_share_named(fileShares, @"office"));
+    XCTAssertNil(first_file_share_named(fileShares, @"Office "));
+    XCTAssertNil(first_file_share_named(fileShares, @"Off"));
+}
+
+
+- (void)testFirstFileShareNamedReturnsNilWithoutFileShares;
+{
+    XCTAssertNil(first_file_share_named(@[], @"Office"));
 }
 
 

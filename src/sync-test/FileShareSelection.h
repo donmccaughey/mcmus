@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 
 
+@class FileShare;
+
 NS_ASSUME_NONNULL_BEGIN
 
 
@@ -22,6 +24,12 @@ typedef struct {
 // from 1, or nil at end of input.
 FileShareSelection parse_file_share_selection(
     NSString *_Nullable input, NSUInteger fileShareCount
+);
+
+// Compares service names exactly: case-sensitive, with no trimming or Unicode
+// normalization.
+FileShare *_Nullable first_file_share_named(
+    NSArray<FileShare *> *fileShares, NSString *shareName
 );
 
 

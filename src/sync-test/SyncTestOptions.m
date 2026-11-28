@@ -4,7 +4,8 @@
 
 
 NSString *const SyncTestUsage =
-    @"usage: sync-test [--workdir=DIR] [--manifest=MANIFEST_PATH] MUSIC_DIR";
+    @"usage: sync-test [--workdir=DIR] [--manifest=MANIFEST_PATH] "
+    @"[--share-name=SHARE_NAME] MUSIC_DIR";
 
 static NSErrorDomain const SyncTestOptionsErrorDomain =
     @"SyncTestOptionsErrorDomain";
@@ -12,6 +13,8 @@ static NSString *const workdirOption = @"--workdir";
 static NSString *const workdirOptionPrefix = @"--workdir=";
 static NSString *const manifestOption = @"--manifest";
 static NSString *const manifestOptionPrefix = @"--manifest=";
+static NSString *const shareNameOption = @"--share-name";
+static NSString *const shareNameOptionPrefix = @"--share-name=";
 static NSString *const defaultManifestName = @"manifest.csv";
 
 
@@ -48,7 +51,8 @@ static NSURL *file_url(NSString *path, NSURL *currentDirectoryURL)
 
 - (instancetype)initWithMusicDirectoryURL:(NSURL *)musicDirectoryURL
                       workingDirectoryURL:(NSURL *)workingDirectoryURL
-                              manifestURL:(NSURL *)manifestURL;
+                              manifestURL:(NSURL *)manifestURL
+                                shareName:(nullable NSString *)shareName;
 {
     self = [super init];
     if (!self) return nil;
@@ -56,6 +60,7 @@ static NSURL *file_url(NSString *path, NSURL *currentDirectoryURL)
     _musicDirectoryURL = musicDirectoryURL;
     _workingDirectoryURL = workingDirectoryURL;
     _manifestURL = manifestURL;
+    _shareName = [shareName copy];
 
     return self;
 }
@@ -68,6 +73,7 @@ static NSURL *file_url(NSString *path, NSURL *currentDirectoryURL)
     NSString *musicDir = nil;
     NSString *workingDir = nil;
     NSString *manifestPath = nil;
+    NSString *shareName = nil;
     NSError *parseError = nil;
 
     for (NSUInteger i = 1; i < arguments.count; ++i) {
@@ -90,6 +96,16 @@ static NSURL *file_url(NSString *path, NSURL *currentDirectoryURL)
         } else if ([argument isEqual:manifestOption]) {
             parseError =
                 options_error(@"--manifest requires a MANIFEST_PATH value");
+        } else if ([argument hasPrefix:shareNameOptionPrefix]) {
+            shareName =
+                [argument substringFromIndex:shareNameOptionPrefix.length];
+            if (!shareName.length) {
+                parseError =
+                    options_error(@"--share-name requires a SHARE_NAME value");
+            }
+        } else if ([argument isEqual:shareNameOption]) {
+            parseError =
+                options_error(@"--share-name requires a SHARE_NAME value");
         } else if ([argument hasPrefix:@"--"]) {
             parseError = options_error([@"unknown option "
                 stringByAppendingString:argument]);
@@ -119,7 +135,8 @@ static NSURL *file_url(NSString *path, NSURL *currentDirectoryURL)
     return [[self alloc]
         initWithMusicDirectoryURL:directory_url(musicDir, currentDirectoryURL)
               workingDirectoryURL:workingDirectoryURL
-                      manifestURL:manifestURL];
+                      manifestURL:manifestURL
+                        shareName:shareName];
 }
 
 

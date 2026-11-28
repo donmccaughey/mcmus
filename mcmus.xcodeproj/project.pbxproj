@@ -1063,6 +1063,7 @@
 		D45C7E0030C200000000000A /* Exceptions for "src" folder in "sync-test-tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"file-syncing/FileShare.m",
 				"sync-test/FileShareSelection.m",
 				"sync-test/FileShareSelectionTests.m",
 				"sync-test/SyncTestOptions.m",

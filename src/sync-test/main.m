@@ -73,6 +73,7 @@ int main(int argc, const char *argv[])
             [[SyncTest alloc] initWithMusicDir:options.musicDirectoryURL
                                     workingDir:options.workingDirectoryURL
                                   manifestPath:options.manifestURL
+                                     shareName:options.shareName
                                    serialQueue:serialQueue
                                          clock:clock
                                            dns:dns

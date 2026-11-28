@@ -1,5 +1,7 @@
 #import "FileShareSelection.h"
 
+#import "FileShare.h"
+
 
 static const FileShareSelection cancelled = {
     .kind = FileShareSelectionKindCancelled,
@@ -40,4 +42,15 @@ FileShareSelection parse_file_share_selection(
         .kind = FileShareSelectionKindSelected,
         .index = (NSUInteger)number - 1,
     };
+}
+
+
+FileShare *_Nullable first_file_share_named(
+    NSArray<FileShare *> *fileShares, NSString *shareName
+)
+{
+    for (FileShare *fileShare in fileShares) {
+        if ([fileShare.serviceName isEqualToString:shareName]) return fileShare;
+    }
+    return nil;
 }

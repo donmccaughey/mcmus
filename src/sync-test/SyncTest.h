@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
+                       shareName:(nullable NSString *)shareName
                      serialQueue:(dispatch_queue_serial_t)serialQueue
                            clock:(id<Clock>)clock
                              dns:(id<DNS>)dns

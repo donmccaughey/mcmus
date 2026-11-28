@@ -12,7 +12,10 @@
 
 
 static void printFileShares(NSArray<FileShare *> *fileShares);
-static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
+static FileShare *listedFileShareOrExit(NSArray<FileShare *> *fileShares);
+static FileShare *fileShareNamedOrExit(
+    NSArray<FileShare *> *fileShares, NSString *shareName
+);
 
 
 @interface SyncTest () <FileShareFinderDelegate, FileSyncingDelegate>
@@ -23,6 +26,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
     NSURL *_musicDir;
     NSURL *_workingDir;
     NSURL *_manifestPath;
+    NSString *_shareName;
     dispatch_queue_serial_t _serialQueue;
     id<Clock> _clock;
     id<DNS> _dns;
@@ -36,6 +40,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 - (instancetype)initWithMusicDir:(NSURL *)musicDir
                       workingDir:(NSURL *)workingDir
                     manifestPath:(NSURL *)manifestPath
+                       shareName:(nullable NSString *)shareName
                      serialQueue:(dispatch_queue_serial_t)serialQueue
                            clock:(id<Clock>)clock
                              dns:(id<DNS>)dns
@@ -47,6 +52,7 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
     _musicDir = musicDir;
     _workingDir = workingDir;
     _manifestPath = manifestPath;
+    _shareName = [shareName copy];
 
     _clock = clock;
     _dns = dns;
@@ -89,10 +95,10 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares);
 
     _fileShareFinder = nil;
 
-    printFileShares(fileShares);
-    FileShare *fileShare = fileShares.count == 1
-        ? fileShares.firstObject
-        : promptForFileShareOrExit(fileShares);
+    FileShare *fileShare = _shareName
+        ? fileShareNamedOrExit(fileShares, _shareName)
+        : listedFileShareOrExit(fileShares);
+    printf("Syncing with \"%s\".\n", fileShare.serviceName.UTF8String);
 
     _fileSyncing =
         [[FileSyncing alloc] initWithMusicDir:_musicDir
@@ -271,4 +277,25 @@ static FileShare *promptForFileShareOrExit(NSArray<FileShare *> *fileShares)
         case FileShareSelectionKindInvalid: break;
         }
     }
+}
+
+
+static FileShare *listedFileShareOrExit(NSArray<FileShare *> *fileShares)
+{
+    printFileShares(fileShares);
+    return fileShares.count == 1 ? fileShares.firstObject
+                                 : promptForFileShareOrExit(fileShares);
+}
+
+
+static FileShare *fileShareNamedOrExit(
+    NSArray<FileShare *> *fileShares, NSString *shareName
+)
+{
+    FileShare *fileShare = first_file_share_named(fileShares, shareName);
+    if (!fileShare) {
+        fprintf(stderr, "No file share matches %s.\n", shareName.UTF8String);
+        exit(EXIT_FAILURE);
+    }
+    return fileShare;
 }
