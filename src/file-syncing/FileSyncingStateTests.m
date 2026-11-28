@@ -138,7 +138,7 @@ static NSString *csv_text(Manifest *manifest)
 {
     FileSyncingState *state = state_with_file_system([FileSystemFake new]);
 
-    XCTAssertEqualObjects(state.tarballs, @[]);
+    XCTAssertEqualObjects(state.tarballs, @{});
 }
 
 
@@ -207,7 +207,7 @@ static NSString *csv_text(Manifest *manifest)
 
     [state updateWithServerManifest:manifest_with_track(@"Same.m4a")];
 
-    XCTAssertEqualObjects(state.tarballs, @[]);
+    XCTAssertEqualObjects(state.tarballs, @{});
 }
 
 
@@ -221,7 +221,9 @@ static NSString *csv_text(Manifest *manifest)
                @"B.m4a": @5,
            })];
 
-    XCTAssertEqualObjects(state.tarballs, (@[@[@"A.m4a", @"B.m4a", @"C.m4a"]]));
+    XCTAssertEqualObjects(
+        state.tarballs, (@{@1: @[@[@"A.m4a"], @[@"B.m4a"], @[@"C.m4a"]]})
+    );
 }
 
 
@@ -239,7 +241,8 @@ static NSString *csv_text(Manifest *manifest)
            })];
 
     XCTAssertEqualObjects(
-        state.tarballs, (@[@[@"A.m4a", @"B.m4a", @"C.m4a", @"D.m4a"]])
+        state.tarballs,
+        (@{@1: @[@[@"A.m4a"], @[@"B.m4a"], @[@"C.m4a"], @[@"D.m4a"]]})
     );
 }
 
@@ -252,7 +255,7 @@ static NSString *csv_text(Manifest *manifest)
 
     [state updateWithServerManifest:manifest_with_track(@"Added.m4a")];
 
-    XCTAssertEqualObjects(state.tarballs, (@[@[@"Added.m4a"]]));
+    XCTAssertEqualObjects(state.tarballs, (@{@1: @[@[@"Added.m4a"]]}));
 }
 
 
@@ -265,7 +268,7 @@ static NSString *csv_text(Manifest *manifest)
                @"B.m4a": @(40 * megabyte),
            })];
 
-    XCTAssertEqualObjects(state.tarballs, (@[@[@"A.m4a", @"B.m4a"]]));
+    XCTAssertEqualObjects(state.tarballs, (@{@1: @[@[@"A.m4a"], @[@"B.m4a"]]}));
 }
 
 
@@ -280,7 +283,7 @@ static NSString *csv_text(Manifest *manifest)
            })];
 
     XCTAssertEqualObjects(
-        state.tarballs, (@[@[@"A.m4a"], @[@"B.m4a", @"C.m4a"]])
+        state.tarballs, (@{@1: @[@[@"A.m4a"]], @2: @[@[@"B.m4a"], @[@"C.m4a"]]})
     );
 }
 
@@ -296,7 +299,8 @@ static NSString *csv_text(Manifest *manifest)
            })];
 
     XCTAssertEqualObjects(
-        state.tarballs, (@[@[@"A.m4a"], @[@"B.m4a"], @[@"C.m4a"]])
+        state.tarballs,
+        (@{@1: @[@[@"A.m4a"]], @2: @[@[@"B.m4a"]], @3: @[@[@"C.m4a"]]})
     );
 }
 
@@ -312,7 +316,9 @@ static NSString *csv_text(Manifest *manifest)
                @"B.m4a": @(60 * megabyte),
            })];
 
-    XCTAssertEqualObjects(state.tarballs, (@[@[@"A.m4a"], @[@"B.m4a"]]));
+    XCTAssertEqualObjects(
+        state.tarballs, (@{@1: @[@[@"A.m4a"]], @2: @[@[@"B.m4a"]]})
+    );
 }
 
 
@@ -323,7 +329,7 @@ static NSString *csv_text(Manifest *manifest)
 
     [state updateWithServerManifest:manifest_with_track(@"Later.m4a")];
 
-    XCTAssertEqualObjects(state.tarballs, (@[@[@"Later.m4a"]]));
+    XCTAssertEqualObjects(state.tarballs, (@{@1: @[@[@"Later.m4a"]]}));
 }
 
 

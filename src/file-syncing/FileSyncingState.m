@@ -20,7 +20,7 @@ static const unsigned long long maxTarballSize = 100ULL * 1024 * 1024;
     _removedTracks = @[];
     _addedTracks = @[];
     _changedTracks = @[];
-    _tarballs = @[];
+    _tarballs = [NSMutableDictionary new];
 
     _localManifest = [Manifest newWithCSVPath:localManifestPath
                                    fileSystem:fileSystem
@@ -51,23 +51,27 @@ static const unsigned long long maxTarballSize = 100ULL * 1024 * 1024;
 }
 
 
-- (NSArray<NSArray<NSString *> *> *)makeTarballs;
+- (NSMutableDictionary<NSNumber *, CSVRecords> *)makeTarballs;
 {
-    NSMutableArray<NSArray<NSString *> *> *tarballs = [NSMutableArray array];
-    NSMutableArray<NSString *> *tarball = [NSMutableArray array];
+    NSMutableDictionary<NSNumber *, CSVRecords> *tarballs =
+        [NSMutableDictionary new];
+    NSMutableArray<CSVRecord> *tarball = [NSMutableArray new];
     unsigned long long tarballSize = 0;
+    int tarballID = 1;
 
     for (TrackMetadata *download in [self sortedDownloads]) {
         BOOL wouldOverflow = tarballSize + download.size > maxTarballSize;
         if (wouldOverflow && tarball.count) {
-            [tarballs addObject:tarball];
-            tarball = [NSMutableArray array];
+            tarballs[@(tarballID)] = tarball;
+            tarball = [NSMutableArray new];
             tarballSize = 0;
+            ++tarballID;
         }
-        [tarball addObject:download.relativePath];
+        CSVRecord record = @[download.relativePath];
+        [tarball addObject:record];
         tarballSize += download.size;
     }
-    if (tarball.count) [tarballs addObject:tarball];
+    if (tarball.count) tarballs[@(tarballID)] = tarball;
 
     return tarballs;
 }

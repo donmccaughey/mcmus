@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+#import "CSV.h"
+
 
 @protocol FileSystem;
 
@@ -17,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSArray<TrackMetadata *> *removedTracks;
 @property (nonatomic, copy) NSArray<TrackMetadata *> *addedTracks;
 @property (nonatomic, copy) NSArray<TrackMetadata *> *changedTracks;
-@property (nonatomic, readonly) NSArray<NSArray<NSString *> *> *tarballs;
+@property (nonatomic, readonly)
+    NSMutableDictionary<NSNumber *, CSVRecords> *tarballs;
 @property (nonatomic, readonly) NSUInteger modifiedTrackCount;
 
 - (instancetype)initWithLocalManifestPath:(NSURL *)localManifestPath
