@@ -112,7 +112,7 @@ static BOOL is_line_break(uint8_t byte)
 - (instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (nullable NSArray<NSArray<NSString *> *> *)parse;
+- (nullable CSVRecords)parse;
 
 @property (nonatomic, readonly, nullable) NSError *error;
 
@@ -133,7 +133,7 @@ static BOOL is_line_break(uint8_t byte)
     ParseState _state;
     NSMutableData *_field;
     NSMutableArray<NSString *> *_fields;
-    NSMutableArray<NSArray<NSString *> *> *_records;
+    NSMutableArray<CSVRecord> *_records;
 }
 
 
@@ -156,7 +156,7 @@ static BOOL is_line_break(uint8_t byte)
 }
 
 
-- (nullable NSArray<NSArray<NSString *> *> *)parse;
+- (nullable CSVRecords)parse;
 {
     [self skipByteOrderMark];
     while (_index < _length && !_error) {
@@ -350,10 +350,10 @@ static BOOL is_line_break(uint8_t byte)
 @end
 
 
-NSArray<NSArray<NSString *> *> *parseCSV(NSData *data, NSError **error)
+CSVRecords parseCSV(NSData *data, NSError **error)
 {
     Parser *parser = [[Parser alloc] initWithData:data];
-    NSArray<NSArray<NSString *> *> *records = [parser parse];
+    CSVRecords records = [parser parse];
     if (!records && error) *error = parser.error;
     return records;
 }
@@ -383,7 +383,7 @@ static NSString *format_field(NSString *field)
 }
 
 
-static NSString *format_record(NSArray<NSString *> *record)
+static NSString *format_record(CSVRecord record)
 {
     NSMutableArray<NSString *> *fields =
         [NSMutableArray arrayWithCapacity:record.count];
@@ -394,10 +394,10 @@ static NSString *format_record(NSArray<NSString *> *record)
 }
 
 
-NSData *generateCSV(NSArray<NSArray<NSString *> *> *records)
+NSData *generateCSV(CSVRecords records)
 {
     NSMutableString *csv = [NSMutableString new];
-    for (NSArray<NSString *> *record in records) {
+    for (CSVRecord record in records) {
         [csv appendString:format_record(record)];
         // The ending after the last record lets a record with one empty
         // field round-trip: without it that record formats as nothing.
